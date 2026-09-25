@@ -14,6 +14,7 @@ import {
   MessageSquare,
   Radio,
   ReceiptText,
+  Users,
 } from 'lucide-react';
 import { NavGroup } from '../types/navigation.types';
 
@@ -100,6 +101,12 @@ export const navigationConfig: NavGroup[] = [
         path: '/suppliers',
         icon: Truck,
         roles: ['SUPER_ADMIN', 'MANAGER'],
+      },
+      {
+        title: 'User Logins',
+        path: '/users',
+        icon: Users,
+        roles: ['SUPER_ADMIN'],
       },
     ],
   },

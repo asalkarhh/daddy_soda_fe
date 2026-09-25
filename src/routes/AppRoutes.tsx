@@ -5,7 +5,7 @@ import { ProtectedRoute } from './ProtectedRoute';
 import { RoleRoute } from './RoleRoute';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 
-// Pages
+// Core Pages
 import { LoginPage } from '../pages/auth/LoginPage';
 import { AdminDashboardPage } from '../pages/dashboard/AdminDashboardPage';
 import { FranchiseDashboardPage } from '../pages/dashboard/FranchiseDashboardPage';
@@ -13,6 +13,17 @@ import { UnauthorizedPage } from '../pages/common/UnauthorizedPage';
 import { NotFoundPage } from '../pages/common/NotFoundPage';
 import { ModulePlaceholderPage } from '../pages/common/ModulePlaceholderPage';
 import { LoadingScreen } from '../components/common/LoadingScreen';
+
+// Master Data Pages
+import { FranchisesPage } from '../pages/masters/FranchisesPage';
+import { OutletsPage } from '../pages/masters/OutletsPage';
+import { MachinesPage } from '../pages/masters/MachinesPage';
+import { ProductsPage } from '../pages/masters/ProductsPage';
+import { SuppliersPage } from '../pages/masters/SuppliersPage';
+import { UsersPage } from '../pages/masters/UsersPage';
+
+// Franchise Self-Service Pages
+import { MyMachinesPage } from '../pages/franchise/MyMachinesPage';
 
 // Helper Root Redirect
 const RootRedirect: React.FC = () => {
@@ -52,29 +63,16 @@ export const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       >
-        {/* SUPER_ADMIN and MANAGER Routes */}
+        {/* SUPER_ADMIN and MANAGER Shared Master & Operations Routes */}
         <Route element={<RoleRoute allowedRoles={['SUPER_ADMIN', 'MANAGER']} />}>
           <Route path="/dashboard" element={<AdminDashboardPage />} />
-          <Route
-            path="/franchises"
-            element={<ModulePlaceholderPage title="Franchises Master" category="Masters" />}
-          />
-          <Route
-            path="/outlets"
-            element={<ModulePlaceholderPage title="Outlets Master" category="Masters" />}
-          />
-          <Route
-            path="/machines"
-            element={<ModulePlaceholderPage title="Machines Master" category="Masters" />}
-          />
-          <Route
-            path="/products"
-            element={<ModulePlaceholderPage title="Flavours & Products Master" category="Masters" />}
-          />
-          <Route
-            path="/suppliers"
-            element={<ModulePlaceholderPage title="Suppliers Master" category="Masters" />}
-          />
+          <Route path="/franchises" element={<FranchisesPage />} />
+          <Route path="/outlets" element={<OutletsPage />} />
+          <Route path="/machines" element={<MachinesPage />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/suppliers" element={<SuppliersPage />} />
+
+          {/* Placeholders for future operational modules */}
           <Route
             path="/purchases"
             element={<ModulePlaceholderPage title="Purchases" category="Operations" />}
@@ -113,13 +111,15 @@ export const AppRoutes: React.FC = () => {
           />
         </Route>
 
+        {/* SUPER_ADMIN ONLY Routes */}
+        <Route element={<RoleRoute allowedRoles={['SUPER_ADMIN']} />}>
+          <Route path="/users" element={<UsersPage />} />
+        </Route>
+
         {/* FRANCHISE_OWNER Routes */}
         <Route element={<RoleRoute allowedRoles={['FRANCHISE_OWNER']} />}>
           <Route path="/my-dashboard" element={<FranchiseDashboardPage />} />
-          <Route
-            path="/my-machines"
-            element={<ModulePlaceholderPage title="My Soda Machines" category="My Franchise" />}
-          />
+          <Route path="/my-machines" element={<MyMachinesPage />} />
           <Route
             path="/my-orders"
             element={<ModulePlaceholderPage title="My Orders" category="My Franchise" />}

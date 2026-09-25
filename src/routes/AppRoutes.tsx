@@ -36,12 +36,19 @@ import { CreateOrderPage } from '../pages/orders/CreateOrderPage';
 import { OrderDetailPage } from '../pages/orders/OrderDetailPage';
 import { EditOrderPage } from '../pages/orders/EditOrderPage';
 
+// Invoice & Payment Pages (Admin & Manager)
+import { InvoicesListPage } from '../pages/invoices/InvoicesListPage';
+import { CreateInvoicePage } from '../pages/invoices/CreateInvoicePage';
+import { InvoiceDetailPage } from '../pages/invoices/InvoiceDetailPage';
+
 // Franchise Self-Service Pages
 import { MyMachinesPage } from '../pages/franchise/MyMachinesPage';
 import { FranchiseOrdersPage } from '../pages/franchise/FranchiseOrdersPage';
 import { FranchiseCreateOrderPage } from '../pages/franchise/FranchiseCreateOrderPage';
 import { FranchiseOrderDetailPage } from '../pages/franchise/FranchiseOrderDetailPage';
 import { FranchiseEditOrderPage } from '../pages/franchise/FranchiseEditOrderPage';
+import { FranchiseInvoicesPage } from '../pages/franchise/FranchiseInvoicesPage';
+import { FranchiseInvoiceDetailPage } from '../pages/franchise/FranchiseInvoiceDetailPage';
 
 // Helper Root Redirect
 const RootRedirect: React.FC = () => {
@@ -104,10 +111,10 @@ export const AppRoutes: React.FC = () => {
           <Route path="/orders/new" element={<CreateOrderPage />} />
           <Route path="/orders/:id" element={<OrderDetailPage />} />
           <Route path="/orders/:id/edit" element={<EditOrderPage />} />
-          <Route
-            path="/invoices"
-            element={<ModulePlaceholderPage title="Invoices & Payments" category="Operations" />}
-          />
+          {/* Invoice & Payment Routes (Admin & Manager) */}
+          <Route path="/invoices" element={<InvoicesListPage />} />
+          <Route path="/invoices/new" element={<CreateInvoicePage />} />
+          <Route path="/invoices/:id" element={<InvoiceDetailPage />} />
           <Route
             path="/dues"
             element={<ModulePlaceholderPage title="Due Payments" category="Operations" />}
@@ -144,10 +151,9 @@ export const AppRoutes: React.FC = () => {
           <Route path="/my-orders/new" element={<FranchiseCreateOrderPage />} />
           <Route path="/my-orders/:id" element={<FranchiseOrderDetailPage />} />
           <Route path="/my-orders/:id/edit" element={<FranchiseEditOrderPage />} />
-          <Route
-            path="/my-invoices"
-            element={<ModulePlaceholderPage title="My Invoices" category="My Franchise" />}
-          />
+          {/* Franchise Owner Invoices Routes */}
+          <Route path="/my-invoices" element={<FranchiseInvoicesPage />} />
+          <Route path="/my-invoices/:id" element={<FranchiseInvoiceDetailPage />} />
           <Route
             path="/my-dues"
             element={<ModulePlaceholderPage title="My Due Payments" category="My Franchise" />}

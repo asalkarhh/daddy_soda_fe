@@ -238,6 +238,51 @@ stateDiagram-v2
 - **Franchise Owner Self-Service**:
   - `GET /api/v1/my/orders` - Filtered order list strictly scoped to authenticated franchise
 
+## Invoices & Payment Collection Module (FE-05)
+
+The Invoices & Payments module handles downstream commercial settlement following physical delivery of sales orders.
+
+### 1. Delivery-Triggered Invoicing
+- **Prerequisite**: Invoices can **only** be created from sales orders in `DELIVERED` status (`GET /orders?status=DELIVERED`).
+- **One Invoice Per Order**: The backend enforces exactly one invoice per delivered order. Any attempt to create a duplicate invoice displays clear backend validation feedback.
+- **Immutable Item Snapshot**: Item codes, flavours, bottle sizes, delivered quantities, and agreed unit prices are mirrored directly from the delivered order snapshot. They are strictly display-only in the invoice generation screen and cannot be edited.
+
+### 2. GST vs Normal Billing
+- **Normal Invoice**: Zero tax is applied (`gstRate: 0`, `gstAmount: 0`). Tax rate controls are hidden from the UI.
+- **GST Invoice**: Tax rate defaults from backend configuration (18%) and can be adjusted by Super Admin or Manager. Grand Total is computed as `Subtotal + GST Amount`.
+
+### 3. Payment Terms & 10-Day Credit Due-Date Rule
+- **Payment Terms**:
+  - `CREDIT`: Due date is automatically defaulted to **Invoice Date + 10 days** in the UI.
+  - `PARTIAL_PAYMENT`: Due date is automatically defaulted to **Invoice Date + 10 days** in the UI.
+  - `FULL_PAYMENT`: Due date is hidden and cleared (`dueDate: null`). Immediate settlement on delivery.
+- **Due Date Extension**: Super Admin or Manager can modify the due date via the **Update Due Date** modal (`PATCH /invoices/{id}/due-date`). A mandatory audit reason (up to 500 characters) is required. The new due date cannot precede the original invoice date.
+
+### 4. Manual Offline Payment Collection
+- Payments are entered manually by Super Admin or Manager (`POST /invoices/{id}/payments`).
+- Supported modes: `UPI`, `BANK_TRANSFER`, `CASH`, `CHEQUE`, `OTHER`.
+- **Validation**: Payment amount must be `> 0` and cannot exceed the current outstanding balance (`balanceAmount`). Submissions exceeding the balance are blocked client-side and server-side.
+- **Real-Time Settlement**: Recording a payment updates the invoice ledger, balance amount, and payment status (`UNPAID` → `PARTIALLY_PAID` → `PAID` / `OVERDUE`).
+
+### 5. Protected PDF Downloads
+- Generated dynamically by backend service (`GET /invoices/{id}/download`).
+- Consumed securely as a binary `Blob` using the authenticated Axios client.
+- The UI extracts the filename from the `Content-Disposition` header or falls back safely to `invoice-{invoiceNumber}.pdf`.
+
+### 6. Role-Based Permissions
+| Capability | SUPER_ADMIN | MANAGER | FRANCHISE_OWNER |
+| :--- | :---: | :---: | :---: |
+| Access Invoices List (`/invoices`) | ✅ | ✅ | ❌ (Blocked) |
+| Create Invoice (`/invoices/new`) | ✅ | ✅ | ❌ (Blocked) |
+| View Admin Invoice Detail (`/invoices/:id`) | ✅ | ✅ | ❌ (Blocked) |
+| Record Offline Payment (`POST /invoices/:id/payments`) | ✅ | ✅ | ❌ (No action) |
+| Update Due Date (`PATCH /invoices/:id/due-date`) | ✅ | ✅ | ❌ (No action) |
+| Access Self-Service Invoices (`/my-invoices`) | ❌ | ❌ | ✅ (Own invoices only) |
+| View Self-Service Invoice (`/my-invoices/:id`) | ❌ | ❌ | ✅ (Own invoice only) |
+| Download Invoice PDF | ✅ | ✅ | ✅ (Own invoice only) |
+
+---
+
 ### Standard Response Format
 ```json
 {
@@ -254,27 +299,29 @@ stateDiagram-v2
 
 ```
 src/
-├── api/                  # Axios instance, interceptors, error parsers, and typed API clients (auth, master, inventory, order)
+├── api/                  # Axios instance, interceptors, error parsers, and typed API clients (auth, master, inventory, order, invoice)
 ├── components/
 │   ├── common/           # Common components (Breadcrumb, PageHeader, ErrorMessage, TableSkeleton, etc.)
 │   ├── inventory/        # Inventory components (StockAdjustmentModal)
+│   ├── invoices/         # Invoice components (InvoiceStatusBadge, InvoiceTypeBadge, RecordPaymentModal, UpdateDueDateModal)
 │   ├── orders/           # Order components (OrderStatusBadge, CancelOrderModal, DeliverOrderModal)
 │   └── ui/               # Reusable primitive UI components (Button, Input, Select, Card, Modal, Table, Pagination, etc.)
 ├── config/               # Environment configuration and navigation menu definitions
 ├── contexts/             # AuthContext and ToastContext providers
-├── hooks/                # Custom hooks (useAuth, useToast, useMasterData, useInventoryData, useOrderData)
+├── hooks/                # Custom hooks (useAuth, useToast, useMasterData, useInventoryData, useOrderData, useInvoiceData)
 ├── layouts/              # DashboardLayout, responsive Sidebar, and Header
 ├── pages/
 │   ├── auth/             # LoginPage
 │   ├── common/           # UnauthorizedPage, NotFoundPage, ModulePlaceholderPage
 │   ├── dashboard/        # AdminDashboardPage (/dashboard) & FranchiseDashboardPage (/my-dashboard)
-│   ├── franchise/        # Franchise Owner self-service pages (MyMachinesPage, FranchiseOrdersPage, FranchiseCreateOrderPage, FranchiseOrderDetailPage, FranchiseEditOrderPage)
+│   ├── franchise/        # Franchise Owner self-service pages (MyMachinesPage, Orders, FranchiseInvoicesPage, FranchiseInvoiceDetailPage)
 │   ├── inventory/        # Warehouse Inventory, Product Detail, and Stock Movements pages
+│   ├── invoices/         # Admin/Manager Invoice pages (InvoicesListPage, CreateInvoicePage, InvoiceDetailPage)
 │   ├── masters/          # Master CRUD pages (Franchises, Outlets, Machines, Products, Suppliers, Users)
 │   ├── orders/           # Admin/Manager Order pages (OrdersListPage, CreateOrderPage, OrderDetailPage, EditOrderPage)
 │   └── purchases/        # Purchase Bills list, new purchase form, and detail pages
 ├── routes/               # AppRoutes, ProtectedRoute guard, RoleRoute guard
-├── types/                # TypeScript interfaces (auth, api, master, inventory, order, navigation)
+├── types/                # TypeScript interfaces (auth, api, master, inventory, order, invoice, navigation)
 └── utils/                # Utility helpers (cn, storage, formatters)
 ```
 
@@ -290,15 +337,16 @@ Vitest validates:
 - **Master Data Module (`test/masters.test.tsx`)**: 9 tests
 - **Purchases & Inventory Module (`test/inventory.test.tsx`)**: 11 tests
 - **Franchise Orders & Delivery Module (`test/orders.test.tsx`)**: 12 tests
-  1. Franchise Owner cannot access `/orders` (blocked and redirected to `/unauthorized`)
-  2. Admin/Manager can access `/orders` with Create Order action
-  3. Franchise Owner create form has NO franchise selector and price input is display-only
-  4. Admin/Manager create form allows unit price override and franchise selection
-  5. Duplicate product rows within the same order are prevented
-  6. Delivered order has no edit, cancel, or delete actions
-  7. Draft order shows delete action
-  8. Cancel action requires a mandatory cancellation reason
-  9. Deliver modal shows stock-deduction warning
-  10. Backend insufficient warehouse stock error message is rendered clearly
-  11. Successful delivery invalidates orders and warehouse inventory queries
-  12. Franchise Owner only requests and renders own orders via `getMyOrders`
+- **Invoices & Payments Module (`test/invoices.test.tsx`)**: 11 tests
+  1. Franchise Owner cannot access `/invoices` or `/invoices/new` (blocked with Restricted Area)
+  2. Super Admin and Manager can access creation screen (`/invoices/new`)
+  3. GST bill displays tax controls (GST rate, computed tax) and Normal bill hides tax controls
+  4. Credit invoice automatically defaults due date to invoice date + 10 days
+  5. Full payment term hides and clears payment due date
+  6. Invoice items and unit prices are locked to delivered order snapshot (display-only)
+  7. Record payment blocks amounts greater than outstanding balance
+  8. Update due date requires a mandatory extension reason (max 500 chars)
+  9. Franchise Owner cannot see or trigger payment or due-date update actions
+  10. PDF download handles Blob response with dynamic filename and initiates download
+  11. Manual payment recording calls API and refreshes outstanding balance and status
+

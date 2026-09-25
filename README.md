@@ -283,6 +283,89 @@ The Invoices & Payments module handles downstream commercial settlement followin
 
 ---
 
+## Dashboards, Dues, Reports & Enquiries Module (FE-06)
+
+The FE-06 module provides operational oversight, credit receivables tracking, monthly CSV reports, and internal franchise sales enquiry management.
+
+### 1. Operational Dashboard (`/dashboard`)
+- **Access**: `SUPER_ADMIN` and `MANAGER` only.
+- **Summary Cards (12 KPIs)**:
+  - Active Franchises, Outlets, Machines, Flavours/Products
+  - Products In Stock, Products Out of Stock (amber/red warning state)
+  - Purchases This Month, Delivered Orders This Month, Invoices This Month
+  - Pending Amount (prominent styling), Overdue Amount (strict RED styling)
+  - New Website Enquiries count
+- **Quick Action Triggers**:
+  - Add Purchase Bill (`/purchases/new`)
+  - Create Order (`/orders/new`)
+  - Create Invoice (`/invoices/new`)
+  - View Due Payments (`/dues`)
+  - View Website Enquiries (`/enquiries`)
+- **Sections**:
+  - **Section A ("Credit Payments Requiring Attention")**: First 5 overdue invoices (`GET /dashboard/dues?dueType=OVERDUE`) highlighted with subtle red background and border.
+  - **Section B ("Due Today")**: Up to 5 invoices maturing today (`dueType=DUE_TODAY`) with amber styling.
+  - **Section C ("Upcoming Due Payments")**: First 5 upcoming scheduled dues with direct link to `/dues`.
+
+### 2. Franchise Dashboard (`/my-dashboard`)
+- **Access**: `FRANCHISE_OWNER` only.
+- **Self-Service Overview**:
+  - Active Outlet & Machine counts
+  - Orders by status breakdown (Draft, Placed, Prepared, Delivered, Cancelled)
+  - Invoices billed this month, Pending Balance, Overdue Amount
+  - Overdue warning banner when overdue invoices exist
+  - **"My Next Payment Due"** spotlight card with color coding: RED (Overdue), AMBER (Due Today), BLUE (Upcoming)
+- **Sections**:
+  - **Section A ("My Recent Orders")**: Latest 5 orders linking to `/my-orders`.
+  - **Section B ("My Recent Invoices")**: Latest 5 invoices linking to `/my-invoices`.
+
+### 3. Credit Due Payments List (`/dues`)
+- **Role Awareness**:
+  - Super Admin & Manager see all dues across franchises (`Credit Due Payments`) with franchise filter dropdown.
+  - Franchise Owner sees only own dues (`My Due Payments`) without any franchise selection dropdown (`franchiseId` is never sent to API).
+- **Due-Status Visual Rules**:
+  - **OVERDUE** (`displaySeverity: RED`):
+    - Row highlighted with subtle red background (`bg-red-50/60`) and red left border (`border-l-4 border-red-500`).
+    - Red balance text, red days overdue counter.
+    - Badged clearly as `Overdue`.
+  - **DUE_TODAY** (`displaySeverity: AMBER`):
+    - Row highlighted with amber background (`bg-amber-50/50`) and amber left border (`border-amber-500`).
+    - Badged as `Due Today`.
+  - **UPCOMING** (`displaySeverity: NORMAL`):
+    - Standard clean table row with `Upcoming` badge.
+- **Credit Due-Date Business Logic**:
+  - 10-day credit due date originates from backend invoice business rules.
+  - Action buttons only link to Invoice Detail (`/invoices/:id` or `/my-invoices/:id`).
+  - No payment entry or due-date editing actions are displayed on the dues list itself (managed inside invoice details).
+
+### 4. Monthly CSV Report Downloads (`/reports` & `/my-reports`)
+- **Protected CSV Downloads**:
+  - Consumed securely as binary `Blob` with authenticated Axios client.
+  - Filename dynamically extracted from `Content-Disposition` header with safe fallback.
+  - Download buttons display "Preparing Download..." spinner and disable during generation.
+- **Admin & Manager Reports (`/reports`)**:
+  1. **Monthly Purchases** (`GET /reports/monthly/purchases/download`): Filters by mandatory month (`YYYY-MM`) and optional supplier.
+  2. **Monthly Orders** (`GET /reports/monthly/orders/download`): Filters by mandatory month (`YYYY-MM`), optional franchise, and order status.
+  3. **Monthly Invoices** (`GET /reports/monthly/invoices/download`): Filters by mandatory month (`YYYY-MM`), optional franchise, invoice type, and payment status.
+  4. **Monthly Due Payments** (`GET /reports/monthly/dues/download`): Filters by mandatory month (`YYYY-MM`).
+- **Franchise Owner Reports (`/my-reports`)**:
+  - Access to 3 reports: My Monthly Orders, My Monthly Invoices, and My Monthly Due Payments.
+  - Purchases report, franchise selectors, and supplier filters are completely omitted.
+  - Hits the same endpoints without franchise ID parameters.
+
+### 5. Internal Website Enquiry Management (`/enquiries`)
+- **Access**: `SUPER_ADMIN` and `MANAGER` only.
+- **Workflow**:
+  - Inquiries originate from public website submissions.
+  - Internal users manage status transitions: `NEW` → `CONTACTED` → `CLOSED`.
+  - Read-only lead viewing drawer/modal with applicant details, city, mobile, message, source, notes, and timestamps.
+  - Update Status modal allowing status progression and optional admin audit notes with validation feedback.
+- **Scope Constraints**:
+  - No enquiry deletion.
+  - No email or WhatsApp API automation.
+  - No lead assignment or automated reminder workflows in this version.
+
+---
+
 ### Standard Response Format
 ```json
 {
@@ -299,29 +382,33 @@ The Invoices & Payments module handles downstream commercial settlement followin
 
 ```
 src/
-├── api/                  # Axios instance, interceptors, error parsers, and typed API clients (auth, master, inventory, order, invoice)
+├── api/                  # Axios instance, interceptors, error parsers, and typed API clients (auth, master, inventory, order, invoice, dashboard)
 ├── components/
-│   ├── common/           # Common components (Breadcrumb, PageHeader, ErrorMessage, TableSkeleton, etc.)
+│   ├── common/           # Common components (Breadcrumb, PageHeader, ErrorMessage, TableSkeleton, StatusBadge, etc.)
+│   ├── enquiries/        # Enquiry management components (EnquiryDetailModal, UpdateEnquiryStatusModal)
 │   ├── inventory/        # Inventory components (StockAdjustmentModal)
 │   ├── invoices/         # Invoice components (InvoiceStatusBadge, InvoiceTypeBadge, RecordPaymentModal, UpdateDueDateModal)
 │   ├── orders/           # Order components (OrderStatusBadge, CancelOrderModal, DeliverOrderModal)
 │   └── ui/               # Reusable primitive UI components (Button, Input, Select, Card, Modal, Table, Pagination, etc.)
 ├── config/               # Environment configuration and navigation menu definitions
 ├── contexts/             # AuthContext and ToastContext providers
-├── hooks/                # Custom hooks (useAuth, useToast, useMasterData, useInventoryData, useOrderData, useInvoiceData)
+├── hooks/                # Custom hooks (useAuth, useToast, useMasterData, useInventoryData, useOrderData, useInvoiceData, useDashboardData)
 ├── layouts/              # DashboardLayout, responsive Sidebar, and Header
 ├── pages/
 │   ├── auth/             # LoginPage
 │   ├── common/           # UnauthorizedPage, NotFoundPage, ModulePlaceholderPage
 │   ├── dashboard/        # AdminDashboardPage (/dashboard) & FranchiseDashboardPage (/my-dashboard)
+│   ├── dues/             # DuePaymentsPage (/dues and /my-dues)
+│   ├── enquiries/        # EnquiriesPage (/enquiries)
 │   ├── franchise/        # Franchise Owner self-service pages (MyMachinesPage, Orders, FranchiseInvoicesPage, FranchiseInvoiceDetailPage)
 │   ├── inventory/        # Warehouse Inventory, Product Detail, and Stock Movements pages
 │   ├── invoices/         # Admin/Manager Invoice pages (InvoicesListPage, CreateInvoicePage, InvoiceDetailPage)
 │   ├── masters/          # Master CRUD pages (Franchises, Outlets, Machines, Products, Suppliers, Users)
 │   ├── orders/           # Admin/Manager Order pages (OrdersListPage, CreateOrderPage, OrderDetailPage, EditOrderPage)
-│   └── purchases/        # Purchase Bills list, new purchase form, and detail pages
+│   ├── purchases/        # Purchase Bills list, new purchase form, and detail pages
+│   └── reports/          # MonthlyReportsPage (/reports) & FranchiseReportsPage (/my-reports)
 ├── routes/               # AppRoutes, ProtectedRoute guard, RoleRoute guard
-├── types/                # TypeScript interfaces (auth, api, master, inventory, order, invoice, navigation)
+├── types/                # TypeScript interfaces (auth, api, master, inventory, order, invoice, dashboard, navigation)
 └── utils/                # Utility helpers (cn, storage, formatters)
 ```
 
@@ -332,21 +419,21 @@ src/
 ```bash
 npm test
 ```
-Vitest validates:
+Vitest validates **60 tests across 6 test suites**:
 - **Authentication & Role-Based Routing (`test/auth-flow.test.tsx`)**: 7 tests
 - **Master Data Module (`test/masters.test.tsx`)**: 9 tests
 - **Purchases & Inventory Module (`test/inventory.test.tsx`)**: 11 tests
 - **Franchise Orders & Delivery Module (`test/orders.test.tsx`)**: 12 tests
 - **Invoices & Payments Module (`test/invoices.test.tsx`)**: 11 tests
-  1. Franchise Owner cannot access `/invoices` or `/invoices/new` (blocked with Restricted Area)
-  2. Super Admin and Manager can access creation screen (`/invoices/new`)
-  3. GST bill displays tax controls (GST rate, computed tax) and Normal bill hides tax controls
-  4. Credit invoice automatically defaults due date to invoice date + 10 days
-  5. Full payment term hides and clears payment due date
-  6. Invoice items and unit prices are locked to delivered order snapshot (display-only)
-  7. Record payment blocks amounts greater than outstanding balance
-  8. Update due date requires a mandatory extension reason (max 500 chars)
-  9. Franchise Owner cannot see or trigger payment or due-date update actions
-  10. PDF download handles Blob response with dynamic filename and initiates download
-  11. Manual payment recording calls API and refreshes outstanding balance and status
+- **Dashboards, Reports & Enquiries Module (`test/dashboard-reports-enquiries.test.tsx`)**: 10 tests
+  1. Admin and Manager can access operational dashboard, reports, and enquiries
+  2. Franchise Owner is blocked from operational dashboard, reports, and enquiries (redirected to `/unauthorized`)
+  3. Franchise Owner sees own dashboard route with self-service metrics
+  4. Due row with `displaySeverity: RED` renders red visual styling and badge
+  5. Due-today row renders amber visual styling and badge
+  6. Report download uses Blob and correct API endpoint/query parameters
+  7. Franchise Owner report page hides purchase/franchise/supplier filters
+  8. Enquiry list renders status and update modal
+  9. Enquiry status update sends correct payload and refreshes list
+  10. Dashboard quick actions link to correct routes
 

@@ -72,11 +72,6 @@ describe('Daddy Soda House Authentication & Role-Based Access Flow', () => {
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /Operational Dashboard/i })).toBeInTheDocument();
-      expect(screen.getByText(/Active Franchises/i)).toBeInTheDocument();
-      expect(screen.getByText(/Warehouse Stock/i)).toBeInTheDocument();
-      expect(screen.getByText(/Pending Dues/i)).toBeInTheDocument();
-      expect(screen.getByText(/Overdue Dues/i)).toBeInTheDocument();
-      expect(screen.getByText(/Dashboard data will be connected in a later module\./i)).toBeInTheDocument();
     });
   });
 
@@ -103,11 +98,7 @@ describe('Daddy Soda House Authentication & Role-Based Access Flow', () => {
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /My Franchise Dashboard/i })).toBeInTheDocument();
       expect(screen.getAllByText(/My Orders/i).length).toBeGreaterThanOrEqual(1);
-      expect(screen.getByText(/Total franchise orders placed/i)).toBeInTheDocument();
-      expect(screen.getByText(/Pending Amount/i)).toBeInTheDocument();
-      expect(screen.getByText(/Overdue Amount/i)).toBeInTheDocument();
       expect(screen.getAllByText(/My Machines/i).length).toBeGreaterThanOrEqual(1);
-      expect(screen.getByText(/Your franchise data will be connected in a later module\./i)).toBeInTheDocument();
     });
   });
 

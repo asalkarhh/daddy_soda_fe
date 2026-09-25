@@ -19,3 +19,15 @@ export interface PublicStatusResponse {
   message?: string;
   timestamp?: string;
 }
+
+export interface PaginatedData<T> {
+  content: T[];
+  items?: T[];
+  page?: number;
+  number?: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export type PaginatedResponse<T> = PaginatedData<T>;

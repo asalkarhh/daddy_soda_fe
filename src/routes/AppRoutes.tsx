@@ -41,6 +41,12 @@ import { InvoicesListPage } from '../pages/invoices/InvoicesListPage';
 import { CreateInvoicePage } from '../pages/invoices/CreateInvoicePage';
 import { InvoiceDetailPage } from '../pages/invoices/InvoiceDetailPage';
 
+// Dues, Reports, and Enquiries Pages
+import { DuePaymentsPage } from '../pages/dues/DuePaymentsPage';
+import { MonthlyReportsPage } from '../pages/reports/MonthlyReportsPage';
+import { FranchiseReportsPage } from '../pages/reports/FranchiseReportsPage';
+import { EnquiriesPage } from '../pages/enquiries/EnquiriesPage';
+
 // Franchise Self-Service Pages
 import { MyMachinesPage } from '../pages/franchise/MyMachinesPage';
 import { FranchiseOrdersPage } from '../pages/franchise/FranchiseOrdersPage';
@@ -115,18 +121,9 @@ export const AppRoutes: React.FC = () => {
           <Route path="/invoices" element={<InvoicesListPage />} />
           <Route path="/invoices/new" element={<CreateInvoicePage />} />
           <Route path="/invoices/:id" element={<InvoiceDetailPage />} />
-          <Route
-            path="/dues"
-            element={<ModulePlaceholderPage title="Due Payments" category="Operations" />}
-          />
-          <Route
-            path="/reports"
-            element={<ModulePlaceholderPage title="Monthly Analytics & Reports" category="Analytics" />}
-          />
-          <Route
-            path="/enquiries"
-            element={<ModulePlaceholderPage title="Website Enquiries" category="Customer Relations" />}
-          />
+          <Route path="/dues" element={<DuePaymentsPage />} />
+          <Route path="/reports" element={<MonthlyReportsPage />} />
+          <Route path="/enquiries" element={<EnquiriesPage />} />
           <Route
             path="/iot"
             element={<ModulePlaceholderPage title="IoT Machine Telemetry" category="Hardware & IoT" />}
@@ -154,14 +151,9 @@ export const AppRoutes: React.FC = () => {
           {/* Franchise Owner Invoices Routes */}
           <Route path="/my-invoices" element={<FranchiseInvoicesPage />} />
           <Route path="/my-invoices/:id" element={<FranchiseInvoiceDetailPage />} />
-          <Route
-            path="/my-dues"
-            element={<ModulePlaceholderPage title="My Due Payments" category="My Franchise" />}
-          />
-          <Route
-            path="/my-reports"
-            element={<ModulePlaceholderPage title="My Monthly Reports" category="My Franchise" />}
-          />
+          <Route path="/my-dues" element={<DuePaymentsPage />} />
+          <Route path="/dues" element={<DuePaymentsPage />} />
+          <Route path="/my-reports" element={<FranchiseReportsPage />} />
           <Route
             path="/my-manual-sales"
             element={<ModulePlaceholderPage title="My Daily Sales" category="My Franchise" />}

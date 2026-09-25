@@ -109,6 +109,92 @@ Due to relational constraints, entities must be provisioned in the following ord
 
 ---
 
+## Purchase Bills & Warehouse Inventory Module (FE-03)
+
+The Purchase and Warehouse Inventory module handles stock replenishment, inventory tracking, movement audit logging, and manual stock corrections.
+
+### Key Business Rules & Workflows
+1. **Purchase Bill Inward Workflow** (`/purchases/new`):
+   - Physical supplier delivery bills are entered manually to record syrup stock inward.
+   - Each purchase bill specifies an active supplier, bill date, optional supplier bill number, and one or more flavour line items.
+   - **No Financial / Price Data**: The module strictly records bottle quantities. Purchase price, rates, GST, taxes, and supplier payment ledgers are explicitly excluded.
+   - **Immediate Inventory Increment**: Saving a purchase bill immediately adds the specified bottle quantities to warehouse inventory and logs a `PURCHASE_IN` movement.
+2. **Cancellation Over Editing**:
+   - Confirmed purchase bills **cannot be edited or deleted**.
+   - If an error was made during inward entry, the bill must be **cancelled** with a mandatory cancellation justification.
+   - Cancellation triggers a `PURCHASE_CANCEL_REVERSAL` movement and reverses stock **only if current warehouse inventory is sufficient**. If stock has already been dispatched, the backend rejects the cancellation with an informative error.
+3. **Warehouse Stock Updates** (`/inventory`):
+   - Warehouse stock increases through confirmed purchases and manual stock adjustments.
+   - Warehouse stock decreases through order deliveries (subsequent module) or manual stock reductions.
+   - Visual cues: Items with `quantity > 0` are badged `IN STOCK` (green), while `quantity = 0` triggers an explicit `OUT OF STOCK` treatment (red).
+4. **Manual Stock Adjustments** (`StockAdjustmentModal`):
+   - Used for physical inventory discrepancies, handling damage, breakage, or sample returns.
+   - Supports `Add Stock` (`ADJUSTMENT_IN`) and `Reduce Stock` (`ADJUSTMENT_OUT`).
+   - Requires a positive decimal quantity and a mandatory reason/note (max 500 characters).
+   - Prevents negative inventory stock balances.
+5. **Stock Movement Audit Trail** (`/inventory/movements`):
+   - Complete ledger capturing all additions, cancellations, manual corrections, and dispatches.
+   - Filterable by flavour/product, movement type, and date range.
+
+---
+
+## Franchise Orders, Order Management & Delivery Module (FE-04)
+
+The Franchise Orders and Delivery module governs the replenishment lifecycle of syrup bottles from franchise order placement through warehouse preparation and final delivery.
+
+### Order Status Lifecycle
+```mermaid
+stateDiagram-v2
+    [*] --> DRAFT: Save as Draft
+    [*] --> PLACED: Place Immediately
+    DRAFT --> PLACED: Mark as Placed / Place Order
+    PLACED --> PREPARED: Mark as Prepared (Admin/Manager)
+    PREPARED --> DELIVERED: Confirm Full Delivery (Admin/Manager)
+    PLACED --> DELIVERED: Direct Full Delivery (Admin/Manager)
+    DRAFT --> CANCELLED: Cancel Order (with reason)
+    PLACED --> CANCELLED: Cancel Order (with reason)
+    PREPARED --> CANCELLED: Cancel Order (with reason - Admin/Manager only)
+    DELIVERED --> [*]: Immutable (Final State)
+    CANCELLED --> [*]: Immutable (Final State)
+```
+
+### Key Business Rules & Workflows
+1. **Delivery-Time Warehouse Stock Deduction**:
+   - Central warehouse inventory is deducted **only upon successful order delivery (`DELIVERED`)**.
+   - No stock is deducted or reserved during `DRAFT`, `PLACED`, or `PREPARED` statuses.
+   - Successful delivery records stock deductions and invalidates both order queries and warehouse inventory cache (`['warehouse-inventory']`, `['stock-movements']`).
+2. **No Stock Reservation & No Partial Delivery (V1)**:
+   - Orders can be created and placed regardless of current warehouse stock levels.
+   - Deliveries are **full delivery only**; partial fulfillment or backorders are not supported in V1.
+   - If central warehouse stock is insufficient at the moment of delivery confirmation, the backend rejects the delivery mutation and the UI renders the exact flavour names and insufficient quantities clearly.
+3. **Role-Based Price Autofill & Modification**:
+   - Product default selling prices auto-fill from the Product Master (`defaultSellingPrice`).
+   - **Super Admin & Manager**: Permitted to adjust/override unit prices on both creation and edit forms.
+   - **Franchise Owner**: Unit prices are strictly **display-only**. Franchise owners cannot modify prices. Request payloads sent by Franchise Owners omit `franchiseId` and `unitPrice`.
+   - If a product has no default price configured in Product Master, Franchise Owner is alerted with: *"Price is not configured for this flavour. Please contact the manager."* and submission is blocked.
+4. **Order Immutability & Deletion**:
+   - `DELIVERED` and `CANCELLED` orders are completely immutable. They cannot be edited, cancelled, or deleted.
+   - **Delete Action**: Only `DRAFT` orders can be permanently deleted.
+   - **Cancellation Reason**: Order cancellation requires a mandatory reason (up to 500 characters) which is permanently stored in the order audit trail.
+
+### Order Permissions by Role
+
+| Action / Capability | Super Admin | Manager | Franchise Owner |
+| :--- | :---: | :---: | :---: |
+| Access `/orders` (All Franchises) | Yes | Yes | No (403 Restricted) |
+| Access `/my-orders` (Self-Service) | No | No | Yes (Isolated Own Data) |
+| Create Order with Franchise Selector | Yes | Yes | No (Implicit from Session) |
+| Edit Unit Selling Prices | Yes | Yes | No (Display-Only) |
+| Edit Orders | DRAFT / PLACED | DRAFT / PLACED | DRAFT Only |
+| Mark as Placed | DRAFT Only | DRAFT Only | DRAFT Only |
+| Mark as Prepared | PLACED Only | PLACED Only | No Access |
+| Deliver Order (Deduct Stock) | PLACED / PREPARED | PLACED / PREPARED | No Access |
+| Cancel Order (with Reason) | DRAFT / PLACED / PREPARED | DRAFT / PLACED / PREPARED | DRAFT / PLACED Only |
+| Delete Order | DRAFT Only | DRAFT Only | DRAFT Only |
+| View Warehouse Stock Helper | Yes (Informational) | Yes (Informational) | No |
+
+---
+
 ## Backend Integration Details
 
 ### Authentication Endpoints
@@ -117,7 +203,7 @@ Due to relational constraints, entities must be provisioned in the following ord
 - `POST /api/v1/auth/logout` - Logs out the active session
 - `GET /api/v1/public/status` - Checks whether backend server is reachable ("System online")
 
-### Master Data Endpoints
+### Master Data Endpoints (FE-02)
 - **Franchises**: `POST/GET /franchises`, `GET/PUT /franchises/{id}`, `PATCH /franchises/{id}/status`
 - **Outlets**: `POST/GET /outlets`, `GET/PUT /outlets/{id}`, `PATCH /outlets/{id}/status`
 - **Machines**: `POST/GET /machines`, `GET/PUT /machines/{id}`, `PATCH /machines/{id}/status`
@@ -125,6 +211,32 @@ Due to relational constraints, entities must be provisioned in the following ord
 - **Suppliers**: `POST/GET /suppliers`, `GET/PUT /suppliers/{id}`, `PATCH /suppliers/{id}/status`
 - **User Logins** *(Super Admin)*: `POST/GET /users`, `PATCH /users/{id}/status`
 - **Franchise Self-Service**: `GET /my/machines`, `GET /my/franchise`, `GET /my/outlets`
+
+### Purchases & Inventory Endpoints (FE-03)
+- **Purchases**:
+  - `POST /api/v1/purchases` - Create purchase bill and add quantities to warehouse stock
+  - `GET /api/v1/purchases` - Paginated list with supplier, bill number, status, and date filters
+  - `GET /api/v1/purchases/{id}` - Purchase bill detail and line items
+  - `POST /api/v1/purchases/{id}/cancel` - Cancel confirmed purchase bill and reverse stock
+- **Warehouse Inventory**:
+  - `GET /api/v1/inventory/warehouse` - Real-time stock levels with in-stock/out-of-stock indicators
+  - `GET /api/v1/inventory/warehouse/{productId}` - Single product stock and recent movement history
+  - `GET /api/v1/inventory/movements` - Full paginated stock movement audit trail
+  - `POST /api/v1/inventory/adjustments` - Record manual stock adjustment (`ADJUSTMENT_IN` / `ADJUSTMENT_OUT`)
+
+### Orders & Delivery Endpoints (FE-04)
+- **Admin & Manager Operations**:
+  - `GET /api/v1/orders` - Paginated orders list with franchise, status, order number, and date filters
+  - `GET /api/v1/orders/{id}` - Complete order details, line items, and audit timestamps
+  - `POST /api/v1/orders` - Create order with target franchise, line items, and optional price overrides
+  - `PUT /api/v1/orders/{id}` - Update order details for DRAFT or PLACED orders
+  - `POST /api/v1/orders/{id}/place` - Transition DRAFT order to PLACED status
+  - `POST /api/v1/orders/{id}/prepare` - Transition PLACED order to PREPARED status
+  - `POST /api/v1/orders/{id}/deliver` - Execute full delivery and deduct warehouse inventory
+  - `POST /api/v1/orders/{id}/cancel` - Cancel order with mandatory reason payload `{ reason }`
+  - `DELETE /api/v1/orders/{id}` - Permanently delete DRAFT order
+- **Franchise Owner Self-Service**:
+  - `GET /api/v1/my/orders` - Filtered order list strictly scoped to authenticated franchise
 
 ### Standard Response Format
 ```json
@@ -142,22 +254,27 @@ Due to relational constraints, entities must be provisioned in the following ord
 
 ```
 src/
-├── api/                  # Axios instance, interceptors, error parsers, and typed API clients (auth, master)
+├── api/                  # Axios instance, interceptors, error parsers, and typed API clients (auth, master, inventory, order)
 ├── components/
 │   ├── common/           # Common components (Breadcrumb, PageHeader, ErrorMessage, TableSkeleton, etc.)
-│   └── ui/               # Reusable primitive UI components (Button, Input, Select, Card, Modal, Table, etc.)
+│   ├── inventory/        # Inventory components (StockAdjustmentModal)
+│   ├── orders/           # Order components (OrderStatusBadge, CancelOrderModal, DeliverOrderModal)
+│   └── ui/               # Reusable primitive UI components (Button, Input, Select, Card, Modal, Table, Pagination, etc.)
 ├── config/               # Environment configuration and navigation menu definitions
 ├── contexts/             # AuthContext and ToastContext providers
-├── hooks/                # Custom hooks (useAuth, useToast, useMasterData)
+├── hooks/                # Custom hooks (useAuth, useToast, useMasterData, useInventoryData, useOrderData)
 ├── layouts/              # DashboardLayout, responsive Sidebar, and Header
 ├── pages/
 │   ├── auth/             # LoginPage
 │   ├── common/           # UnauthorizedPage, NotFoundPage, ModulePlaceholderPage
 │   ├── dashboard/        # AdminDashboardPage (/dashboard) & FranchiseDashboardPage (/my-dashboard)
-│   ├── franchise/        # Franchise Owner self-service pages (MyMachinesPage)
-│   └── masters/          # Master CRUD pages (Franchises, Outlets, Machines, Products, Suppliers, Users)
+│   ├── franchise/        # Franchise Owner self-service pages (MyMachinesPage, FranchiseOrdersPage, FranchiseCreateOrderPage, FranchiseOrderDetailPage, FranchiseEditOrderPage)
+│   ├── inventory/        # Warehouse Inventory, Product Detail, and Stock Movements pages
+│   ├── masters/          # Master CRUD pages (Franchises, Outlets, Machines, Products, Suppliers, Users)
+│   ├── orders/           # Admin/Manager Order pages (OrdersListPage, CreateOrderPage, OrderDetailPage, EditOrderPage)
+│   └── purchases/        # Purchase Bills list, new purchase form, and detail pages
 ├── routes/               # AppRoutes, ProtectedRoute guard, RoleRoute guard
-├── types/                # TypeScript interfaces (auth, api, master, navigation)
+├── types/                # TypeScript interfaces (auth, api, master, inventory, order, navigation)
 └── utils/                # Utility helpers (cn, storage, formatters)
 ```
 
@@ -169,20 +286,19 @@ src/
 npm test
 ```
 Vitest validates:
-- **Authentication & Role-Based Routing**:
-  - Unauthenticated user redirects to login
-  - Successful login redirects by role (`SUPER_ADMIN` / `MANAGER` -> `/dashboard`, `FRANCHISE_OWNER` -> `/my-dashboard`)
-  - Invalid login displays backend error message cleanly
-  - Protected route blocks unauthenticated user
-  - Franchise Owner cannot access admin routes (shows `/unauthorized`)
-  - Logout clears session tokens and returns user to `/login`
-- **Master Data Module**:
-  - `MANAGER` can access operational masters (`/franchises`, `/outlets`, `/products`)
-  - `FRANCHISE_OWNER` is blocked from `/franchises` and redirected to `/unauthorized`
-  - Validates required fields and 10-digit mobile in Franchise form
-  - Defaults bottle size to 5.00 L in Product form
-  - Requires franchise selection when creating a `FRANCHISE_OWNER` user
-  - Hides franchise selection when creating a `MANAGER` user
-  - Disables machine outlet selector until a franchise is selected (cascading dependency)
-  - Requires confirmation modal before toggling entity active status
-  - Calls create API and invalidates TanStack Query cache on successful form submission
+- **Authentication & Role-Based Routing (`test/auth-flow.test.tsx`)**: 7 tests
+- **Master Data Module (`test/masters.test.tsx`)**: 9 tests
+- **Purchases & Inventory Module (`test/inventory.test.tsx`)**: 11 tests
+- **Franchise Orders & Delivery Module (`test/orders.test.tsx`)**: 12 tests
+  1. Franchise Owner cannot access `/orders` (blocked and redirected to `/unauthorized`)
+  2. Admin/Manager can access `/orders` with Create Order action
+  3. Franchise Owner create form has NO franchise selector and price input is display-only
+  4. Admin/Manager create form allows unit price override and franchise selection
+  5. Duplicate product rows within the same order are prevented
+  6. Delivered order has no edit, cancel, or delete actions
+  7. Draft order shows delete action
+  8. Cancel action requires a mandatory cancellation reason
+  9. Deliver modal shows stock-deduction warning
+  10. Backend insufficient warehouse stock error message is rendered clearly
+  11. Successful delivery invalidates orders and warehouse inventory queries
+  12. Franchise Owner only requests and renders own orders via `getMyOrders`

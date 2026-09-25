@@ -22,8 +22,26 @@ import { ProductsPage } from '../pages/masters/ProductsPage';
 import { SuppliersPage } from '../pages/masters/SuppliersPage';
 import { UsersPage } from '../pages/masters/UsersPage';
 
+// Purchases & Inventory Pages
+import { PurchasesListPage } from '../pages/purchases/PurchasesListPage';
+import { AddPurchasePage } from '../pages/purchases/AddPurchasePage';
+import { PurchaseDetailPage } from '../pages/purchases/PurchaseDetailPage';
+import { WarehouseInventoryPage } from '../pages/inventory/WarehouseInventoryPage';
+import { StockMovementsPage } from '../pages/inventory/StockMovementsPage';
+import { InventoryProductDetailPage } from '../pages/inventory/InventoryProductDetailPage';
+
+// Order Management Pages (Admin & Manager)
+import { OrdersListPage } from '../pages/orders/OrdersListPage';
+import { CreateOrderPage } from '../pages/orders/CreateOrderPage';
+import { OrderDetailPage } from '../pages/orders/OrderDetailPage';
+import { EditOrderPage } from '../pages/orders/EditOrderPage';
+
 // Franchise Self-Service Pages
 import { MyMachinesPage } from '../pages/franchise/MyMachinesPage';
+import { FranchiseOrdersPage } from '../pages/franchise/FranchiseOrdersPage';
+import { FranchiseCreateOrderPage } from '../pages/franchise/FranchiseCreateOrderPage';
+import { FranchiseOrderDetailPage } from '../pages/franchise/FranchiseOrderDetailPage';
+import { FranchiseEditOrderPage } from '../pages/franchise/FranchiseEditOrderPage';
 
 // Helper Root Redirect
 const RootRedirect: React.FC = () => {
@@ -72,19 +90,20 @@ export const AppRoutes: React.FC = () => {
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/suppliers" element={<SuppliersPage />} />
 
-          {/* Placeholders for future operational modules */}
-          <Route
-            path="/purchases"
-            element={<ModulePlaceholderPage title="Purchases" category="Operations" />}
-          />
-          <Route
-            path="/inventory"
-            element={<ModulePlaceholderPage title="Warehouse Inventory" category="Operations" />}
-          />
-          <Route
-            path="/orders"
-            element={<ModulePlaceholderPage title="Franchise Orders" category="Operations" />}
-          />
+          {/* Purchases Routes */}
+          <Route path="/purchases" element={<PurchasesListPage />} />
+          <Route path="/purchases/new" element={<AddPurchasePage />} />
+          <Route path="/purchases/:id" element={<PurchaseDetailPage />} />
+
+          {/* Warehouse Inventory Routes */}
+          <Route path="/inventory" element={<WarehouseInventoryPage />} />
+          <Route path="/inventory/movements" element={<StockMovementsPage />} />
+          <Route path="/inventory/:productId" element={<InventoryProductDetailPage />} />
+          {/* Orders Routes (Admin & Manager) */}
+          <Route path="/orders" element={<OrdersListPage />} />
+          <Route path="/orders/new" element={<CreateOrderPage />} />
+          <Route path="/orders/:id" element={<OrderDetailPage />} />
+          <Route path="/orders/:id/edit" element={<EditOrderPage />} />
           <Route
             path="/invoices"
             element={<ModulePlaceholderPage title="Invoices & Payments" category="Operations" />}
@@ -120,10 +139,11 @@ export const AppRoutes: React.FC = () => {
         <Route element={<RoleRoute allowedRoles={['FRANCHISE_OWNER']} />}>
           <Route path="/my-dashboard" element={<FranchiseDashboardPage />} />
           <Route path="/my-machines" element={<MyMachinesPage />} />
-          <Route
-            path="/my-orders"
-            element={<ModulePlaceholderPage title="My Orders" category="My Franchise" />}
-          />
+          {/* Franchise Owner Orders Routes */}
+          <Route path="/my-orders" element={<FranchiseOrdersPage />} />
+          <Route path="/my-orders/new" element={<FranchiseCreateOrderPage />} />
+          <Route path="/my-orders/:id" element={<FranchiseOrderDetailPage />} />
+          <Route path="/my-orders/:id/edit" element={<FranchiseEditOrderPage />} />
           <Route
             path="/my-invoices"
             element={<ModulePlaceholderPage title="My Invoices" category="My Franchise" />}

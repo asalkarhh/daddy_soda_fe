@@ -68,3 +68,16 @@ export function formatBottleSize(litres: number | null | undefined): string {
   }
   return `${Number(litres).toFixed(2)} L`;
 }
+
+/**
+ * Format inventory quantity cleanly with 2 decimal places and unit (e.g., 150.00 Bottles / Units)
+ */
+export function formatQuantity(qty: number | null | undefined, unit: string = 'Bottles / Units'): string {
+  if (qty === null || qty === undefined || isNaN(qty)) {
+    return `0.00 ${unit}`;
+  }
+  return `${Number(qty).toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })} ${unit}`;
+}

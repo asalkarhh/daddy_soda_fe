@@ -364,6 +364,80 @@ The FE-06 module provides operational oversight, credit receivables tracking, mo
   - No email or WhatsApp API automation.
   - No lead assignment or automated reminder workflows in this version.
 
+## Public Marketing Website & Franchise Enquiry Flow (FE-08)
+
+The FE-08 module delivers the public-facing marketing website and franchise enquiry generation flow for Daddy Soda House.
+
+### 1. Public Routes Overview
+
+| Route | Page | Purpose |
+| :--- | :--- | :--- |
+| `/` | `HomePage` | Hero showcase, Why Daddy Soda House, Featured Flavours, Onboarding Steps, FAQ Preview, Enquiry CTA |
+| `/about` | `AboutPage` | Brand overview, vision & mission placeholders, product philosophy, values |
+| `/products` | `ProductsPage` | Flavour catalog with category filters (informational; no pricing or ordering) |
+| `/franchise` | `FranchisePage` | Main franchise conversion page with setup process, benefits, FAQs, and embedded enquiry form |
+| `/contact` | `ContactPage` | Corporate contact details, address, office hours, and embedded enquiry form |
+| `/privacy-policy` | `PrivacyPolicyPage` | Structured data protection and privacy policy with legal review banner |
+| `/terms-and-conditions` | `TermsAndConditionsPage` | Website usage terms, franchise disclaimer, no guaranteed returns clause |
+
+> [!NOTE]
+> Public pages use a dedicated `PublicLayout` featuring `PublicHeader`, sticky navigation, mobile drawer menu, non-blocking `PublicStatusBanner`, and `PublicFooter`.
+> A visible **"Partner Login" / "Portal Login"** link connects visitors to the internal management portal (`/login`).
+> Internal dashboard routes remain protected and redirect unauthenticated users to `/login`.
+
+### 2. Critical Franchise Enquiry & WhatsApp Redirect Flow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Visitor as Franchise Applicant
+    participant FE as React Frontend (FranchiseEnquiryForm)
+    participant API as Backend REST API (POST /public/enquiries)
+    participant DB as Admin Portal Database
+    participant WA as WhatsApp Web / App (Direct Chat)
+
+    Visitor->>FE: Fills Name, 10-digit Mobile, Email, City, Message
+    Visitor->>FE: Clicks "Submit Enquiry on WhatsApp"
+    FE->>FE: Validates input with Zod schema (Disables submit button)
+    FE->>API: POST /public/enquiries { fullName, mobile, email, city, message }
+    API->>DB: Stores enquiry in Admin Portal (ENQ-YYYYMM-XXXXX)
+    API-->>FE: HTTP 200 { success: true, data: { enquiryId, enquiryNumber, whatsAppUrl } }
+    FE->>FE: Shows success toast notification
+    FE->>WA: Browser redirects to data.whatsAppUrl (window.location.href)
+```
+
+#### Key Rules:
+- **Save First, Redirect After**: WhatsApp is **never** opened before a successful backend response (`HTTP 200 OK`).
+- **No Manual URL Building**: Frontend uses the backend-provided `whatsAppUrl` directly from the response payload.
+- **Error Handling**: If the API call fails or the network errors, an error toast is displayed and **no redirect takes place**.
+- **No Sensitive Local Storage**: No enquiry form data is saved in `localStorage` or `sessionStorage`.
+- **Consent Notice**: Clear consent text is displayed on every enquiry form.
+
+> [!IMPORTANT]
+> **Explicit Architecture Note**:
+> - **No Email Service**: No transactional or marketing emails are sent.
+> - **No WhatsApp Business API**: Direct customer chat URL redirect only (`https://wa.me/...`).
+> - **No Customer Cart / Ordering**: Flavor catalog is purely informational.
+> - **No Payment Gateway / Customer Logins**: Only authorized internal partners/admins log in.
+
+### 3. Replaceable Content & Production Asset Checklist
+
+All public marketing copy, product cards, FAQs, and contact coordinates are centralized in `src/config/siteConfig.ts` for simple client review and customization.
+
+Before launching to production, replace the following placeholders in `src/config/siteConfig.ts` or `public/`:
+- [ ] **Brand Logo**: Replace SVG/PNG logo in `siteConfig.brand.logoUrl` and `public/favicon.ico`.
+- [ ] **Brochure & Hero Images**: Update hero banners and setup process imagery.
+- [ ] **Product Flavour Images**: Replace high-resolution soda bottle and dispensing machine photos.
+- [ ] **Contact Information**: Confirm official Head Office address, phone numbers, and WhatsApp numbers.
+- [ ] **Legal Review**: Have legal counsel review and finalize `PrivacyPolicyPage.tsx` and `TermsAndConditionsPage.tsx`.
+
+### 4. Public API Health Monitoring
+
+- Public layout checks `GET /api/v1/public/status`.
+- If backend service is down or unreachable, a subtle, non-blocking banner is rendered:
+  *"Enquiry service is temporarily unavailable. Please try again shortly."*
+- Page rendering is never blocked by health status failures.
+
 ---
 
 ### Standard Response Format
@@ -382,18 +456,21 @@ The FE-06 module provides operational oversight, credit receivables tracking, mo
 
 ```
 src/
-├── api/                  # Axios instance, interceptors, error parsers, and typed API clients (auth, master, inventory, order, invoice, dashboard)
+├── api/                  # Axios instance, interceptors, error parsers, and typed API clients (auth, master, inventory, order, invoice, dashboard, telemetry, public)
 ├── components/
 │   ├── common/           # Common components (Breadcrumb, PageHeader, ErrorMessage, TableSkeleton, StatusBadge, etc.)
 │   ├── enquiries/        # Enquiry management components (EnquiryDetailModal, UpdateEnquiryStatusModal)
 │   ├── inventory/        # Inventory components (StockAdjustmentModal)
 │   ├── invoices/         # Invoice components (InvoiceStatusBadge, InvoiceTypeBadge, RecordPaymentModal, UpdateDueDateModal)
 │   ├── orders/           # Order components (OrderStatusBadge, CancelOrderModal, DeliverOrderModal)
+│   ├── public/           # Public website components (PublicHeader, PublicFooter, PublicStatusBanner, FranchiseEnquiryForm, FlavourCard, FaqAccordion)
+│   ├── sales/            # Manual daily sales entry components
+│   ├── telemetry/        # IoT device telemetry components
 │   └── ui/               # Reusable primitive UI components (Button, Input, Select, Card, Modal, Table, Pagination, etc.)
-├── config/               # Environment configuration and navigation menu definitions
+├── config/               # Environment configuration, navigation definitions, and public siteConfig.ts
 ├── contexts/             # AuthContext and ToastContext providers
-├── hooks/                # Custom hooks (useAuth, useToast, useMasterData, useInventoryData, useOrderData, useInvoiceData, useDashboardData)
-├── layouts/              # DashboardLayout, responsive Sidebar, and Header
+├── hooks/                # Custom hooks (useAuth, useToast, usePageMeta, useMasterData, useInventoryData, useOrderData, useInvoiceData, useDashboardData)
+├── layouts/              # DashboardLayout, responsive Sidebar, Header, and PublicLayout
 ├── pages/
 │   ├── auth/             # LoginPage
 │   ├── common/           # UnauthorizedPage, NotFoundPage, ModulePlaceholderPage
@@ -405,10 +482,13 @@ src/
 │   ├── invoices/         # Admin/Manager Invoice pages (InvoicesListPage, CreateInvoicePage, InvoiceDetailPage)
 │   ├── masters/          # Master CRUD pages (Franchises, Outlets, Machines, Products, Suppliers, Users)
 │   ├── orders/           # Admin/Manager Order pages (OrdersListPage, CreateOrderPage, OrderDetailPage, EditOrderPage)
+│   ├── public/           # Public pages (HomePage, AboutPage, ProductsPage, FranchisePage, ContactPage, PrivacyPolicyPage, TermsAndConditionsPage)
 │   ├── purchases/        # Purchase Bills list, new purchase form, and detail pages
-│   └── reports/          # MonthlyReportsPage (/reports) & FranchiseReportsPage (/my-reports)
+│   ├── reports/          # MonthlyReportsPage (/reports) & FranchiseReportsPage (/my-reports)
+│   ├── sales/            # ManualDailySalesPage
+│   └── telemetry/        # IotTelemetryPage
 ├── routes/               # AppRoutes, ProtectedRoute guard, RoleRoute guard
-├── types/                # TypeScript interfaces (auth, api, master, inventory, order, invoice, dashboard, navigation)
+├── types/                # TypeScript interfaces (auth, api, master, inventory, order, invoice, dashboard, telemetry, public, navigation)
 └── utils/                # Utility helpers (cn, storage, formatters)
 ```
 
@@ -419,21 +499,30 @@ src/
 ```bash
 npm test
 ```
-Vitest validates **60 tests across 6 test suites**:
+Vitest validates **93 tests across 8 test suites**:
 - **Authentication & Role-Based Routing (`test/auth-flow.test.tsx`)**: 7 tests
 - **Master Data Module (`test/masters.test.tsx`)**: 9 tests
 - **Purchases & Inventory Module (`test/inventory.test.tsx`)**: 11 tests
 - **Franchise Orders & Delivery Module (`test/orders.test.tsx`)**: 12 tests
 - **Invoices & Payments Module (`test/invoices.test.tsx`)**: 11 tests
 - **Dashboards, Reports & Enquiries Module (`test/dashboard-reports-enquiries.test.tsx`)**: 10 tests
-  1. Admin and Manager can access operational dashboard, reports, and enquiries
-  2. Franchise Owner is blocked from operational dashboard, reports, and enquiries (redirected to `/unauthorized`)
-  3. Franchise Owner sees own dashboard route with self-service metrics
-  4. Due row with `displaySeverity: RED` renders red visual styling and badge
-  5. Due-today row renders amber visual styling and badge
-  6. Report download uses Blob and correct API endpoint/query parameters
-  7. Franchise Owner report page hides purchase/franchise/supplier filters
-  8. Enquiry list renders status and update modal
-  9. Enquiry status update sends correct payload and refreshes list
-  10. Dashboard quick actions link to correct routes
+- **IoT Telemetry & Manual Daily Sales Module (`test/iot-manual-sales-consumption.test.tsx`)**: 17 tests
+- **Public Marketing Website & Franchise Enquiry Flow (`test/public-website-enquiry.test.tsx`)**: 16 tests
+  1. Public Home page renders at `/` without authentication
+  2. Public About page renders at `/about` without authentication
+  3. Public Products page renders at `/products` without prices or ordering
+  4. Public Franchise page renders at `/franchise` with onboarding info and enquiry form
+  5. Public Contact page renders at `/contact` with corporate info and enquiry form
+  6. Public Privacy Policy page renders at `/privacy-policy` with legal review banner
+  7. Public Terms & Conditions page renders at `/terms-and-conditions` with legal review banner
+  8. Internal dashboard route still redirects unauthenticated users to `/login`
+  9. "Partner Login" button links directly to `/login`
+  10. Mobile menu opens and closes accessibly
+  11. Enquiry form validates mandatory name and exact 10-digit mobile
+  12. Enquiry form rejects invalid email addresses
+  13. Submits enquiry to `POST /public/enquiries` and redirects to backend `whatsAppUrl` on success
+  14. Failed enquiry API request displays error toast and does not redirect to WhatsApp
+  15. Dynamic page title and meta description updates per public route
+  16. Subtle non-blocking status notification renders when public status is down
+
 

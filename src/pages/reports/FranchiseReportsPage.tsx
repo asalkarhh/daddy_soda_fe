@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Download,
   Loader2,
@@ -7,11 +8,14 @@ import {
   AlertCircle,
   Calendar,
   Info,
+  BarChart2,
 } from 'lucide-react';
 import { PageHeader } from '../../components/common/PageHeader';
+import { Button } from '../../components/ui/Button';
 import { useReportDownloads } from '../../hooks/useDashboardData';
 
 export const FranchiseReportsPage: React.FC = () => {
+  const navigate = useNavigate();
   const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
 
   // Reports download hook
@@ -62,6 +66,15 @@ export const FranchiseReportsPage: React.FC = () => {
       <PageHeader
         title="My Monthly Reports"
         subtitle="Download statement CSV files for your franchise orders, billing invoices, and payment credit records."
+        actions={
+          <Button
+            variant="outline"
+            onClick={() => navigate('/my-reports/consumption')}
+            leftIcon={<BarChart2 className="w-4 h-4 text-brand-600" />}
+          >
+            Consumption Analytics
+          </Button>
+        }
       />
 
       {/* Info notice banner */}

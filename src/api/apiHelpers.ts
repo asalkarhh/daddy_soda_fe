@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { ApiErrorResponse } from '../types/api.types';
 
 export function getApiErrorMessage(error: unknown, fallback = 'An unexpected error occurred. Please try again.'): string {
-  if (axios.isAxiosError(error)) {
+  if (axios.isAxiosError(error) || (error && typeof error === 'object' && 'response' in error)) {
     const axiosErr = error as AxiosError<ApiErrorResponse>;
 
     // 1. Response error payload message
@@ -56,3 +56,5 @@ export function getApiErrorMessage(error: unknown, fallback = 'An unexpected err
 
   return fallback;
 }
+
+export const getErrorMessage = getApiErrorMessage;

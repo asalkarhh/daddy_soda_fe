@@ -209,7 +209,7 @@ describe('Daddy Soda House Master Data Module', () => {
     storage.setUser(mockAdminUser);
     vi.spyOn(authApi, 'getCurrentUser').mockResolvedValue(mockAdminUser);
 
-    renderWithProviders(<AppRoutes />, { initialEntries: ['/products'] });
+    renderWithProviders(<AppRoutes />, { initialEntries: ['/products-master'] });
 
     const user = userEvent.setup();
 

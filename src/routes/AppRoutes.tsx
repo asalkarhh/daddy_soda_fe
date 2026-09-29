@@ -1,24 +1,31 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RoleRoute } from './RoleRoute';
 import { DashboardLayout } from '../layouts/DashboardLayout';
+import { PublicLayout } from '../layouts/PublicLayout';
 
-// Core Pages
+// Public Marketing & Franchise Website Pages (FE-08)
+import { HomePage } from '../pages/public/HomePage';
+import { AboutPage } from '../pages/public/AboutPage';
+import { ProductsPage } from '../pages/public/ProductsPage';
+import { FranchisePage } from '../pages/public/FranchisePage';
+import { ContactPage } from '../pages/public/ContactPage';
+import { PrivacyPolicyPage } from '../pages/public/PrivacyPolicyPage';
+import { TermsAndConditionsPage } from '../pages/public/TermsAndConditionsPage';
+
+// Core & Auth Pages
 import { LoginPage } from '../pages/auth/LoginPage';
 import { AdminDashboardPage } from '../pages/dashboard/AdminDashboardPage';
 import { FranchiseDashboardPage } from '../pages/dashboard/FranchiseDashboardPage';
 import { UnauthorizedPage } from '../pages/common/UnauthorizedPage';
 import { NotFoundPage } from '../pages/common/NotFoundPage';
-import { ModulePlaceholderPage } from '../pages/common/ModulePlaceholderPage';
-import { LoadingScreen } from '../components/common/LoadingScreen';
 
 // Master Data Pages
 import { FranchisesPage } from '../pages/masters/FranchisesPage';
 import { OutletsPage } from '../pages/masters/OutletsPage';
 import { MachinesPage } from '../pages/masters/MachinesPage';
-import { ProductsPage } from '../pages/masters/ProductsPage';
+import { ProductsPage as MasterProductsPage } from '../pages/masters/ProductsPage';
 import { SuppliersPage } from '../pages/masters/SuppliersPage';
 import { UsersPage } from '../pages/masters/UsersPage';
 
@@ -47,6 +54,14 @@ import { MonthlyReportsPage } from '../pages/reports/MonthlyReportsPage';
 import { FranchiseReportsPage } from '../pages/reports/FranchiseReportsPage';
 import { EnquiriesPage } from '../pages/enquiries/EnquiriesPage';
 
+// FE-07 IoT, Manual Daily Sales & Consumption Pages
+import { IotMachineMonitoringPage } from '../pages/iot/IotMachineMonitoringPage';
+import { IotEventsListPage } from '../pages/iot/IotEventsListPage';
+import { IotEventDetailPage } from '../pages/iot/IotEventDetailPage';
+import { ConsumptionReportPage } from '../pages/reports/ConsumptionReportPage';
+import { ManualDailySalesListPage } from '../pages/manualSales/ManualDailySalesListPage';
+import { ManualDailySalesFormPage } from '../pages/manualSales/ManualDailySalesFormPage';
+
 // Franchise Self-Service Pages
 import { MyMachinesPage } from '../pages/franchise/MyMachinesPage';
 import { FranchiseOrdersPage } from '../pages/franchise/FranchiseOrdersPage';
@@ -56,32 +71,21 @@ import { FranchiseEditOrderPage } from '../pages/franchise/FranchiseEditOrderPag
 import { FranchiseInvoicesPage } from '../pages/franchise/FranchiseInvoicesPage';
 import { FranchiseInvoiceDetailPage } from '../pages/franchise/FranchiseInvoiceDetailPage';
 
-// Helper Root Redirect
-const RootRedirect: React.FC = () => {
-  const { isAuthenticated, isLoading, user } = useAuth();
-
-  if (isLoading) {
-    return <LoadingScreen message="Initializing session..." />;
-  }
-
-  if (!isAuthenticated || !user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (user.role === 'FRANCHISE_OWNER') {
-    return <Navigate to="/my-dashboard" replace />;
-  }
-
-  return <Navigate to="/dashboard" replace />;
-};
-
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
-      {/* Root redirect */}
-      <Route path="/" element={<RootRedirect />} />
+      {/* Public Marketing & Franchise Website Routes */}
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/products" element={<ProductsPage />} />
+        <Route path="/franchise" element={<FranchisePage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
+      </Route>
 
-      {/* Public Routes */}
+      {/* Standalone Authentication & Core Status Routes */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
       <Route path="/not-found" element={<NotFoundPage />} />
@@ -100,7 +104,7 @@ export const AppRoutes: React.FC = () => {
           <Route path="/franchises" element={<FranchisesPage />} />
           <Route path="/outlets" element={<OutletsPage />} />
           <Route path="/machines" element={<MachinesPage />} />
-          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/products-master" element={<MasterProductsPage />} />
           <Route path="/suppliers" element={<SuppliersPage />} />
 
           {/* Purchases Routes */}
@@ -112,11 +116,13 @@ export const AppRoutes: React.FC = () => {
           <Route path="/inventory" element={<WarehouseInventoryPage />} />
           <Route path="/inventory/movements" element={<StockMovementsPage />} />
           <Route path="/inventory/:productId" element={<InventoryProductDetailPage />} />
+
           {/* Orders Routes (Admin & Manager) */}
           <Route path="/orders" element={<OrdersListPage />} />
           <Route path="/orders/new" element={<CreateOrderPage />} />
           <Route path="/orders/:id" element={<OrderDetailPage />} />
           <Route path="/orders/:id/edit" element={<EditOrderPage />} />
+
           {/* Invoice & Payment Routes (Admin & Manager) */}
           <Route path="/invoices" element={<InvoicesListPage />} />
           <Route path="/invoices/new" element={<CreateInvoicePage />} />
@@ -124,14 +130,19 @@ export const AppRoutes: React.FC = () => {
           <Route path="/dues" element={<DuePaymentsPage />} />
           <Route path="/reports" element={<MonthlyReportsPage />} />
           <Route path="/enquiries" element={<EnquiriesPage />} />
-          <Route
-            path="/iot"
-            element={<ModulePlaceholderPage title="IoT Machine Telemetry" category="Hardware & IoT" />}
-          />
-          <Route
-            path="/manual-sales"
-            element={<ModulePlaceholderPage title="Manual Daily Sales" category="Daily Operations" />}
-          />
+
+          {/* IoT Telemetry Routes (Admin & Manager Only) */}
+          <Route path="/iot" element={<IotMachineMonitoringPage />} />
+          <Route path="/iot/events" element={<IotEventsListPage />} />
+          <Route path="/iot/events/:id" element={<IotEventDetailPage />} />
+          <Route path="/iot/consumption" element={<ConsumptionReportPage />} />
+        </Route>
+
+        {/* Shared Operational Routes (Role-aware for all authenticated roles) */}
+        <Route element={<RoleRoute allowedRoles={['SUPER_ADMIN', 'MANAGER', 'FRANCHISE_OWNER']} />}>
+          <Route path="/manual-sales" element={<ManualDailySalesListPage />} />
+          <Route path="/manual-sales/new" element={<ManualDailySalesFormPage />} />
+          <Route path="/manual-sales/:id/edit" element={<ManualDailySalesFormPage />} />
         </Route>
 
         {/* SUPER_ADMIN ONLY Routes */}
@@ -152,12 +163,9 @@ export const AppRoutes: React.FC = () => {
           <Route path="/my-invoices" element={<FranchiseInvoicesPage />} />
           <Route path="/my-invoices/:id" element={<FranchiseInvoiceDetailPage />} />
           <Route path="/my-dues" element={<DuePaymentsPage />} />
-          <Route path="/dues" element={<DuePaymentsPage />} />
           <Route path="/my-reports" element={<FranchiseReportsPage />} />
-          <Route
-            path="/my-manual-sales"
-            element={<ModulePlaceholderPage title="My Daily Sales" category="My Franchise" />}
-          />
+          <Route path="/my-reports/consumption" element={<ConsumptionReportPage />} />
+          <Route path="/my-manual-sales" element={<ManualDailySalesListPage />} />
         </Route>
       </Route>
 

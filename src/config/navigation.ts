@@ -92,7 +92,7 @@ export const navigationConfig: NavGroup[] = [
       },
       {
         title: 'Flavours / Products',
-        path: '/products',
+        path: '/products-master',
         icon: Package,
         roles: ['SUPER_ADMIN', 'MANAGER'],
       },
@@ -130,6 +130,12 @@ export const navigationConfig: NavGroup[] = [
         title: 'IoT Machine Data',
         path: '/iot',
         icon: Radio,
+        roles: ['SUPER_ADMIN', 'MANAGER'],
+      },
+      {
+        title: 'Consumption Report',
+        path: '/iot/consumption',
+        icon: BarChart3,
         roles: ['SUPER_ADMIN', 'MANAGER'],
       },
     ],
@@ -177,8 +183,14 @@ export const navigationConfig: NavGroup[] = [
         roles: ['FRANCHISE_OWNER'],
       },
       {
+        title: 'Consumption Report',
+        path: '/my-reports/consumption',
+        icon: BarChart3,
+        roles: ['FRANCHISE_OWNER'],
+      },
+      {
         title: 'Manual Daily Sales',
-        path: '/my-manual-sales',
+        path: '/manual-sales',
         icon: ReceiptText,
         roles: ['FRANCHISE_OWNER'],
       },

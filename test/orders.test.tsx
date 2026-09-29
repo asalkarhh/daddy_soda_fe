@@ -297,7 +297,10 @@ describe('Daddy Soda House Franchise Orders & Delivery Module (FE-04)', () => {
       expect(screen.getByRole('heading', { name: /Create Franchise Order/i })).toBeInTheDocument();
     });
 
-    // Select franchise
+    // Wait for franchise options to load then select
+    await waitFor(() => {
+      expect(screen.getByText(/Kothrud Refreshments/i)).toBeInTheDocument();
+    });
     await user.selectOptions(screen.getByLabelText(/Target Franchise/i), 'fran-1');
 
     // Select product in row 1
@@ -448,10 +451,10 @@ describe('Daddy Soda House Franchise Orders & Delivery Module (FE-04)', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(
+        screen.getAllByText(
           /Insufficient warehouse stock for Orange Syrup Concentrate\. Available: 5, Requested: 20/i
-        )
-      ).toBeInTheDocument();
+        ).length
+      ).toBeGreaterThanOrEqual(1);
     });
   });
 

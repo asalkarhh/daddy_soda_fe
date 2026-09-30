@@ -1,5 +1,6 @@
 import { apiClient } from './client';
 import { ApiResponse, PaginatedData } from '../types/api.types';
+import { cleanQueryParams } from './apiHelpers';
 import {
   OperationalDashboardSummary,
   FranchiseDashboardSummary,
@@ -21,7 +22,7 @@ async function triggerCsvDownload(
   fallbackFilename: string
 ): Promise<void> {
   const response = await apiClient.get(url, {
-    params,
+    params: cleanQueryParams(params),
     responseType: 'blob',
   });
 
@@ -69,7 +70,7 @@ export const dashboardApi = {
   getDues: async (params?: DueFilters): Promise<PaginatedData<DueInvoice>> => {
     const response = await apiClient.get<ApiResponse<PaginatedData<DueInvoice>>>(
       '/dashboard/dues',
-      { params }
+      { params: cleanQueryParams(params) }
     );
     return response.data.data;
   },
@@ -132,7 +133,7 @@ export const dashboardApi = {
   // --------------------------------------------------
   getEnquiries: async (params?: EnquiryFilters): Promise<PaginatedData<Enquiry>> => {
     const response = await apiClient.get<ApiResponse<PaginatedData<Enquiry>>>('/enquiries', {
-      params,
+      params: cleanQueryParams(params),
     });
     return response.data.data;
   },

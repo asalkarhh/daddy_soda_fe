@@ -1,5 +1,6 @@
 import apiClient from './client';
 import { ApiResponse } from '../types/api.types';
+import { cleanQueryParams } from './apiHelpers';
 import { PaginatedData } from '../types/master.types';
 import {
   PurchaseEntry,
@@ -20,7 +21,7 @@ export const inventoryApi = {
   // --------------------------------------------------
   getPurchases: async (params?: PurchaseFilterParams): Promise<PaginatedData<PurchaseEntry>> => {
     const response = await apiClient.get<ApiResponse<PaginatedData<PurchaseEntry>>>('/purchases', {
-      params,
+      params: cleanQueryParams(params),
     });
     return response.data.data;
   },
@@ -46,7 +47,7 @@ export const inventoryApi = {
   getWarehouseInventory: async (params?: InventoryFilterParams): Promise<PaginatedData<InventoryStock>> => {
     const response = await apiClient.get<ApiResponse<PaginatedData<InventoryStock>>>(
       '/inventory/warehouse',
-      { params }
+      { params: cleanQueryParams(params) }
     );
     return response.data.data;
   },
@@ -69,7 +70,7 @@ export const inventoryApi = {
   ): Promise<PaginatedData<StockMovement>> => {
     const response = await apiClient.get<ApiResponse<PaginatedData<StockMovement>>>(
       '/inventory/movements',
-      { params }
+      { params: cleanQueryParams(params) }
     );
     return response.data.data;
   },

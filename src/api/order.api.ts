@@ -1,5 +1,6 @@
 import apiClient from './client';
 import { ApiResponse } from '../types/api.types';
+import { cleanQueryParams } from './apiHelpers';
 import { PaginatedData } from '../types/master.types';
 import {
   SalesOrder,
@@ -16,7 +17,7 @@ export const orderApi = {
   // --------------------------------------------------
   getOrders: async (params?: OrderFilters): Promise<PaginatedData<SalesOrder>> => {
     const response = await apiClient.get<ApiResponse<PaginatedData<SalesOrder>>>('/orders', {
-      params,
+      params: cleanQueryParams(params),
     });
     return response.data.data;
   },
@@ -65,7 +66,7 @@ export const orderApi = {
   // --------------------------------------------------
   getMyOrders: async (params?: MyOrderFilters): Promise<PaginatedData<SalesOrder>> => {
     const response = await apiClient.get<ApiResponse<PaginatedData<SalesOrder>>>('/my/orders', {
-      params,
+      params: cleanQueryParams(params),
     });
     return response.data.data;
   },

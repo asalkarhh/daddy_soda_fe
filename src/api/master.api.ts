@@ -1,5 +1,6 @@
 import apiClient from './client';
 import { ApiResponse } from '../types/api.types';
+import { cleanMasterFilterParams } from './apiHelpers';
 import {
   Franchise,
   FranchiseFormData,
@@ -30,7 +31,7 @@ export const masterApi = {
   // --------------------------------------------------
   getFranchises: async (params?: FranchiseFilterParams): Promise<PaginatedData<Franchise>> => {
     const response = await apiClient.get<ApiResponse<PaginatedData<Franchise>>>('/franchises', {
-      params,
+      params: cleanMasterFilterParams(params),
     });
     return response.data.data;
   },
@@ -38,7 +39,7 @@ export const masterApi = {
   getAllActiveFranchises: async (): Promise<Franchise[]> => {
     // Helper to fetch list for selectors
     const response = await apiClient.get<ApiResponse<PaginatedData<Franchise> | Franchise[]>>('/franchises', {
-      params: { status: 'ACTIVE', size: 100 },
+      params: { active: true, size: 100 },
     });
     const data = response.data.data;
     if (Array.isArray(data)) return data;
@@ -71,7 +72,7 @@ export const masterApi = {
   // --------------------------------------------------
   getOutlets: async (params?: OutletFilterParams): Promise<PaginatedData<Outlet>> => {
     const response = await apiClient.get<ApiResponse<PaginatedData<Outlet>>>('/outlets', {
-      params,
+      params: cleanMasterFilterParams(params),
     });
     return response.data.data;
   },
@@ -79,7 +80,7 @@ export const masterApi = {
   getActiveOutletsByFranchise: async (franchiseId: string): Promise<Outlet[]> => {
     if (!franchiseId) return [];
     const response = await apiClient.get<ApiResponse<PaginatedData<Outlet> | Outlet[]>>('/outlets', {
-      params: { franchiseId, status: 'ACTIVE', size: 100 },
+      params: { franchiseId, active: true, size: 100 },
     });
     const data = response.data.data;
     if (Array.isArray(data)) return data;
@@ -112,7 +113,7 @@ export const masterApi = {
   // --------------------------------------------------
   getMachines: async (params?: MachineFilterParams): Promise<PaginatedData<Machine>> => {
     const response = await apiClient.get<ApiResponse<PaginatedData<Machine>>>('/machines', {
-      params,
+      params: cleanMasterFilterParams(params),
     });
     return response.data.data;
   },
@@ -143,7 +144,7 @@ export const masterApi = {
   // --------------------------------------------------
   getProducts: async (params?: ProductFilterParams): Promise<PaginatedData<Product>> => {
     const response = await apiClient.get<ApiResponse<PaginatedData<Product>>>('/products', {
-      params,
+      params: cleanMasterFilterParams(params),
     });
     return response.data.data;
   },
@@ -173,7 +174,7 @@ export const masterApi = {
   // --------------------------------------------------
   getSuppliers: async (params?: SupplierFilterParams): Promise<PaginatedData<Supplier>> => {
     const response = await apiClient.get<ApiResponse<PaginatedData<Supplier>>>('/suppliers', {
-      params,
+      params: cleanMasterFilterParams(params),
     });
     return response.data.data;
   },
@@ -203,7 +204,7 @@ export const masterApi = {
   // --------------------------------------------------
   getUsers: async (params?: UserFilterParams): Promise<PaginatedData<ManagedUser>> => {
     const response = await apiClient.get<ApiResponse<PaginatedData<ManagedUser>>>('/users', {
-      params,
+      params: cleanMasterFilterParams(params),
     });
     return response.data.data;
   },

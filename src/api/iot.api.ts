@@ -1,5 +1,6 @@
 import { apiClient } from './client';
 import { ApiResponse, PaginatedData } from '../types/api.types';
+import { cleanQueryParams } from './apiHelpers';
 import {
   IotMachineStatus,
   IotMachineStatusFilters,
@@ -19,7 +20,7 @@ async function triggerCsvDownload(
   fallbackFilename: string
 ): Promise<void> {
   const response = await apiClient.get(url, {
-    params,
+    params: cleanQueryParams(params),
     responseType: 'blob',
   });
 
@@ -52,7 +53,7 @@ export const iotApi = {
   ): Promise<PaginatedData<IotMachineStatus> | IotMachineStatus[]> => {
     const response = await apiClient.get<ApiResponse<PaginatedData<IotMachineStatus> | IotMachineStatus[]>>(
       '/iot/machines/status',
-      { params }
+      { params: cleanQueryParams(params) }
     );
     return response.data.data;
   },
@@ -63,7 +64,7 @@ export const iotApi = {
   getEvents: async (params?: IotEventFilters): Promise<PaginatedData<IotEvent>> => {
     const response = await apiClient.get<ApiResponse<PaginatedData<IotEvent>>>(
       '/iot/events',
-      { params }
+      { params: cleanQueryParams(params) }
     );
     return response.data.data;
   },
@@ -81,7 +82,7 @@ export const iotApi = {
   ): Promise<PaginatedData<ManualDailySales>> => {
     const response = await apiClient.get<ApiResponse<PaginatedData<ManualDailySales>>>(
       '/manual-sales',
-      { params }
+      { params: cleanQueryParams(params) }
     );
     return response.data.data;
   },
@@ -116,7 +117,7 @@ export const iotApi = {
   ): Promise<ConsumptionSummary> => {
     const response = await apiClient.get<ApiResponse<ConsumptionSummary>>(
       '/reports/consumption/summary',
-      { params }
+      { params: cleanQueryParams(params) }
     );
     return response.data.data;
   },

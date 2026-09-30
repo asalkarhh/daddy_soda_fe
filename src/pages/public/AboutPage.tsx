@@ -2,195 +2,300 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   Sparkles,
-  Heart,
-  Target,
-  Eye,
-  ShieldCheck,
   ArrowRight,
-  Droplets,
+  Building2,
   Users,
+  CheckCircle2,
+  Phone,
+  Mail,
 } from 'lucide-react';
-import { usePageMeta } from '../../hooks/usePageMeta';
+import DaddyLogo, { HimmatEmblem } from '@/components/common/DaddyLogo';
+import { HIMMAT_GROUP_DETAILS, LEADERSHIP, CORE_USPS } from '@/data/franchiseData';
 
 export const AboutPage: React.FC = () => {
-  usePageMeta({
-    title: 'About Us | Daddy Soda House - Authentic Indian Beverage Story',
-    description:
-      'Learn about Daddy Soda House, our passion for authentic Indian soda recipes, consistent quality syrups, and partner-centric franchise network.',
-  });
-
   return (
-    <div className="space-y-16 md:space-y-24 pb-16">
-      {/* Hero Header */}
-      <section className="bg-gradient-to-b from-teal-900 to-teal-800 text-white py-16 lg:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-800 border border-teal-600/40 text-amber-300 text-xs font-semibold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Our Heritage & Purpose</span>
+    <div className="min-h-screen bg-[#FFF8ED] pt-6 pb-28">
+      
+      {/* 1. HERO HEADER: HIMMAT GROUP LEGACY + DADDY SODA HOUSE */}
+      <section className="relative overflow-hidden pt-8 pb-16 border-b border-[#E8D9BD]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD] text-xs font-bold text-[#E6392F] mb-6 shadow-xs">
+            <HimmatEmblem className="w-4 h-4" />
+            <span className="tracking-widest uppercase">ESTABLISHED 1973 • 50+ YEARS OF EXCELLENCE</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">
-            Crafting the True Spirit of Indian Soda
+          <div className="flex justify-center mb-6">
+            <DaddyLogo size="xl" variant="full" />
+          </div>
+
+          <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-black text-[#171717] tracking-tight leading-[0.95] max-w-4xl mx-auto mb-4">
+            HALF A CENTURY OF TRUST. <br />
+            <span className="text-[#E6392F]">A NEW ERA OF SODA.</span>
           </h1>
 
-          <p className="text-base sm:text-lg text-teal-100/90 leading-relaxed">
-            From the bustling street corners of India to modern beverage kiosks, Daddy Soda House is dedicated to delivering crisp, high-carbonation fizzy drinks with unmatched flavor depth.
+          <p className="font-display text-xl sm:text-2xl text-[#7A6B56] uppercase tracking-wide max-w-2xl mx-auto">
+            Refreshing Taste. Consistent Quality. Profitable Partnership.
           </p>
+
         </div>
       </section>
 
-      {/* Brand Overview & Story */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-5">
-            <span className="text-xs font-bold uppercase tracking-widest text-teal-700">
-              The Journey
+      {/* 2. ABOUT HIMMAT GROUP (FROM BROCHURE PAGE 3) */}
+      <section className="py-16 sm:py-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Legacy Highlight Box */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mb-16">
+          
+          {/* Left Column: EST 1973 & Founder */}
+          <div className="lg:col-span-4 bg-[#701A1A] text-white rounded-3xl p-8 sm:p-10 flex flex-col justify-between relative overflow-hidden shadow-xl border-4 border-[#8B2500]">
+            <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+              <HimmatEmblem className="w-64 h-64" />
+            </div>
+
+            <div>
+              <div className="flex items-center gap-2 text-[#E6A15C] font-black text-sm uppercase tracking-widest mb-2">
+                <Sparkles className="w-4 h-4" />
+                <span>Foundational Legacy</span>
+              </div>
+              <p className="text-xs uppercase font-bold text-[#E6A15C] tracking-widest">EST.</p>
+              <h2 className="font-display text-7xl sm:text-8xl font-black leading-none text-[#FFF8ED]">
+                1973
+              </h2>
+              <div className="w-16 h-1 bg-[#E6A15C] my-4 rounded-full" />
+              <h3 className="font-display text-3xl font-black text-[#FFF8ED]">
+                Himmat Group of Business
+              </h3>
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-white/20">
+              <p className="text-xs uppercase font-semibold text-[#E6A15C] tracking-wider">Founded by</p>
+              <p className="font-display text-xl font-bold text-white mt-1">
+                Late Shri Nandkumar Shivaji Kadam
+              </p>
+              <p className="text-xs text-[#FAF2E2]/80 mt-1">
+                A visionary entrepreneur whose values of integrity, quality, and community trust laid the cornerstone for over 5 decades of growth across Maharashtra.
+              </p>
+            </div>
+          </div>
+
+          {/* Right Column: About Narrative & 4 Key Metric Cards */}
+          <div className="lg:col-span-8 flex flex-col justify-between space-y-8">
+            
+            <div className="bg-white rounded-3xl p-8 sm:p-10 border border-[#E8D9BD] shadow-sm">
+              <div className="inline-flex items-center gap-2 text-xs font-black tracking-widest uppercase text-[#E6392F] mb-2">
+                <Building2 className="w-4 h-4" />
+                <span>Corporate Heritage</span>
+              </div>
+              <h2 className="font-display text-3xl sm:text-5xl font-black text-[#171717] tracking-tight mb-4">
+                ABOUT HIMMAT GROUP
+              </h2>
+              <p className="text-base sm:text-lg text-[#7A6B56] leading-relaxed">
+                From a single restaurant to a diversified business conglomerate — <strong>Himmat Group</strong> has built <strong>50+ years of trust, credibility, and entrepreneurial success across Maharashtra.</strong>
+              </p>
+            </div>
+
+            {/* 4 Key Stat Cards from Brochure Page 3 */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {HIMMAT_GROUP_DETAILS.stats.map((st) => (
+                <div
+                  key={st.label}
+                  className="bg-[#FAF2E2] rounded-2xl p-5 text-center border border-[#E8D9BD] shadow-xs flex flex-col justify-center"
+                >
+                  <span className="font-display text-4xl sm:text-5xl font-black text-[#E6392F] leading-none">
+                    {st.value}
+                  </span>
+                  <span className="text-xs font-bold text-[#7A6B56] uppercase tracking-wider mt-2">
+                    {st.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </div>
+
+        {/* 5 Business Verticals */}
+        <div className="bg-[#FAF2E2] rounded-3xl p-8 sm:p-12 border border-[#E8D9BD] mb-16">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#E6392F]">
+              DIVERSIFIED CONGLOMERATE
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-              Reinventing Nostalgic Indian Flavours for Today's Consumers
-            </h2>
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-              India has a rich tradition of local soda houses, from spiced Jeera and tangy Kala Khatta to invigorating fresh lemon sodas. Daddy Soda House was founded to standardize this beloved beverage experience.
+            <h3 className="font-display text-3xl sm:text-5xl font-black text-[#171717] tracking-tight mt-1">
+              THE 5 BUSINESS VERTICALS
+            </h3>
+            <p className="text-xs sm:text-sm text-[#7A6B56] mt-2">
+              Spanning retail, energy, financial services, hospitality, and modern beverage manufacturing.
             </p>
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-              We combine authentic culinary spice profiles with precision carbonation machinery and food-grade syrups, ensuring that every customer receives the exact same refreshing punch across every outlet in our network.
-            </p>
-
-            <div className="pt-2 grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-teal-50 border border-teal-100">
-                <div className="text-2xl font-black text-teal-900">100%</div>
-                <div className="text-xs font-semibold text-teal-700 mt-1">
-                  Food-Grade Ingredients
-                </div>
-              </div>
-              <div className="p-4 rounded-xl bg-amber-50 border border-amber-100">
-                <div className="text-2xl font-black text-amber-900">High Fizz</div>
-                <div className="text-xs font-semibold text-amber-700 mt-1">
-                  Carbonation Technology
-                </div>
-              </div>
-            </div>
           </div>
 
-          {/* Story graphic box */}
-          <div className="bg-slate-900 text-white rounded-3xl p-8 sm:p-10 shadow-xl relative overflow-hidden">
-            <div className="w-14 h-14 rounded-2xl bg-teal-600 flex items-center justify-center text-white mb-6">
-              <Droplets className="w-8 h-8" />
-            </div>
-            <h3 className="text-xl font-bold text-white mb-3">Our Core Philosophy</h3>
-            <p className="text-sm text-slate-300 leading-relaxed mb-6">
-              "Great beverages should be refreshing, high quality, and accessible to everyone. We empower local entrepreneurs to build viable businesses through standardized product recipes and reliable supply chains."
-            </p>
-            <div className="border-t border-slate-800 pt-4 flex items-center justify-between text-xs text-slate-400">
-              <span>Daddy Soda House Leadership Team</span>
-              <span className="text-amber-400 font-semibold">Pune, Maharashtra</span>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {HIMMAT_GROUP_DETAILS.verticals.map((v) => (
+              <div
+                key={v.name}
+                className={`bg-white rounded-2xl p-5 border transition-all duration-200 hover:-translate-y-1 hover:shadow-md flex flex-col justify-between ${
+                  v.name.includes('Beverages')
+                    ? 'border-2 border-[#E6392F] shadow-sm bg-[#FFF8ED]'
+                    : 'border-[#E8D9BD]'
+                }`}
+              >
+                <div>
+                  <div className="w-12 h-12 rounded-xl bg-[#FAF2E2] flex items-center justify-center text-2xl mb-4 border border-[#E8D9BD]">
+                    {v.icon}
+                  </div>
+                  <h4 className="font-display text-lg font-bold text-[#171717] leading-tight mb-2">
+                    {v.name}
+                  </h4>
+                  <p className="text-xs text-[#7A6B56] leading-relaxed">
+                    {v.desc}
+                  </p>
+                </div>
+                {v.name.includes('Beverages') && (
+                  <div className="mt-4 pt-3 border-t border-[#E8D9BD]">
+                    <span className="text-[10px] font-black uppercase text-[#E6392F] tracking-wider flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" /> Home of Daddy Soda
+                    </span>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
-      </section>
 
-      {/* Mission & Vision */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Mission */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-8 shadow-xs">
-            <div className="w-12 h-12 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center mb-5">
-              <Target className="w-6 h-6" />
-            </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-3">Our Mission</h3>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              To deliver superior taste, crisp fizz, and pure refreshment through standardized soda dispensers and proprietary syrup formulations, while creating sustainable livelihood and enterprise opportunities for franchise partners.
-            </p>
-          </div>
-
-          {/* Vision */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-8 shadow-xs">
-            <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-5">
-              <Eye className="w-6 h-6" />
-            </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-3">Our Vision</h3>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              To emerge as India's most trusted neighborhood beverage brand, renowned for uncompromising hygiene, consistent product quality, and high-turnaround franchise satisfaction across urban and semi-urban markets.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Core Values */}
-      <section className="bg-slate-100/70 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* 3. LEADERSHIP SECTION (FROM BROCHURE PAGE 4) */}
+        <div className="mb-16">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs font-bold uppercase tracking-widest text-teal-700">
-              What Guides Us
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
-              Our Core Principles
+            <div className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-[#E6392F] mb-1">
+              <Users className="w-4 h-4" />
+              <span>EXECUTIVE BOARD</span>
+            </div>
+            <h2 className="font-display text-4xl sm:text-6xl font-black text-[#171717] tracking-tight">
+              OUR LEADERSHIP
             </h2>
-            <p className="text-sm text-slate-600 mt-2">
-              Every bottle, cup, and partner engagement is built on a foundation of integrity and consistency.
+            <p className="text-sm text-[#7A6B56]">
+              Steered by visionary directors championing innovation and scalable retail franchises.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs">
-              <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center mb-4">
-                <ShieldCheck className="w-5 h-5" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {LEADERSHIP.map((leader) => (
+              <div
+                key={leader.name}
+                className="bg-white rounded-3xl p-8 sm:p-10 border border-[#E8D9BD] shadow-sm hover:shadow-lg transition-all flex flex-col items-center text-center relative overflow-hidden"
+              >
+                {/* Director Avatar Circle */}
+                <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-[#701A1A] to-[#E6392F] p-1 shadow-md mb-6 relative">
+                  <div className="w-full h-full rounded-full bg-[#FAF2E2] flex items-center justify-center font-display text-3xl font-black text-[#701A1A] border-2 border-white">
+                    {leader.initials}
+                  </div>
+                </div>
+
+                <h3 className="font-display text-2xl sm:text-3xl font-black text-[#171717] mb-2">
+                  {leader.name}
+                </h3>
+
+                <div className="inline-block px-4 py-1 rounded-full bg-[#E6392F] text-white text-xs font-bold uppercase tracking-wider mb-4 shadow-xs">
+                  {leader.role}
+                </div>
+
+                <p className="text-sm text-[#7A6B56] leading-relaxed max-w-sm">
+                  {leader.desc}
+                </p>
+
+                <div className="mt-6 pt-4 border-t border-[#E8D9BD] w-full flex items-center justify-center gap-2 text-xs font-bold text-[#171717]">
+                  <HimmatEmblem className="w-4 h-4" />
+                  <span>Himmat Beverages Pvt. Ltd.</span>
+                </div>
               </div>
-              <h4 className="text-base font-bold text-slate-900 mb-2">Quality & Hygiene</h4>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                We prioritize rigorous food-grade standards and clean dispensing systems to deliver safe, fresh soda in every serving.
-              </p>
+            ))}
+          </div>
+        </div>
+
+        {/* 4. WHY DADDY SODA HOUSE / USP PILLARS (BROCHURE PAGES 5 & 6) */}
+        <div className="bg-white rounded-3xl p-8 sm:p-12 border border-[#E8D9BD] shadow-sm mb-16">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#E6392F]">
+              THE WINNING ADVANTAGE
+            </span>
+            <h3 className="font-display text-3xl sm:text-5xl font-black text-[#171717] tracking-tight mt-1">
+              WHY DADDY SODA HOUSE?
+            </h3>
+            <p className="font-display text-xl text-[#7A6B56] uppercase tracking-wide mt-1">
+              No expertise. No stress. Just business.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {CORE_USPS.map((usp) => (
+              <div
+                key={usp.title}
+                className="bg-[#FAF2E2] rounded-2xl p-6 border border-[#E8D9BD] flex flex-col justify-between"
+              >
+                <div>
+                  <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-2xl mb-4 border border-[#E8D9BD] shadow-xs">
+                    {usp.icon}
+                  </div>
+                  <h4 className="font-display text-2xl font-bold text-[#171717] mb-3">
+                    {usp.title}
+                  </h4>
+                  <ul className="space-y-2">
+                    {usp.points.map((pt) => (
+                      <li key={pt} className="flex items-start gap-2 text-xs sm:text-sm text-[#7A6B56]">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                        <span>{pt}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 5. CALL TO ACTION: FRANCHISE & PARTNERSHIP */}
+        <div className="bg-[#171717] text-white rounded-3xl p-8 sm:p-12 text-center border-4 border-[#E6392F] relative overflow-hidden shadow-2xl">
+          <div className="relative z-10 space-y-4 max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E6392F] text-white text-xs font-bold uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>JOIN INDIA&apos;S NEXT BIG SODA BRAND</span>
+            </div>
+            
+            <h3 className="font-display text-4xl sm:text-6xl font-black text-white tracking-tight">
+              PROFITABLE FOUNTAIN PARTNERSHIP
+            </h3>
+            
+            <p className="text-sm sm:text-base text-[#FAF2E2]/90 leading-relaxed">
+              Backed by 50+ years of Himmat Group legacy, powered by innovation, and built for entrepreneurs like you. Setup your Daddy Soda House in just 1.5 months.
+            </p>
+
+            <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
+              <Link
+                to="/franchise"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-[#E6392F] text-white font-display text-xl tracking-wider hover:bg-white hover:text-[#171717] transition-all shadow-lg hover:-translate-y-0.5"
+              >
+                <span>EXPLORE FRANCHISE OPPORTUNITY</span>
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+              
+              <a
+                href="tel:8237522072"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-display text-xl tracking-wider transition-all border border-white/20"
+              >
+                <Phone className="w-5 h-5 text-[#E6392F]" />
+                <span>CALL: 8237522072</span>
+              </a>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs">
-              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
-                <Heart className="w-5 h-5" />
-              </div>
-              <h4 className="text-base font-bold text-slate-900 mb-2">Authentic Taste</h4>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Every syrup blend is carefully crafted using authentic spice formulations to preserve traditional Indian taste memories.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
-                <Users className="w-5 h-5" />
-              </div>
-              <h4 className="text-base font-bold text-slate-900 mb-2">Partner Success</h4>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                We view every franchise owner as a long-term business partner, providing dedicated supply chain and operational guidance.
-              </p>
+            <div className="pt-4 flex items-center justify-center gap-6 text-xs text-[#C4B79D]">
+              <span className="flex items-center gap-1.5">
+                <Mail className="w-4 h-4 text-[#E6392F]" /> himmat.beverages1290@gmail.com
+              </span>
             </div>
           </div>
         </div>
+
       </section>
 
-      {/* Final CTA */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-teal-900 rounded-3xl p-8 sm:p-12 text-center text-white space-y-6 shadow-xl">
-          <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Ready to Build With Daddy Soda House?
-          </h3>
-          <p className="text-sm sm:text-base text-teal-100 max-w-xl mx-auto leading-relaxed">
-            Explore our franchise model or submit an enquiry to discuss setup options with our expansion team.
-          </p>
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              to="/franchise"
-              className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>Explore Franchise Model</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link
-              to="/contact"
-              className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-teal-800 hover:bg-teal-700 text-white font-semibold text-sm border border-teal-600/60 transition-all flex items-center justify-center"
-            >
-              <span>Contact Head Office</span>
-            </Link>
-          </div>
-        </div>
-      </section>
     </div>
   );
 };

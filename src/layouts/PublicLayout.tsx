@@ -1,26 +1,29 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { PublicHeader } from '../components/public/PublicHeader';
-import { PublicFooter } from '../components/public/PublicFooter';
-import { PublicStatusBanner } from '../components/public/PublicStatusBanner';
+import Navbar from '@/components/layout/Navbar';
+import MobileNav from '@/components/layout/MobileNav';
+import Footer from '@/components/layout/Footer';
+import CartDrawer from '@/components/layout/CartDrawer';
+import WhatsAppButton from '@/components/common/WhatsAppButton';
+import { CartProvider } from '@/contexts/CartContext';
+import { RewardsProvider } from '@/contexts/RewardsContext';
 
 export const PublicLayout: React.FC = () => {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col selection:bg-teal-100 selection:text-teal-900">
-      {/* Non-blocking API Status Banner */}
-      <PublicStatusBanner />
-
-      {/* Sticky Header */}
-      <PublicHeader />
-
-      {/* Main Public Page Content */}
-      <main className="flex-1 w-full flex flex-col">
-        <Outlet />
-      </main>
-
-      {/* Footer */}
-      <PublicFooter />
-    </div>
+    <RewardsProvider>
+      <CartProvider>
+        <div className="min-h-screen flex flex-col bg-[#FFF8ED] text-[#171717] antialiased">
+          <Navbar />
+          <main className="flex-1">
+            <Outlet />
+          </main>
+          <Footer />
+          <WhatsAppButton />
+          <CartDrawer />
+          <MobileNav />
+        </div>
+      </CartProvider>
+    </RewardsProvider>
   );
 };
 

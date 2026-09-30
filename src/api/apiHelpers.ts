@@ -58,3 +58,41 @@ export function getApiErrorMessage(error: unknown, fallback = 'An unexpected err
 }
 
 export const getErrorMessage = getApiErrorMessage;
+
+/**
+ * Strips empty strings, undefined, null, and 'ALL' sentinel values from query parameters
+ * to prevent Spring Boot backend enum and validation conversion errors.
+ */
+export function cleanQueryParams<T extends Record<string, any>>(params?: T): Record<string, any> {
+  if (!params) return {};
+  const cleaned: Record<string, any> = {};
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '' || value === 'ALL') {
+      return;
+    }
+    cleaned[key] = value;
+  });
+
+  return cleaned;
+}
+
+/**
+ * Normalizes master filters by converting UI `status: 'ACTIVE' | 'INACTIVE' | 'ALL'` to Spring Boot `active: boolean | undefined`.
+ */
+export function cleanMasterFilterParams<T extends Record<string, any>>(params?: T): Record<string, any> {
+  if (!params) return {};
+  const cleaned = cleanQueryParams(params);
+
+  if ('status' in cleaned) {
+    const statusVal = cleaned.status;
+    delete cleaned.status;
+    if (statusVal === 'ACTIVE') {
+      cleaned.active = true;
+    } else if (statusVal === 'INACTIVE') {
+      cleaned.active = false;
+    }
+  }
+
+  return cleaned;
+}

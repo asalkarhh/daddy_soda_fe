@@ -1,21 +1,18 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Sparkles, Phone, ArrowRight, UserCircle, ShoppingBag } from 'lucide-react';
+import { Menu, X, Sparkles, Phone, ArrowRight, UserCircle } from 'lucide-react';
 import DaddyLogo from '@/components/common/DaddyLogo';
-import { useCart } from '@/contexts/CartContext';
 
 export default function Navbar() {
   const location = useLocation();
   const pathname = location.pathname;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { itemCount, setIsDrawerOpen } = useCart();
 
   const navLinks = [
     { label: 'HOME', href: '/' },
     { label: 'ABOUT US', href: '/story' },
     { label: 'PRODUCTS & FLAVORS', href: '/menu' },
     { label: 'FRANCHISE MODEL', href: '/franchise', highlight: true },
-    { label: 'BUILD SODA', href: '/build' },
     { label: 'LOCATIONS', href: '/stores' },
   ];
 
@@ -88,20 +85,6 @@ export default function Navbar() {
               <Phone className="w-3.5 h-3.5 text-[#701A1A]" />
               <span className="font-semibold">8237522072</span>
             </a>
-
-            {/* Cart Button */}
-            <button
-              onClick={() => setIsDrawerOpen(true)}
-              className="relative p-2 rounded-xl bg-[#FAF2E2] border border-[#E8D9BD] text-[#171717] hover:border-[#701A1A] transition-colors shadow-xs cursor-pointer"
-              aria-label="View Cart"
-            >
-              <ShoppingBag className="w-5 h-5 text-[#701A1A]" />
-              {itemCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-[#E6392F] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-xs">
-                  {itemCount}
-                </span>
-              )}
-            </button>
 
             {/* Primary CTA: Apply for Franchise */}
             <Link

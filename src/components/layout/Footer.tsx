@@ -74,7 +74,7 @@ export default function Footer() {
               <li><Link to="/menu?cat=citrus" className="hover:text-[#E6392F] transition-colors">Orange & Lemon Fizz</Link></li>
               <li><Link to="/menu?cat=citrus" className="hover:text-[#E6392F] transition-colors">Craft Mojito Soda</Link></li>
               <li><Link to="/menu?cat=limited" className="hover:text-[#E6392F] transition-colors">Rainbow Ice-Gola</Link></li>
-              <li><Link to="/build" className="hover:text-[#E6392F] transition-colors">Build Custom Soda</Link></li>
+              <li><Link to="/menu" className="hover:text-[#E6392F] transition-colors">All 8 Flavors Range</Link></li>
             </ul>
           </div>
 

@@ -12,10 +12,8 @@ import { StoryPage } from '../pages/public/StoryPage';
 import { ProductsPage } from '../pages/public/ProductsPage';
 import { ProductDetailPage } from '../pages/public/ProductDetailPage';
 import { FranchisePage } from '../pages/public/FranchisePage';
-import { BuildSodaPage } from '../pages/public/BuildSodaPage';
 import { StoresPage } from '../pages/public/StoresPage';
 import { RewardsPage } from '../pages/public/RewardsPage';
-import { CheckoutPage } from '../pages/public/CheckoutPage';
 import { ContactPage } from '../pages/public/ContactPage';
 import { PrivacyPolicyPage } from '../pages/public/PrivacyPolicyPage';
 import { TermsAndConditionsPage } from '../pages/public/TermsAndConditionsPage';
@@ -88,10 +86,8 @@ export const AppRoutes: React.FC = () => {
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/menu" element={<ProductsPage />} />
         <Route path="/menu/:slug" element={<ProductDetailPage />} />
-        <Route path="/build" element={<BuildSodaPage />} />
         <Route path="/stores" element={<StoresPage />} />
         <Route path="/rewards" element={<RewardsPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/franchise" element={<FranchisePage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />

@@ -211,6 +211,12 @@ export const CreateInvoicePage: React.FC = () => {
               <p className="text-xs text-slate-500 mt-1">
                 Only fulfilled and delivered orders can be invoiced. Central warehouse stock was already deducted at delivery.
               </p>
+              {deliveredOrderOptions.length === 0 && (
+                <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 mt-2">
+                  <Info className="w-4 h-4 shrink-0 text-amber-600" />
+                  <span>No DELIVERED orders available to invoice. Go to <strong>Orders</strong>, open an order, and click <strong>"Deliver Order"</strong> to make it eligible for invoicing.</span>
+                </div>
+              )}
             </div>
 
             {/* Selected Order Summary Display */}

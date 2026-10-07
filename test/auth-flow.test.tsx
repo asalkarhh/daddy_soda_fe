@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from './test-utils';
 import { AppRoutes } from '../src/routes/AppRoutes';
@@ -159,8 +159,6 @@ describe('Daddy Soda House Authentication & Role-Based Access Flow', () => {
 
     renderWithProviders(<AppRoutes />, { initialEntries: ['/dashboard'] });
 
-    const user = userEvent.setup();
-
     // Verify dashboard rendered
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /Operational Dashboard/i })).toBeInTheDocument();
@@ -168,15 +166,16 @@ describe('Daddy Soda House Authentication & Role-Based Access Flow', () => {
 
     // Open User menu
     const userMenuButton = screen.getByRole('button', { name: /User profile menu/i });
-    await user.click(userMenuButton);
+    fireEvent.click(userMenuButton);
 
     // Click Log Out in dropdown
     const logoutDropdownBtn = await screen.findByRole('button', { name: /Log Out/i });
-    await user.click(logoutDropdownBtn);
+    fireEvent.click(logoutDropdownBtn);
 
     // Confirm in Confirmation Modal
-    const confirmLogoutBtn = await screen.findByRole('button', { name: /^Log Out$/i });
-    await user.click(confirmLogoutBtn);
+    const dialog = await screen.findByRole('dialog');
+    const confirmLogoutBtn = within(dialog).getByRole('button', { name: /Log Out/i });
+    fireEvent.click(confirmLogoutBtn);
 
     // Verify redirect to login and storage cleared
     await waitFor(() => {

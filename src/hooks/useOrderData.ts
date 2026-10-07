@@ -13,6 +13,7 @@ export function useOrders(params?: OrderFilters) {
   return useQuery({
     queryKey: ['orders', params],
     queryFn: () => orderApi.getOrders(params),
+    refetchOnMount: 'always',
   });
 }
 

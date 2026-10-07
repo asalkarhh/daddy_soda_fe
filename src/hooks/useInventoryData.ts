@@ -18,6 +18,9 @@ export function usePurchases(params?: PurchaseFilterParams) {
   return useQuery({
     queryKey: ['purchases', params],
     queryFn: () => inventoryApi.getPurchases(params),
+    // The list must revalidate when returning from the create/detail screens;
+    // otherwise an older empty result can remain visible in the history table.
+    refetchOnMount: 'always',
   });
 }
 

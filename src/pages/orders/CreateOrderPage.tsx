@@ -21,6 +21,7 @@ import { Select } from '../../components/ui/Select';
 import { Textarea } from '../../components/ui/Textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { useActiveFranchises, useProducts } from '../../hooks/useMasterData';
+import { useWarehouseInventory } from '../../hooks/useInventoryData';
 import { useOrderMutations } from '../../hooks/useOrderData';
 import { formatBottleSize, formatQuantity, formatCurrency } from '../../utils/formatters';
 
@@ -64,6 +65,8 @@ export const CreateOrderPage: React.FC = () => {
   const { data: productsData } = useProducts({ status: 'ACTIVE', size: 100 });
   const products = productsData?.content || [];
   const productMap = new Map(products.map((p) => [p.id, p]));
+  const { data: inventoryData } = useWarehouseInventory({ size: 100 });
+  const stockMap = new Map((inventoryData?.content || []).map((stock) => [stock.productId, stock.availableQuantity]));
 
   const { createOrderMutation } = useOrderMutations();
 
@@ -307,6 +310,11 @@ export const CreateOrderPage: React.FC = () => {
                       error={errors.items?.[index]?.quantity?.message}
                       {...register(`items.${index}.quantity`, { valueAsNumber: true })}
                     />
+                    {selectedProductId && (
+                      <p className={`text-[11px] mt-1 font-semibold ${stockMap.get(selectedProductId) !== undefined && stockMap.get(selectedProductId)! < qty ? 'text-red-600' : 'text-emerald-700'}`}>
+                        Current stock: {formatQuantity(stockMap.get(selectedProductId) ?? 0)}
+                      </p>
+                    )}
                   </div>
 
                   {/* Unit Price (Editable override for Super Admin & Manager) */}

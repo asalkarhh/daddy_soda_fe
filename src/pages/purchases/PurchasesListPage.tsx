@@ -54,11 +54,11 @@ export const PurchasesListPage: React.FC = () => {
   const suppliers = suppliersData?.content || [];
 
   // Purchases list query
-  const { data, isLoading } = usePurchases({
+  const { data, isLoading, isError } = usePurchases({
     purchaseNumber: purchaseNumber || undefined,
     supplierId: supplierId || undefined,
     supplierBillNumber: supplierBillNumber || undefined,
-    status: statusFilter,
+    status: statusFilter === 'ALL' ? undefined : statusFilter,
     fromDate: fromDate || undefined,
     toDate: toDate || undefined,
     page: page - 1,
@@ -254,6 +254,12 @@ export const PurchasesListPage: React.FC = () => {
         <TableBody>
           {isLoading ? (
             <TableSkeleton columns={10} rows={5} />
+          ) : isError ? (
+            <TableRow>
+              <TableCell colSpan={10} className="p-8 text-center text-red-600">
+                Could not load purchase history. Please refresh and try again.
+              </TableCell>
+            </TableRow>
           ) : purchases.length === 0 ? (
             <TableRow>
               <TableCell colSpan={10} className="p-0">

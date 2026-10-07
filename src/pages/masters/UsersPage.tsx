@@ -154,11 +154,10 @@ export const UsersPage: React.FC = () => {
     if (editingUser) {
       const payload: UpdateUserFormData = {
         fullName: values.fullName,
-        mobile: values.mobile,
         email: values.email || undefined,
         role: values.role,
         franchiseId: values.role === 'FRANCHISE_OWNER' ? values.franchiseId || undefined : undefined,
-        temporaryPassword: values.temporaryPassword || undefined,
+        active: editingUser.active,
       };
       await updateMutation.mutateAsync({ id: editingUser.id, data: payload });
     } else {
@@ -166,7 +165,7 @@ export const UsersPage: React.FC = () => {
         fullName: values.fullName,
         mobile: values.mobile,
         email: values.email || undefined,
-        temporaryPassword: values.temporaryPassword,
+        password: values.temporaryPassword!,
         role: values.role,
         franchiseId: values.role === 'FRANCHISE_OWNER' ? values.franchiseId || undefined : undefined,
       };

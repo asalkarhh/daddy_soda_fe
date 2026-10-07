@@ -214,18 +214,17 @@ export interface CreateUserFormData {
   fullName: string;
   mobile: string;
   email?: string;
-  temporaryPassword?: string;
+  password: string;
   role: 'MANAGER' | 'FRANCHISE_OWNER';
   franchiseId?: string;
 }
 
 export interface UpdateUserFormData {
   fullName: string;
-  mobile: string;
   email?: string;
   role: 'MANAGER' | 'FRANCHISE_OWNER';
   franchiseId?: string;
-  temporaryPassword?: string;
+  active: boolean;
 }
 
 export interface UserFilterParams {

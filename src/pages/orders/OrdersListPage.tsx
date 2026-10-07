@@ -58,9 +58,9 @@ export const OrdersListPage: React.FC = () => {
 
   // Queries
   const { data: franchises = [] } = useActiveFranchises();
-  const { data, isLoading } = useOrders({
+  const { data, isLoading, isError } = useOrders({
     franchiseId: franchiseId || undefined,
-    status: statusFilter,
+    status: statusFilter === 'ALL' ? undefined : statusFilter,
     orderNumber: orderNumber || undefined,
     fromDate: fromDate || undefined,
     toDate: toDate || undefined,
@@ -228,6 +228,12 @@ export const OrdersListPage: React.FC = () => {
         <TableBody>
           {isLoading ? (
             <TableSkeleton columns={10} rows={5} />
+          ) : isError ? (
+            <TableRow>
+              <TableCell colSpan={10} className="p-8 text-center text-red-600">
+                Could not load order history. Please refresh and try again.
+              </TableCell>
+            </TableRow>
           ) : orders.length === 0 ? (
             <TableRow>
               <TableCell colSpan={10} className="p-0">

@@ -30,7 +30,7 @@ export default function StoreLocatorCTA() {
                   LOCATIONS & DRIVE-THRU
                 </span>
                 <h2 className="font-display text-4xl sm:text-6xl font-black text-[#171717] tracking-tight mt-1 leading-none">
-                  FIND YOUR DADDY
+                  FIND YOUR Daddy
                 </h2>
                 <p className="text-sm text-[#7A6B56] mt-2">
                   Drive-thru windows, walk-up counters, and late-night dirty soda hubs open across Maharashtra & Bengaluru.

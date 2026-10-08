@@ -53,7 +53,7 @@ export interface SodaTopping {
 }
 
 export type IceLevel = 'light' | 'regular' | 'extra';
-export type CupSize = 'regular' | 'large' | 'daddy-tub';
+export type CupSize = 'regular' | 'large' | 'Daddy-tub';
 
 export interface CustomSoda {
   id: string;

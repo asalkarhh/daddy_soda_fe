@@ -141,7 +141,7 @@ export const FranchisePage: React.FC = () => {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          2. CORE USPs: WHY DADDY SODA HOUSE? (BROCHURE PAGES 5 & 6)
+          2. CORE USPs: WHY Daddy SODA HOUSE? (BROCHURE PAGES 5 & 6)
           ───────────────────────────────────────────────────────────── */}
       <section className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-14">
@@ -150,7 +150,7 @@ export const FranchisePage: React.FC = () => {
             <span>THE EASIEST BUSINESS TO RUN</span>
           </div>
           <h2 className="font-display text-4xl sm:text-6xl font-black text-[#171717] tracking-tight leading-none">
-            WHY DADDY SODA HOUSE?
+            WHY Daddy SODA HOUSE?
           </h2>
           <p className="font-display text-xl sm:text-2xl text-[#7A6B56] uppercase tracking-wide mt-2">
             No expertise. No stress. Just business.

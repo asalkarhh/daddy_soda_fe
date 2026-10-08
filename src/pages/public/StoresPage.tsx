@@ -30,7 +30,7 @@ export const StoresPage: React.FC = () => {
             <span className="tracking-widest uppercase">FOUNTAIN BARS & DRIVE-THRU</span>
           </div>
           <h1 className="font-display text-5xl sm:text-7xl font-black text-[#171717] tracking-tight leading-none mb-3">
-            FIND YOUR DADDY
+            FIND YOUR Daddy
           </h1>
           <p className="text-sm sm:text-base text-[#7A6B56]">
             Locate nearby Daddy Soda drive-thrus and walk-up bars. Open late into the night for your carbonated cravings.

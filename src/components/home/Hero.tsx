@@ -78,7 +78,7 @@ export default function Hero() {
           </div>
 
           <h1 className="font-display text-5xl sm:text-7xl lg:text-9xl font-black tracking-tight leading-[0.9] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)]">
-            DADDY SODA <span className="text-[#F8E71C]">HOUSE</span>
+            Daddy SODA <span className="text-[#F8E71C]">HOUSE</span>
           </h1>
 
           <p className="font-display text-2xl sm:text-3xl lg:text-4xl text-[#FAF2E2] tracking-wide uppercase drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">

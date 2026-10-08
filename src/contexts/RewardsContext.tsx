@@ -19,7 +19,7 @@ export function RewardsProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('daddy_soda_points');
+      const saved = localStorage.getItem('Daddy_soda_points');
       if (saved) {
         setPoints(parseInt(saved, 10));
       }
@@ -32,7 +32,7 @@ export function RewardsProvider({ children }: { children: React.ReactNode }) {
     setPoints((prev) => {
       const updated = prev + amount;
       try {
-        localStorage.setItem('daddy_soda_points', updated.toString());
+        localStorage.setItem('Daddy_soda_points', updated.toString());
       } catch {
         // ignore
       }
@@ -45,7 +45,7 @@ export function RewardsProvider({ children }: { children: React.ReactNode }) {
       setPoints((prev) => {
         const updated = prev - amount;
         try {
-          localStorage.setItem('daddy_soda_points', updated.toString());
+          localStorage.setItem('Daddy_soda_points', updated.toString());
         } catch {
           // ignore
         }

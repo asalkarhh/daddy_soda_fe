@@ -15,7 +15,7 @@ export default function WhyDaddySodaSection() {
           </div>
 
           <h2 className="font-display text-4xl sm:text-6xl font-black text-[#171717] tracking-tight leading-none">
-            WHY DADDY SODA HOUSE?
+            WHY Daddy SODA HOUSE?
           </h2>
 
           <p className="font-display text-xl sm:text-2xl text-[#7A6B56] uppercase tracking-wide mt-2">

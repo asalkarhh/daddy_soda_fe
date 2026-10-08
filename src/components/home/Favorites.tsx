@@ -18,7 +18,7 @@ export default function Favorites() {
               <span>THE REBEL FOUNTAIN FLAVORS</span>
             </div>
             <h2 className="font-display text-4xl sm:text-6xl font-black text-[#171717] tracking-tight">
-              SIGNATURE DADDY FLAVORS
+              SIGNATURE Daddy FLAVORS
             </h2>
           </div>
           <Link

@@ -16,7 +16,7 @@ export const AboutPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#FFF8ED] pt-6 pb-28">
       
-      {/* 1. HERO HEADER: HIMMAT GROUP LEGACY + DADDY SODA HOUSE */}
+      {/* 1. HERO HEADER: HIMMAT GROUP LEGACY + Daddy SODA HOUSE */}
       <section className="relative overflow-hidden pt-8 pb-16 border-b border-[#E8D9BD]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           
@@ -211,14 +211,14 @@ export const AboutPage: React.FC = () => {
           </div>
         </div>
 
-        {/* 4. WHY DADDY SODA HOUSE / USP PILLARS (BROCHURE PAGES 5 & 6) */}
+        {/* 4. WHY Daddy SODA HOUSE / USP PILLARS (BROCHURE PAGES 5 & 6) */}
         <div className="bg-white rounded-3xl p-8 sm:p-12 border border-[#E8D9BD] shadow-sm mb-16">
           <div className="text-center max-w-3xl mx-auto mb-12">
             <span className="text-xs font-bold uppercase tracking-widest text-[#E6392F]">
               THE WINNING ADVANTAGE
             </span>
             <h3 className="font-display text-3xl sm:text-5xl font-black text-[#171717] tracking-tight mt-1">
-              WHY DADDY SODA HOUSE?
+              WHY Daddy SODA HOUSE?
             </h3>
             <p className="font-display text-xl text-[#7A6B56] uppercase tracking-wide mt-1">
               No expertise. No stress. Just business.

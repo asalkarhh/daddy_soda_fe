@@ -18,7 +18,7 @@ describe('Daddy Soda House Franchise Orders & Delivery Module (FE-04)', () => {
     id: 'u-admin-1',
     fullName: 'Rajesh Sharma',
     mobile: '9876543210',
-    email: 'admin@daddysoda.com',
+    email: 'admin@Daddysoda.com',
     role: 'SUPER_ADMIN',
     active: true,
   };
@@ -27,7 +27,7 @@ describe('Daddy Soda House Franchise Orders & Delivery Module (FE-04)', () => {
     id: 'u-franchise-1',
     fullName: 'Amit Patel',
     mobile: '9123456780',
-    email: 'franchise@daddysoda.com',
+    email: 'franchise@Daddysoda.com',
     role: 'FRANCHISE_OWNER',
     active: true,
   };

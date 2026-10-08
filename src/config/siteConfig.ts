@@ -13,7 +13,7 @@ export const siteConfig: SiteConfig = {
     phoneDisplay: '+91 98765 43210',
     whatsappNumber: '+919876543210',
     whatsappDisplay: '+91 98765 43210',
-    email: 'franchise@daddysodahouse.com',
+    email: 'franchise@Daddysodahouse.com',
     address: 'Daddy Soda House Corporate Office, FC Road, Shivaji Nagar',
     city: 'Pune',
     state: 'Maharashtra',
@@ -21,10 +21,10 @@ export const siteConfig: SiteConfig = {
     workingHours: 'Mon - Sat: 9:30 AM to 7:00 PM IST',
   },
   socialLinks: {
-    instagram: 'https://instagram.com/daddysodahouse',
-    facebook: 'https://facebook.com/daddysodahouse',
-    linkedin: 'https://linkedin.com/company/daddysodahouse',
-    youtube: 'https://youtube.com/@daddysodahouse',
+    instagram: 'https://instagram.com/Daddysodahouse',
+    facebook: 'https://facebook.com/Daddysodahouse',
+    linkedin: 'https://linkedin.com/company/Daddysodahouse',
+    youtube: 'https://youtube.com/@Daddysodahouse',
   },
   flavours: [
     {

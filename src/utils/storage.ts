@@ -1,7 +1,7 @@
 import { User } from '../types/auth.types';
 
-const TOKEN_KEY = 'daddy_soda_token';
-const USER_KEY = 'daddy_soda_user';
+const TOKEN_KEY = 'Daddy_soda_token';
+const USER_KEY = 'Daddy_soda_user';
 
 export const storage = {
   getToken: (): string | null => {

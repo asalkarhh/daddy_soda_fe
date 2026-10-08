@@ -17,7 +17,7 @@ export default function FranchiseBanner() {
           <div className="lg:col-span-7 space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#701A1A] text-[#FAF2E2] text-xs font-bold uppercase tracking-wider">
               <HimmatEmblem className="w-4 h-4" />
-              <span>FRANCHISE OPPORTUNITY • DADDY SODA HOUSE</span>
+              <span>FRANCHISE OPPORTUNITY • Daddy SODA HOUSE</span>
             </div>
 
             <h2 className="font-display text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[0.95]">

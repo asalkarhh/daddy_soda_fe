@@ -11,7 +11,7 @@ export const RewardsPage: React.FC = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD] text-xs font-bold text-[#E6392F]">
           <Gift className="w-4 h-4" />
-          <span className="tracking-widest uppercase">DADDY SODA REWARDS CLUB</span>
+          <span className="tracking-widest uppercase">Daddy SODA REWARDS CLUB</span>
         </div>
 
         <h1 className="font-display text-5xl sm:text-7xl font-black text-[#171717] tracking-tight leading-none">

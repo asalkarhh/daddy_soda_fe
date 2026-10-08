@@ -173,7 +173,7 @@ export default function DaddyLogo({
                 dark ? 'text-white' : 'text-[#171717]'
               }`}
             >
-              DADDY SODA HOUSE
+              Daddy SODA HOUSE
             </span>
           </div>
           <span className="text-[10px] font-bold uppercase tracking-wider text-[#701A1A] mt-0.5">

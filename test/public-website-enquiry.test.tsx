@@ -23,7 +23,7 @@ describe('Daddy Soda House Public Website & Franchise Enquiry Flow (FE-08)', () 
   it('renders public Home page at / without authentication', async () => {
     renderWithProviders(<HomePage />);
 
-    expect(screen.getAllByText(/DADDY SODA/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/Daddy SODA/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/Refreshing Taste/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/Himmat Beverages/i).length).toBeGreaterThanOrEqual(1);
   });

@@ -14,7 +14,7 @@ describe('Daddy Soda House Master Data Module', () => {
     id: 'u-admin-1',
     fullName: 'Rajesh Sharma',
     mobile: '9876543210',
-    email: 'admin@daddysoda.com',
+    email: 'admin@Daddysoda.com',
     role: 'SUPER_ADMIN',
     active: true,
   };
@@ -23,7 +23,7 @@ describe('Daddy Soda House Master Data Module', () => {
     id: 'u-mgr-1',
     fullName: 'Pooja Verma',
     mobile: '9876500000',
-    email: 'manager@daddysoda.com',
+    email: 'manager@Daddysoda.com',
     role: 'MANAGER',
     active: true,
   };
@@ -32,7 +32,7 @@ describe('Daddy Soda House Master Data Module', () => {
     id: 'u-franchise-1',
     fullName: 'Amit Patel',
     mobile: '9123456780',
-    email: 'franchise@daddysoda.com',
+    email: 'franchise@Daddysoda.com',
     role: 'FRANCHISE_OWNER',
     active: true,
   };

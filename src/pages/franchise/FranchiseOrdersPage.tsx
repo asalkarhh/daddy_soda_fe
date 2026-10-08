@@ -224,7 +224,25 @@ export const FranchiseOrdersPage: React.FC = () => {
       )}
 
       {/* Loading Skeleton */}
-      {isLoading && <TableSkeleton rows={5} columns={6} />}
+      {isLoading && (
+        <div className="hidden md:block">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Order Number</TableHead>
+                <TableHead>Order Date</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Total Quantity</TableHead>
+                <TableHead className="text-right">Order Total</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableSkeleton rows={5} columns={6} />
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       {/* Orders Table */}
       {!isLoading && !isError && (

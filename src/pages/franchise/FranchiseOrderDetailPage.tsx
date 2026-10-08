@@ -10,6 +10,8 @@ import {
   Clock,
   AlertTriangle,
   Package,
+  Info,
+  MessageSquare,
 } from 'lucide-react';
 import { PageHeader } from '../../components/common/PageHeader';
 import { Button } from '../../components/ui/Button';
@@ -140,6 +142,14 @@ export const FranchiseOrderDetailPage: React.FC = () => {
           </div>
         }
       />
+
+      {/* Admin Update Banner */}
+      {order.updateReason && (
+        <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-xl flex items-center gap-2.5 text-blue-950 shadow-sm">
+          <Info className="w-4 h-4 text-blue-600 shrink-0" />
+          <span className="font-bold text-sm text-blue-900">Order Updated by Admin</span>
+        </div>
+      )}
 
       {/* Cancellation Notice Banner */}
       {isCancelled && (
@@ -283,29 +293,47 @@ export const FranchiseOrderDetailPage: React.FC = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {items.map((item, idx) => (
-                <TableRow key={item.id || item.productId || idx}>
-                  <TableCell className="text-slate-400 font-mono text-xs">{idx + 1}</TableCell>
-                  <TableCell className="font-mono text-xs font-semibold text-slate-700">
-                    {item.itemCode || '—'}
-                  </TableCell>
-                  <TableCell className="font-semibold text-slate-900">
-                    {item.flavourName || item.productName || 'Flavour Item'}
-                  </TableCell>
-                  <TableCell className="text-slate-600 text-xs">
-                    {formatBottleSize(item.bottleSizeLitre)}
-                  </TableCell>
-                  <TableCell className="text-right font-medium text-slate-900">
-                    {formatQuantity(item.quantity)} bottles
-                  </TableCell>
-                  <TableCell className="text-right text-slate-700">
-                    {formatCurrency(item.unitPrice)}
-                  </TableCell>
-                  <TableCell className="text-right font-bold text-slate-900">
-                    {formatCurrency(item.lineTotal || item.quantity * item.unitPrice)}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {items.map((item, idx) => {
+                const isUpdated = item.originalQuantity !== undefined && item.originalQuantity !== null && item.originalQuantity !== item.quantity;
+
+                return (
+                  <TableRow key={item.id || item.productId || idx} className={isUpdated || item.adminNote ? 'bg-amber-50/50' : undefined}>
+                    <TableCell className="text-slate-400 font-mono text-xs">{idx + 1}</TableCell>
+                    <TableCell className="font-mono text-xs font-semibold text-slate-700">
+                      {item.itemCode || '—'}
+                    </TableCell>
+                    <TableCell className="font-semibold text-slate-900">
+                      <div>{item.flavourName || item.productName || 'Flavour Item'}</div>
+                      {item.adminNote && (
+                        <div className="mt-1 flex items-start gap-1 text-xs text-amber-900 bg-amber-100/70 border border-amber-200 px-2 py-1 rounded-md font-normal">
+                          <MessageSquare className="w-3.5 h-3.5 text-amber-700 mt-0.5 shrink-0" />
+                          <span><strong>Admin Note:</strong> {item.adminNote}</span>
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-slate-600 text-xs">
+                      {formatBottleSize(item.bottleSizeLitre)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="font-semibold text-slate-900">{formatQuantity(item.quantity)} bottles</div>
+                      {isUpdated && (
+                        <div className="text-xs text-amber-800 font-medium mt-0.5">
+                          <span className="line-through text-slate-400 mr-1">{formatQuantity(item.originalQuantity!)} bottles</span>
+                          <span className="bg-amber-200/80 text-amber-900 px-1.5 py-0.5 rounded font-bold text-[10px]">
+                            Updated by Admin
+                          </span>
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right text-slate-700">
+                      {formatCurrency(item.unitPrice)}
+                    </TableCell>
+                    <TableCell className="text-right font-bold text-slate-900">
+                      {formatCurrency(item.lineTotal || item.quantity * item.unitPrice)}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
 

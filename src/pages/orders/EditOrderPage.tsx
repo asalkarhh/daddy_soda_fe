@@ -13,6 +13,7 @@ import {
   Package,
   Save,
   AlertTriangle,
+  MessageSquare,
 } from 'lucide-react';
 import { PageHeader } from '../../components/common/PageHeader';
 import { Button } from '../../components/ui/Button';
@@ -25,6 +26,7 @@ import { ErrorMessage } from '../../components/common/ErrorMessage';
 import { OrderStatusBadge } from '../../components/orders/OrderStatusBadge';
 import { useActiveFranchises, useProducts } from '../../hooks/useMasterData';
 import { useOrderDetail, useOrderMutations } from '../../hooks/useOrderData';
+import { useWarehouseInventory } from '../../hooks/useInventoryData';
 import { formatBottleSize, formatQuantity, formatCurrency } from '../../utils/formatters';
 
 const orderItemSchema = z.object({
@@ -35,12 +37,15 @@ const orderItemSchema = z.object({
   unitPrice: z
     .number({ invalid_type_error: 'Price must be a valid number' })
     .nonnegative('Price cannot be negative'),
+  adminNote: z.string().trim().optional(),
+  originalQuantity: z.number().optional(),
 });
 
 const editOrderSchema = z.object({
   franchiseId: z.string().min(1, 'Please select a franchise'),
   orderDate: z.string().min(1, 'Order date is required'),
   notes: z.string().trim().optional(),
+  reason: z.string().trim().optional(),
   items: z
     .array(orderItemSchema)
     .min(1, 'At least one syrup item is required')
@@ -67,6 +72,10 @@ export const EditOrderPage: React.FC = () => {
   const products = productsData?.content || [];
   const productMap = new Map(products.map((p) => [p.id, p]));
 
+  const { data: stockData } = useWarehouseInventory({ size: 100 });
+  const stockItems = stockData?.content || [];
+  const stockMap = new Map(stockItems.map((s) => [s.productId, s.availableQuantity]));
+
   const { updateOrderMutation } = useOrderMutations();
 
   const {
@@ -83,6 +92,7 @@ export const EditOrderPage: React.FC = () => {
       franchiseId: '',
       orderDate: '',
       notes: '',
+      reason: '',
       items: [],
     },
   });
@@ -99,14 +109,17 @@ export const EditOrderPage: React.FC = () => {
         franchiseId: order.franchiseId || '',
         orderDate: order.orderDate ? order.orderDate.split('T')[0] : '',
         notes: order.notes || '',
+        reason: order.updateReason || '',
         items:
           order.items && order.items.length > 0
             ? order.items.map((item) => ({
                 productId: item.productId,
                 quantity: item.quantity,
                 unitPrice: item.unitPrice,
+                originalQuantity: item.originalQuantity ?? item.quantity,
+                adminNote: item.adminNote || '',
               }))
-            : [{ productId: '', quantity: 10, unitPrice: 0 }],
+            : [{ productId: '', quantity: 10, unitPrice: 0, adminNote: '' }],
       });
     }
   }, [order, reset]);
@@ -168,10 +181,13 @@ export const EditOrderPage: React.FC = () => {
         franchiseId: values.franchiseId,
         orderDate: values.orderDate,
         notes: values.notes || undefined,
+        reason: values.reason || undefined,
         items: values.items.map((i) => ({
           productId: i.productId,
           quantity: Number(i.quantity),
           unitPrice: Number(i.unitPrice),
+          originalQuantity: i.originalQuantity,
+          adminNote: i.adminNote || undefined,
         })),
       },
     });
@@ -251,6 +267,17 @@ export const EditOrderPage: React.FC = () => {
               </div>
             </div>
 
+            {/* Reason for Order Update */}
+            <div>
+              <Textarea
+                label="Reason for Order Update (Shown to Franchise Owner)"
+                placeholder="e.g., Adjusted item quantities based on current warehouse stock availability..."
+                rows={2}
+                error={errors.reason?.message}
+                {...register('reason')}
+              />
+            </div>
+
             {/* Notes */}
             <div>
               <Textarea
@@ -298,98 +325,144 @@ export const EditOrderPage: React.FC = () => {
             {fields.map((field, index) => {
               const selectedProductId = watchedItems[index]?.productId;
               const product = productMap.get(selectedProductId);
+              const availableStock = selectedProductId ? stockMap.get(selectedProductId) : undefined;
               const qty = Number(watchedItems[index]?.quantity) || 0;
+              const originalQty = watchedItems[index]?.originalQuantity;
               const price = Number(watchedItems[index]?.unitPrice) || 0;
               const lineTotal = qty * price;
 
               return (
                 <div
                   key={field.id}
-                  className="flex flex-col md:flex-row items-start md:items-center gap-3 p-3 bg-slate-50/70 border border-slate-200 rounded-xl relative"
+                  className="p-3.5 bg-slate-50/80 border border-slate-200 rounded-xl space-y-2"
                 >
-                  <span className="text-xs font-bold text-slate-400 w-6 text-center shrink-0 hidden md:block">
-                    #{index + 1}
-                  </span>
+                  <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
+                    <span className="text-xs font-bold text-slate-400 w-6 text-center shrink-0 hidden md:block">
+                      #{index + 1}
+                    </span>
 
-                  {/* Product Selector */}
-                  <div className="flex-1 w-full md:w-auto">
-                    <Controller
-                      control={control}
-                      name={`items.${index}.productId`}
-                      render={({ field: controllerField, fieldState }) => (
-                        <Select
-                          options={productOptions}
-                          placeholder="Select syrup flavour..."
-                          value={controllerField.value}
-                          onChange={(e) => handleProductChange(index, e.target.value)}
-                          error={fieldState.error?.message}
-                        />
+                    {/* Product Selector */}
+                    <div className="flex-1 w-full md:w-auto">
+                      <Controller
+                        control={control}
+                        name={`items.${index}.productId`}
+                        render={({ field: controllerField, fieldState }) => (
+                          <div>
+                            <Select
+                              options={productOptions}
+                              placeholder="Select syrup flavour..."
+                              value={controllerField.value}
+                              onChange={(e) => handleProductChange(index, e.target.value)}
+                              error={fieldState.error?.message}
+                            />
+                            {selectedProductId && availableStock !== undefined && (
+                              <div className="flex items-center gap-1.5 mt-1 text-[11px]">
+                                <span className="text-slate-500 font-medium">Warehouse Stock:</span>
+                                <span
+                                  className={`font-semibold ${
+                                    availableStock <= 0
+                                      ? 'text-red-600 font-bold'
+                                      : availableStock < qty
+                                      ? 'text-amber-600 font-bold'
+                                      : 'text-emerald-600'
+                                  }`}
+                                >
+                                  {formatQuantity(availableStock)} bottles{' '}
+                                  {availableStock <= 0
+                                    ? '(OUT OF STOCK)'
+                                    : availableStock < qty
+                                    ? '(LOW STOCK)'
+                                    : ''}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      />
+                    </div>
+
+                    {/* Item Code */}
+                    <div className="w-full md:w-28">
+                      <Input
+                        readOnly
+                        placeholder="Code"
+                        value={product?.itemCode || '—'}
+                        className="bg-slate-100 text-slate-600 font-mono text-xs cursor-default"
+                      />
+                    </div>
+
+                    {/* Bottle Size */}
+                    <div className="w-full md:w-24">
+                      <Input
+                        readOnly
+                        placeholder="Size"
+                        value={product ? formatBottleSize(product.bottleSizeLitre) : '—'}
+                        className="bg-slate-100 text-slate-600 text-xs cursor-default"
+                      />
+                    </div>
+
+                    {/* Quantity */}
+                    <div className="w-full md:w-32">
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        placeholder="Qty"
+                        error={errors.items?.[index]?.quantity?.message}
+                        {...register(`items.${index}.quantity`, { valueAsNumber: true })}
+                      />
+                      {originalQty !== undefined && originalQty !== null && originalQty !== qty && (
+                        <p className="text-[10px] text-amber-700 font-medium mt-0.5">
+                          Requested: {formatQuantity(originalQty)}
+                        </p>
                       )}
-                    />
+                    </div>
+
+                    {/* Unit Price (Editable override for Super Admin & Manager) */}
+                    <div className="w-full md:w-32">
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="Price (₹)"
+                        error={errors.items?.[index]?.unitPrice?.message}
+                        {...register(`items.${index}.unitPrice`, { valueAsNumber: true })}
+                      />
+                    </div>
+
+                    {/* Line Total */}
+                    <div className="w-full md:w-28 text-right font-bold text-slate-900 text-xs px-2">
+                      {formatCurrency(lineTotal)}
+                    </div>
+
+                    {/* Remove Button */}
+                    <div className="shrink-0">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => remove(index)}
+                        disabled={fields.length === 1}
+                        title="Remove Row"
+                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-30"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
 
-                  {/* Item Code */}
-                  <div className="w-full md:w-28">
+                  {/* Per-Product Reason / Admin Note */}
+                  <div className="pt-2 border-t border-slate-200/60 flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                    <label className="text-xs font-semibold text-amber-900 shrink-0 flex items-center gap-1.5">
+                      <MessageSquare className="w-3.5 h-3.5 text-amber-600" />
+                      Reason / Note for this Product:
+                    </label>
                     <Input
-                      readOnly
-                      placeholder="Code"
-                      value={product?.itemCode || '—'}
-                      className="bg-slate-100 text-slate-600 font-mono text-xs cursor-default"
+                      placeholder="e.g. Reduced from requested quantity due to stock availability at warehouse"
+                      className="bg-white text-xs text-slate-800 h-8 font-normal"
+                      error={errors.items?.[index]?.adminNote?.message}
+                      {...register(`items.${index}.adminNote`)}
                     />
-                  </div>
-
-                  {/* Bottle Size */}
-                  <div className="w-full md:w-24">
-                    <Input
-                      readOnly
-                      placeholder="Size"
-                      value={product ? formatBottleSize(product.bottleSizeLitre) : '—'}
-                      className="bg-slate-100 text-slate-600 text-xs cursor-default"
-                    />
-                  </div>
-
-                  {/* Quantity */}
-                  <div className="w-full md:w-32">
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0.01"
-                      placeholder="Qty"
-                      error={errors.items?.[index]?.quantity?.message}
-                      {...register(`items.${index}.quantity`, { valueAsNumber: true })}
-                    />
-                  </div>
-
-                  {/* Unit Price (Editable override for Super Admin & Manager) */}
-                  <div className="w-full md:w-32">
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="Price (₹)"
-                      error={errors.items?.[index]?.unitPrice?.message}
-                      {...register(`items.${index}.unitPrice`, { valueAsNumber: true })}
-                    />
-                  </div>
-
-                  {/* Line Total */}
-                  <div className="w-full md:w-28 text-right font-bold text-slate-900 text-xs px-2">
-                    {formatCurrency(lineTotal)}
-                  </div>
-
-                  {/* Remove Button */}
-                  <div className="shrink-0">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => remove(index)}
-                      disabled={fields.length === 1}
-                      title="Remove Row"
-                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-30"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
                   </div>
                 </div>
               );

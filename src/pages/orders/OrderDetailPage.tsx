@@ -13,6 +13,8 @@ import {
   AlertTriangle,
   Package,
   Boxes,
+  Info,
+  MessageSquare,
 } from 'lucide-react';
 import { PageHeader } from '../../components/common/PageHeader';
 import { Button } from '../../components/ui/Button';
@@ -179,6 +181,14 @@ export const OrderDetailPage: React.FC = () => {
         }
       />
 
+      {/* Order Update Banner */}
+      {order.updateReason && (
+        <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-xl flex items-center gap-2.5 text-blue-950 shadow-sm">
+          <Info className="w-4 h-4 text-blue-600 shrink-0" />
+          <span className="font-bold text-sm text-blue-900">Order Updated by Admin</span>
+        </div>
+      )}
+
       {/* Cancellation Banner if Cancelled */}
       {isCancelled && (
         <div className="p-4 bg-red-50 border border-red-200 rounded-xl space-y-2 text-red-950">
@@ -336,21 +346,36 @@ export const OrderDetailPage: React.FC = () => {
                 items.map((item, index) => {
                   const stock = stockMap.get(item.productId);
                   const isLow = stock !== undefined && stock < item.quantity;
+                  const isUpdated = item.originalQuantity !== undefined && item.originalQuantity !== null && item.originalQuantity !== item.quantity;
 
                   return (
-                    <TableRow key={item.id || item.productId || index}>
+                    <TableRow key={item.id || item.productId || index} className={isUpdated || item.adminNote ? 'bg-amber-50/40' : undefined}>
                       <TableCell className="text-slate-400 font-mono text-xs">{index + 1}</TableCell>
                       <TableCell className="font-mono text-xs font-semibold text-slate-700">
                         {item.itemCode || '—'}
                       </TableCell>
                       <TableCell className="font-medium text-slate-900">
-                        {item.flavourName || item.productName || 'Flavour'}
+                        <div>{item.flavourName || item.productName || 'Flavour'}</div>
+                        {item.adminNote && (
+                          <div className="mt-1 flex items-start gap-1 text-[11px] text-amber-900 bg-amber-100/70 border border-amber-200 px-2 py-1 rounded">
+                            <MessageSquare className="w-3 h-3 text-amber-700 mt-0.5 shrink-0" />
+                            <span><strong>Admin Note:</strong> {item.adminNote}</span>
+                          </div>
+                        )}
                       </TableCell>
                       <TableCell className="text-xs text-slate-600">
                         {item.bottleSizeLitre ? formatBottleSize(item.bottleSizeLitre) : '5.00 L'}
                       </TableCell>
-                      <TableCell className="text-right font-bold text-slate-900">
-                        {formatQuantity(item.quantity)}
+                      <TableCell className="text-right">
+                        <div className="font-bold text-slate-900">{formatQuantity(item.quantity)}</div>
+                        {isUpdated && (
+                          <div className="text-[10px] text-amber-800 font-medium">
+                            <span className="line-through text-slate-400 mr-1">{formatQuantity(item.originalQuantity!)}</span>
+                            <span className="bg-amber-200/80 text-amber-900 px-1 py-0.5 rounded font-semibold">
+                              Updated
+                            </span>
+                          </div>
+                        )}
                       </TableCell>
                       <TableCell className="text-right font-medium text-slate-700">
                         {formatCurrency(item.unitPrice)}

@@ -9,8 +9,10 @@ export interface SalesOrderItem {
   itemCode?: string;
   bottleSizeLitre?: number;
   quantity: number;
+  originalQuantity?: number;
   unitPrice: number;
   lineTotal: number;
+  adminNote?: string;
   availableStock?: number; // Optional informational field for Admin/Manager
 }
 
@@ -27,6 +29,7 @@ export interface SalesOrder {
   orderTotal: number;
   subtotal?: number;
   notes?: string;
+  updateReason?: string;
   items?: SalesOrderItem[];
   createdBy?: string;
   createdAt?: string;
@@ -43,7 +46,9 @@ export interface SalesOrder {
 export interface CreateOrderItemRequest {
   productId: string;
   quantity: number;
+  originalQuantity?: number;
   unitPrice?: number; // Included for Admin/Manager; omitted for Franchise Owner
+  adminNote?: string;
 }
 
 export interface CreateOrderRequest {
@@ -58,6 +63,8 @@ export interface UpdateOrderRequest {
   franchiseId?: string;
   orderDate?: string;
   notes?: string;
+  reason?: string;
+  updateReason?: string;
   items: CreateOrderItemRequest[];
 }
 

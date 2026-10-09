@@ -3,6 +3,7 @@ import React from 'react';
 export interface PageHeaderProps {
   title: string;
   subtitle?: string;
+  headerNotice?: React.ReactNode;
   badge?: React.ReactNode;
   actions?: React.ReactNode;
   className?: string;
@@ -11,6 +12,7 @@ export interface PageHeaderProps {
 export const PageHeader: React.FC<PageHeaderProps> = ({
   title,
   subtitle,
+  headerNotice,
   badge,
   actions,
   className = '',
@@ -27,6 +29,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         {subtitle && (
           <p className="text-sm text-slate-500 leading-normal">{subtitle}</p>
         )}
+        {headerNotice}
       </div>
       {actions && <div className="flex items-center gap-3 shrink-0">{actions}</div>}
     </div>

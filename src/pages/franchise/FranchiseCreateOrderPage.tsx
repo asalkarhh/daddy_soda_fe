@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -31,6 +31,7 @@ const franchiseOrderItemSchema = z.object({
   productId: z.string().min(1, 'Please select a flavour/product'),
   quantity: z
     .number({ invalid_type_error: 'Quantity must be a valid number' })
+    .int('Quantity must be a whole number')
     .positive('Quantity must be greater than zero'),
 });
 
@@ -56,6 +57,9 @@ type FormValues = z.infer<typeof franchiseCreateOrderSchema>;
 
 export const FranchiseCreateOrderPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const reorderState = location.state as { reorderItems?: Array<{ productId: string; quantity: number }>; reorderFrom?: string } | null;
+  const reorderItems = reorderState?.reorderItems;
 
   const { data: productsData } = useProducts({ status: 'ACTIVE', size: 100 });
   const products = productsData?.content || [];
@@ -67,7 +71,6 @@ export const FranchiseCreateOrderPage: React.FC = () => {
     register,
     control,
     handleSubmit,
-    setValue,
     watch,
     formState: { errors },
   } = useForm<FormValues>({
@@ -76,7 +79,7 @@ export const FranchiseCreateOrderPage: React.FC = () => {
       orderDate: todayStr,
       initialStatus: 'DRAFT',
       notes: '',
-      items: [{ productId: '', quantity: 10 }],
+      items: reorderItems?.length ? reorderItems : [{ productId: '', quantity: 10 }],
     },
   });
 
@@ -86,6 +89,7 @@ export const FranchiseCreateOrderPage: React.FC = () => {
   });
 
   const watchedItems = watch('items') || [];
+  const selectedInitialStatus = watch('initialStatus');
 
   // Check for any product without a configured default selling price
   const hasUnpricedItems = watchedItems.some((item) => {
@@ -103,7 +107,7 @@ export const FranchiseCreateOrderPage: React.FC = () => {
     return sum + (Number(i?.quantity) || 0) * price;
   }, 0);
 
-  const onSubmit = async (values: FormValues) => {
+  const onSubmit = async (values: FormValues, forcedStatus?: FormValues['initialStatus']) => {
     if (hasUnpricedItems) {
       return;
     }
@@ -111,7 +115,8 @@ export const FranchiseCreateOrderPage: React.FC = () => {
     // Notice: NO franchiseId or unitPrice in payload sent by Franchise Owner
     const result = await createOrderMutation.mutateAsync({
       orderDate: values.orderDate,
-      initialStatus: values.initialStatus,
+      status: forcedStatus || values.initialStatus,
+      reorderedFromOrderNumber: reorderState?.reorderFrom,
       notes: values.notes || undefined,
       items: values.items.map((i) => ({
         productId: i.productId,
@@ -143,7 +148,7 @@ export const FranchiseCreateOrderPage: React.FC = () => {
         }
       />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+      <form onSubmit={handleSubmit((values) => onSubmit(values))} className="space-y-6" noValidate>
         {/* Order Header Card - NO FRANCHISE SELECTOR */}
         <Card>
           <CardHeader>
@@ -298,8 +303,8 @@ export const FranchiseCreateOrderPage: React.FC = () => {
                     <div className="w-full md:w-32">
                       <Input
                         type="number"
-                        step="0.01"
-                        min="0.01"
+                        step="1"
+                        min="1"
                         placeholder="Qty"
                         error={errors.items?.[index]?.quantity?.message}
                         {...register(`items.${index}.quantity`, { valueAsNumber: true })}
@@ -382,29 +387,33 @@ export const FranchiseCreateOrderPage: React.FC = () => {
               Cancel
             </Button>
 
+            {selectedInitialStatus === 'DRAFT' && (
             <Button
-              type="submit"
+              type="button"
               variant="outline"
               leftIcon={<FileCheck className="w-4 h-4" />}
               className="flex-1 sm:flex-initial"
               disabled={hasUnpricedItems}
-              onClick={() => setValue('initialStatus', 'DRAFT')}
+              onClick={() => handleSubmit((values) => onSubmit(values, 'DRAFT'))()}
               isLoading={createOrderMutation.isPending}
-            >
-              Save as Draft
-            </Button>
+              >
+                Save as Draft
+              </Button>
+            )}
 
-            <Button
-              type="submit"
+            {selectedInitialStatus === 'PLACED' && (
+              <Button
+              type="button"
               variant="primary"
               leftIcon={<Send className="w-4 h-4" />}
               className="flex-1 sm:flex-initial"
               disabled={hasUnpricedItems}
-              onClick={() => setValue('initialStatus', 'PLACED')}
+              onClick={() => handleSubmit((values) => onSubmit(values, 'PLACED'))()}
               isLoading={createOrderMutation.isPending}
-            >
-              Place Order
-            </Button>
+              >
+                Place Order
+              </Button>
+            )}
           </div>
         </div>
       </form>

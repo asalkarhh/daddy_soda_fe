@@ -33,6 +33,7 @@ const orderItemSchema = z.object({
   productId: z.string().min(1, 'Please select a flavour/product'),
   quantity: z
     .number({ invalid_type_error: 'Quantity must be a valid number' })
+    .int('Quantity must be a whole number')
     .positive('Quantity must be greater than zero'),
   unitPrice: z
     .number({ invalid_type_error: 'Price must be a valid number' })
@@ -405,8 +406,8 @@ export const EditOrderPage: React.FC = () => {
                     <div className="w-full md:w-32">
                       <Input
                         type="number"
-                        step="0.01"
-                        min="0.01"
+                        step="1"
+                        min="1"
                         placeholder="Qty"
                         error={errors.items?.[index]?.quantity?.message}
                         {...register(`items.${index}.quantity`, { valueAsNumber: true })}

@@ -100,6 +100,17 @@ export const OrderDetailPage: React.FC = () => {
       <PageHeader
         title={`Order ${order.orderNumber}`}
         subtitle={`Placed for ${order.franchiseName || 'Franchise'} on ${formatDate(order.orderDate)}`}
+        headerNotice={
+          order.reorderedFromOrderNumber ? (
+            <p className="inline-flex items-center mt-1 px-2.5 py-1 rounded-md bg-purple-100 border border-purple-300 text-xs font-bold text-purple-900">
+              Reorder of {order.reorderedFromOrderNumber}
+            </p>
+          ) : order.updateReason || (order.updatedBy && order.updatedBy !== order.createdBy) ? (
+            <p className="inline-flex items-center mt-1 px-2.5 py-1 rounded-md bg-amber-100 border border-amber-300 text-xs font-bold text-amber-900">
+              Order Updated by Admin
+            </p>
+          ) : undefined
+        }
         badge={<OrderStatusBadge status={order.status} size="md" />}
         actions={
           <div className="flex flex-wrap items-center gap-2">
@@ -201,7 +212,7 @@ export const OrderDetailPage: React.FC = () => {
             {order.cancellationReason || 'No reason provided.'}
           </p>
           <div className="flex flex-wrap items-center gap-4 text-xs text-red-800 pt-1">
-            {order.cancelledBy && <span>Cancelled by: {order.cancelledBy}</span>}
+            <span>Cancelled by: <strong>{order.cancelledByRole === 'FRANCHISE_OWNER' ? 'Franchise Owner' : order.cancelledByRole === 'MANAGER' ? 'Manager' : order.cancelledByRole === 'SUPER_ADMIN' ? 'Super Admin' : order.cancelledBy || 'User'}</strong></span>
             {order.cancelledAt && <span>Cancelled at: {formatDateTime(order.cancelledAt)}</span>}
             <span>No warehouse stock was deducted for this cancelled order.</span>
           </div>

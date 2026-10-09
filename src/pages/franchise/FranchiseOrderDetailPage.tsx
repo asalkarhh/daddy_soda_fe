@@ -83,6 +83,17 @@ export const FranchiseOrderDetailPage: React.FC = () => {
       <PageHeader
         title={`Order ${order.orderNumber}`}
         subtitle={`Placed on ${formatDate(order.orderDate)}`}
+        headerNotice={
+          order.reorderedFromOrderNumber ? (
+            <p className="inline-flex items-center mt-1 px-2.5 py-1 rounded-md bg-purple-100 border border-purple-300 text-xs font-bold text-purple-900">
+              Reorder of {order.reorderedFromOrderNumber}
+            </p>
+          ) : order.updateReason || (order.updatedBy && order.updatedBy !== order.createdBy) ? (
+            <p className="inline-flex items-center mt-1 px-2.5 py-1 rounded-md bg-amber-100 border border-amber-300 text-xs font-bold text-amber-900">
+              Order Updated by Admin
+            </p>
+          ) : undefined
+        }
         badge={<OrderStatusBadge status={order.status} size="md" />}
         actions={
           <div className="flex flex-wrap items-center gap-2">
@@ -93,6 +104,25 @@ export const FranchiseOrderDetailPage: React.FC = () => {
             >
               Back to My Orders
             </Button>
+
+            {isCancelled && (
+              <Button
+                variant="primary"
+                onClick={() =>
+                  navigate('/my-orders/new', {
+                    state: {
+                      reorderItems: items.map((item) => ({
+                        productId: item.productId,
+                        quantity: Math.max(1, Math.round(Number(item.quantity) || 1)),
+                      })),
+                      reorderFrom: order.orderNumber,
+                    },
+                  })
+                }
+              >
+                Reorder
+              </Button>
+            )}
 
             {/* Edit (Franchise Owner: DRAFT only) */}
             {isDraft && (
@@ -164,7 +194,8 @@ export const FranchiseOrderDetailPage: React.FC = () => {
           {order.cancelledAt && (
             <p className="text-xs text-red-500">
               Cancelled on {formatDateTime(order.cancelledAt)}
-              {order.cancelledBy && ` by ${order.cancelledBy}`}
+              {' by '}
+              <strong>{order.cancelledByRole === 'FRANCHISE_OWNER' ? 'Franchise Owner' : order.cancelledByRole === 'MANAGER' ? 'Manager' : order.cancelledByRole === 'SUPER_ADMIN' ? 'Super Admin' : order.cancelledBy || 'User'}</strong>
             </p>
           )}
         </div>

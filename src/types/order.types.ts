@@ -32,6 +32,8 @@ export interface SalesOrder {
   updateReason?: string;
   items?: SalesOrderItem[];
   createdBy?: string;
+  updatedBy?: string;
+  reorderedFromOrderNumber?: string;
   createdAt?: string;
   placedAt?: string;
   preparedBy?: string;
@@ -40,6 +42,7 @@ export interface SalesOrder {
   deliveredAt?: string;
   cancellationReason?: string;
   cancelledBy?: string;
+  cancelledByRole?: string;
   cancelledAt?: string;
 }
 
@@ -54,6 +57,8 @@ export interface CreateOrderItemRequest {
 export interface CreateOrderRequest {
   franchiseId?: string; // Required for Admin/Manager; omitted for Franchise Owner
   orderDate: string;
+  status?: 'DRAFT' | 'PLACED';
+  reorderedFromOrderNumber?: string;
   initialStatus?: 'DRAFT' | 'PLACED';
   notes?: string;
   items: CreateOrderItemRequest[];

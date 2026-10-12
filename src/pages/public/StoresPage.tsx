@@ -129,7 +129,7 @@ export const StoresPage: React.FC = () => {
                 </a>
                 <Link
                   to="/franchise#inquiry-form"
-                  className="py-3 px-4 rounded-xl bg-[#FAF2E2] border border-[#E8D9BD] text-[#701A1A] font-display text-sm tracking-wider hover:bg-[#701A1A] hover:text-white transition-colors"
+                  className="py-3 px-4 rounded-xl bg-[#FAF2E2] border border-[#E8D9BD] text-[#E6392F] font-display text-sm tracking-wider hover:bg-[#E6392F] hover:text-white transition-colors"
                 >
                   FRANCHISE INQUIRY
                 </Link>

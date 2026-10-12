@@ -280,7 +280,7 @@ export const BROCHURE_SODA_FLAVORS = [
     name: 'Cola',
     tagline: 'Bold, fizzy cola — a universal favourite',
     icon: '🥤',
-    color: '#701A1A',
+    color: '#E6392F',
     bgColor: '#FAF0F0',
     price: 20,
     priceTier1: 30,

@@ -48,7 +48,7 @@ export const AboutPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mb-16">
           
           {/* Left Column: EST 1973 & Founder */}
-          <div className="lg:col-span-4 bg-[#701A1A] text-white rounded-3xl p-8 sm:p-10 flex flex-col justify-between relative overflow-hidden shadow-xl border-4 border-[#8B2500]">
+          <div className="lg:col-span-4 bg-[#E6392F] text-white rounded-3xl p-8 sm:p-10 flex flex-col justify-between relative overflow-hidden shadow-xl border-4 border-[#C92A20]">
             <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
               <HimmatEmblem className="w-64 h-64" />
             </div>
@@ -184,8 +184,8 @@ export const AboutPage: React.FC = () => {
                 className="bg-white rounded-3xl p-8 sm:p-10 border border-[#E8D9BD] shadow-sm hover:shadow-lg transition-all flex flex-col items-center text-center relative overflow-hidden"
               >
                 {/* Director Avatar Circle */}
-                <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-[#701A1A] to-[#E6392F] p-1 shadow-md mb-6 relative">
-                  <div className="w-full h-full rounded-full bg-[#FAF2E2] flex items-center justify-center font-display text-3xl font-black text-[#701A1A] border-2 border-white">
+                <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-[#E6392F] to-[#FFB000] p-1 shadow-md mb-6 relative">
+                  <div className="w-full h-full rounded-full bg-[#FAF2E2] flex items-center justify-center font-display text-3xl font-black text-[#E6392F] border-2 border-white">
                     {leader.initials}
                   </div>
                 </div>

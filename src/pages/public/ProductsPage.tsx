@@ -42,8 +42,8 @@ export const ProductsPage: React.FC = () => {
         
         {/* Page Header */}
         <div className="text-center max-w-3xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD] text-xs font-bold text-[#701A1A] mb-3 shadow-xs">
-            <Sparkles className="w-4 h-4 fill-[#701A1A]" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD] text-xs font-bold text-[#E6392F] mb-3 shadow-xs">
+            <Sparkles className="w-4 h-4 fill-[#E6392F]" />
             <span className="tracking-widest uppercase">8 DEDICATED SODA TAPS + ICE-GOLA COUNTER</span>
           </div>
           <h1 className="font-display text-5xl sm:text-7xl font-black text-[#171717] tracking-tight leading-none mb-3">
@@ -65,7 +65,7 @@ export const ProductsPage: React.FC = () => {
               placeholder="Search by flavor, ingredient (e.g. Jeera, Mojito, Gola)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-2xl bg-white border border-[#E8D9BD] text-sm font-semibold focus:outline-hidden focus:border-[#701A1A] shadow-xs"
+              className="w-full pl-12 pr-4 py-3 rounded-2xl bg-white border border-[#E8D9BD] text-sm font-semibold focus:outline-hidden focus:border-[#E6392F] shadow-xs"
             />
             {searchQuery && (
               <button
@@ -87,7 +87,7 @@ export const ProductsPage: React.FC = () => {
                   onClick={() => handleCategoryChange(cat.id as CategoryType)}
                   className={`px-5 py-2.5 rounded-xl font-display text-base tracking-wider shrink-0 transition-all cursor-pointer flex items-center gap-1.5 ${
                     isActive
-                      ? 'bg-[#701A1A] text-white shadow-md'
+                      ? 'bg-[#E6392F] text-white shadow-md'
                       : 'bg-white border border-[#E8D9BD] text-[#7A6B56] hover:text-[#171717] hover:border-[#171717]'
                   }`}
                 >
@@ -112,7 +112,7 @@ export const ProductsPage: React.FC = () => {
             </p>
             <Link
               to="/franchise"
-              className="inline-block px-6 py-3 rounded-xl bg-[#701A1A] text-white font-display text-lg tracking-wider"
+              className="inline-block px-6 py-3 rounded-xl bg-[#E6392F] hover:bg-[#171717] text-white font-display text-lg tracking-wider transition-colors"
             >
               VIEW FRANCHISE OPPORTUNITY
             </Link>
@@ -123,7 +123,7 @@ export const ProductsPage: React.FC = () => {
               return (
                 <div
                   key={product.id}
-                  className="group relative bg-white rounded-3xl p-4 sm:p-5 border border-[#E8D9BD] flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:border-[#701A1A]/40 overflow-hidden"
+                  className="group relative bg-white rounded-3xl p-4 sm:p-5 border border-[#E8D9BD] flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:border-[#E6392F]/40 overflow-hidden"
                 >
                   {/* Badge */}
                   {product.badge && (
@@ -184,7 +184,7 @@ export const ProductsPage: React.FC = () => {
 
                         <Link
                           to={`/menu/${product.slug}`}
-                          className="px-3.5 py-1.5 rounded-xl font-display text-sm tracking-wider bg-[#701A1A] hover:bg-[#E6392F] text-white transition-all shadow-xs flex items-center gap-1"
+                          className="px-3.5 py-1.5 rounded-xl font-display text-sm tracking-wider bg-[#E6392F] hover:bg-[#171717] text-white transition-all shadow-xs flex items-center gap-1"
                         >
                           <span>DETAILS</span>
                           <ArrowRight className="w-3.5 h-3.5" />
@@ -201,7 +201,7 @@ export const ProductsPage: React.FC = () => {
         )}
 
         {/* Bottom Franchise Opportunity Banner */}
-        <div className="mt-16 bg-[#701A1A] text-white rounded-3xl p-8 sm:p-12 text-center shadow-xl border-4 border-[#8B2500]">
+        <div className="mt-16 bg-[#171717] text-white rounded-3xl p-8 sm:p-12 text-center shadow-xl border-4 border-[#E6392F]">
           <h3 className="font-display text-3xl sm:text-5xl font-black text-white">
             WANT TO SERVE THESE AT YOUR OUTLET?
           </h3>
@@ -211,7 +211,7 @@ export const ProductsPage: React.FC = () => {
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
               to="/franchise"
-              className="px-8 py-3.5 rounded-xl bg-white text-[#701A1A] font-display text-xl tracking-wider hover:bg-[#FAF2E2] transition-all shadow-md"
+              className="px-8 py-3.5 rounded-xl bg-[#E6392F] hover:bg-white hover:text-[#171717] text-white font-display text-xl tracking-wider transition-all shadow-md"
             >
               EXPLORE FRANCHISE MODEL
             </Link>

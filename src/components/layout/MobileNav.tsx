@@ -13,7 +13,7 @@ export default function MobileNav() {
         <Link
           to="/"
           className={`flex flex-col items-center gap-1 text-[11px] font-bold ${
-            pathname === '/' ? 'text-[#701A1A]' : 'text-[#7A6B56]'
+            pathname === '/' ? 'text-[#E6392F]' : 'text-[#7A6B56] hover:text-[#E6392F]'
           }`}
         >
           <Home className="w-5 h-5" />
@@ -24,7 +24,7 @@ export default function MobileNav() {
         <Link
           to="/menu"
           className={`flex flex-col items-center gap-1 text-[11px] font-bold ${
-            pathname.startsWith('/menu') || pathname.startsWith('/products') ? 'text-[#701A1A]' : 'text-[#7A6B56]'
+            pathname.startsWith('/menu') || pathname.startsWith('/products') ? 'text-[#E6392F]' : 'text-[#7A6B56] hover:text-[#E6392F]'
           }`}
         >
           <GlassWater className="w-5 h-5" />
@@ -37,10 +37,10 @@ export default function MobileNav() {
           className="relative -top-5 flex flex-col items-center group"
           aria-label="Franchise Opportunity"
         >
-          <div className="w-14 h-14 rounded-full bg-[#701A1A] text-white flex items-center justify-center shadow-lg shadow-[#701A1A]/40 border-4 border-[#FFF8ED] group-hover:scale-105 group-hover:bg-[#E6392F] transition-all">
+          <div className="w-14 h-14 rounded-full bg-[#E6392F] text-white flex items-center justify-center shadow-lg shadow-[#E6392F]/40 border-4 border-[#FFF8ED] group-hover:scale-105 group-hover:bg-[#171717] transition-all">
             <Briefcase className="w-6 h-6 stroke-[2.5]" />
           </div>
-          <span className="text-[11px] font-display tracking-wider font-black text-[#701A1A] mt-0.5">
+          <span className="text-[11px] font-display tracking-wider font-black text-[#E6392F] mt-0.5">
             FRANCHISE
           </span>
         </Link>
@@ -49,7 +49,7 @@ export default function MobileNav() {
         <Link
           to="/story"
           className={`flex flex-col items-center gap-1 text-[11px] font-bold ${
-            pathname === '/story' || pathname === '/about' ? 'text-[#701A1A]' : 'text-[#7A6B56]'
+            pathname === '/story' || pathname === '/about' ? 'text-[#E6392F]' : 'text-[#7A6B56] hover:text-[#E6392F]'
           }`}
         >
           <Building2 className="w-5 h-5" />
@@ -59,7 +59,7 @@ export default function MobileNav() {
         {/* Call Hotline */}
         <a
           href="tel:8237522072"
-          className="flex flex-col items-center gap-1 text-[11px] font-bold text-[#7A6B56] hover:text-[#701A1A]"
+          className="flex flex-col items-center gap-1 text-[11px] font-bold text-[#7A6B56] hover:text-[#E6392F]"
         >
           <Phone className="w-5 h-5" />
           <span>Call Us</span>

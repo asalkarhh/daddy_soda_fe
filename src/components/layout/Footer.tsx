@@ -4,7 +4,7 @@ import DaddyLogo, { HimmatEmblem } from '@/components/common/DaddyLogo';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#171717] text-[#F5E9D0] pt-16 pb-24 md:pb-16 border-t-4 border-[#701A1A]">
+    <footer className="bg-[#171717] text-[#F5E9D0] pt-16 pb-24 md:pb-16 border-t-4 border-[#E6392F]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Top Manifesto Grid */}

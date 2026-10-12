@@ -65,7 +65,7 @@ export const ContactPage: React.FC = () => {
         
         {/* Page Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD] text-xs font-bold text-[#701A1A] mb-3 shadow-xs">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD] text-xs font-bold text-[#E6392F] mb-3 shadow-xs">
             <HimmatEmblem className="w-4 h-4" />
             <span className="tracking-widest uppercase">HIMMAT BEVERAGES PVT. LTD. • EST. 1973</span>
           </div>
@@ -93,7 +93,7 @@ export const ContactPage: React.FC = () => {
 
             <div className="space-y-4 text-sm">
               <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-[#FAF2E2] text-[#701A1A] flex items-center justify-center shrink-0 border border-[#E8D9BD]">
+                <div className="w-10 h-10 rounded-xl bg-[#FAF2E2] text-[#E6392F] flex items-center justify-center shrink-0 border border-[#E8D9BD]">
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
@@ -105,31 +105,31 @@ export const ContactPage: React.FC = () => {
               </div>
 
               <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-[#FAF2E2] text-[#701A1A] flex items-center justify-center shrink-0 border border-[#E8D9BD]">
+                <div className="w-10 h-10 rounded-xl bg-[#FAF2E2] text-[#E6392F] flex items-center justify-center shrink-0 border border-[#E8D9BD]">
                   <Phone className="w-5 h-5" />
                 </div>
                 <div>
                   <h4 className="font-bold text-[#171717] text-xs uppercase tracking-wide">Phone &amp; WhatsApp</h4>
-                  <a href="tel:8237522072" className="text-xs font-bold text-[#701A1A] hover:underline">
+                  <a href="tel:8237522072" className="text-xs font-bold text-[#E6392F] hover:underline">
                     +91 8237522072
                   </a>
                 </div>
               </div>
 
               <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-[#FAF2E2] text-[#701A1A] flex items-center justify-center shrink-0 border border-[#E8D9BD]">
+                <div className="w-10 h-10 rounded-xl bg-[#FAF2E2] text-[#E6392F] flex items-center justify-center shrink-0 border border-[#E8D9BD]">
                   <Mail className="w-5 h-5" />
                 </div>
                 <div>
                   <h4 className="font-bold text-[#171717] text-xs uppercase tracking-wide">Direct Email</h4>
-                  <a href="mailto:himmat.beverages1290@gmail.com" className="text-xs font-bold text-[#701A1A] hover:underline break-all">
+                  <a href="mailto:himmat.beverages1290@gmail.com" className="text-xs font-bold text-[#E6392F] hover:underline break-all">
                     himmat.beverages1290@gmail.com
                   </a>
                 </div>
               </div>
 
               <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-[#FAF2E2] text-[#701A1A] flex items-center justify-center shrink-0 border border-[#E8D9BD]">
+                <div className="w-10 h-10 rounded-xl bg-[#FAF2E2] text-[#E6392F] flex items-center justify-center shrink-0 border border-[#E8D9BD]">
                   <Clock className="w-5 h-5" />
                 </div>
                 <div>
@@ -148,7 +148,7 @@ export const ContactPage: React.FC = () => {
           </div>
 
           {/* Contact & Message Form */}
-          <div className="lg:col-span-7 bg-[#1C120C] text-white rounded-3xl p-8 sm:p-10 border-4 border-[#701A1A] shadow-xl">
+          <div className="lg:col-span-7 bg-[#1C120C] text-white rounded-3xl p-8 sm:p-10 border-4 border-[#E6392F] shadow-xl">
             <h3 className="font-display text-3xl font-black text-white mb-2">
               SEND US A MESSAGE
             </h3>
@@ -169,7 +169,7 @@ export const ContactPage: React.FC = () => {
                 </p>
                 <button
                   onClick={() => setSubmitted(false)}
-                  className="mt-4 px-6 py-2 rounded-xl bg-[#701A1A] text-white font-display text-sm cursor-pointer"
+                  className="mt-4 px-6 py-2 rounded-xl bg-[#E6392F] hover:bg-[#171717] text-white font-display text-sm cursor-pointer transition-colors"
                 >
                   Send Another Message
                 </button>
@@ -262,7 +262,7 @@ export const ContactPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-4 rounded-xl bg-[#701A1A] hover:bg-[#E6392F] text-white font-display text-xl tracking-wider transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer border border-[#E6A15C]/30 disabled:opacity-50"
+                  className="w-full py-4 rounded-xl bg-[#E6392F] hover:bg-[#171717] text-white font-display text-xl tracking-wider transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer border border-[#E6A15C]/30 disabled:opacity-50"
                 >
                   <span>{loading ? 'SENDING...' : 'SEND MESSAGE'}</span>
                   <Send className="w-5 h-5" />

@@ -5,7 +5,7 @@ import FranchiseRoiCalculator from '@/components/franchise/FranchiseRoiCalculato
 
 export default function FranchiseBanner() {
   return (
-    <section className="py-16 sm:py-24 bg-[#171717] text-white border-y-4 border-[#701A1A] relative overflow-hidden">
+    <section className="py-16 sm:py-24 bg-[#171717] text-white border-y-4 border-[#E6392F] relative overflow-hidden">
       {/* Subtle Glows */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-[#E6392F]/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#E6A15C]/10 rounded-full blur-3xl pointer-events-none" />
@@ -15,7 +15,7 @@ export default function FranchiseBanner() {
           
           {/* Left Headline */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#701A1A] text-[#FAF2E2] text-xs font-bold uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E6392F] text-[#FAF2E2] text-xs font-bold uppercase tracking-wider">
               <HimmatEmblem className="w-4 h-4" />
               <span>FRANCHISE OPPORTUNITY • Daddy SODA HOUSE</span>
             </div>

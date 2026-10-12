@@ -39,7 +39,7 @@ export default function HimmatLegacySection() {
               key={st.label}
               className="bg-white rounded-3xl p-6 border border-[#E8D9BD] text-center shadow-xs hover:shadow-md transition-all flex flex-col justify-center items-center"
             >
-              <span className="font-display text-5xl sm:text-6xl font-black text-[#701A1A] leading-none">
+              <span className="font-display text-5xl sm:text-6xl font-black text-[#E6392F] leading-none">
                 {st.value}
               </span>
               <span className="text-xs font-bold text-[#7A6B56] uppercase tracking-wider mt-2">
@@ -53,7 +53,7 @@ export default function HimmatLegacySection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           
           {/* Founder Box */}
-          <div className="lg:col-span-4 bg-[#701A1A] text-white rounded-3xl p-8 flex flex-col justify-between shadow-lg relative overflow-hidden">
+          <div className="lg:col-span-4 bg-[#E6392F] text-white rounded-3xl p-8 flex flex-col justify-between shadow-lg relative overflow-hidden">
             <div className="relative z-10">
               <span className="text-xs uppercase font-bold text-[#E6A15C] tracking-widest block mb-1">
                 OUR INSPIRATION & FOUNDER
@@ -88,7 +88,7 @@ export default function HimmatLegacySection() {
                 {LEADERSHIP.map((leader) => (
                   <div key={leader.name} className="bg-[#FAF2E2] rounded-2xl p-5 border border-[#E8D9BD]">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-12 h-12 rounded-xl bg-[#701A1A] text-white flex items-center justify-center font-display text-xl font-black">
+                      <div className="w-12 h-12 rounded-xl bg-[#E6392F] text-white flex items-center justify-center font-display text-xl font-black">
                         {leader.initials}
                       </div>
                       <div>

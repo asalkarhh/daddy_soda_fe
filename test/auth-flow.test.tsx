@@ -184,4 +184,20 @@ describe('Daddy Soda House Authentication & Role-Based Access Flow', () => {
       expect(storage.getUser()).toBeNull();
     });
   });
+
+  it('navigates back to home page when clicking Back to Home button on login page', async () => {
+    renderWithProviders(<AppRoutes />, { initialEntries: ['/login'] });
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Back to Home/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /Return to Website Home/i })).toBeInTheDocument();
+    });
+
+    const backButton = screen.getByRole('button', { name: /Back to Home/i });
+    fireEvent.click(backButton);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Daddy Soda House Home/i)).toBeInTheDocument();
+    });
+  });
 });

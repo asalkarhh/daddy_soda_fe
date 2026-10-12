@@ -85,7 +85,7 @@ export const FranchisePage: React.FC = () => {
       {/* ─────────────────────────────────────────────────────────────
           1. HERO BANNER (BROCHURE PAGE 1 & 2)
           ───────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-[#701A1A] text-white py-16 sm:py-24 border-b-4 border-[#8B2500]">
+      <section className="relative overflow-hidden bg-[#E6392F] text-white py-16 sm:py-24 border-b-4 border-[#C92A20]">
         <div className="absolute inset-0 opacity-5 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -145,8 +145,8 @@ export const FranchisePage: React.FC = () => {
           ───────────────────────────────────────────────────────────── */}
       <section className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FAF2E2] border border-[#E8D9BD] text-xs font-black uppercase tracking-widest text-[#701A1A] mb-2">
-            <Zap className="w-4 h-4 fill-[#701A1A]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FAF2E2] border border-[#E8D9BD] text-xs font-black uppercase tracking-widest text-[#E6392F] mb-2">
+            <Zap className="w-4 h-4 fill-[#E6392F]" />
             <span>THE EASIEST BUSINESS TO RUN</span>
           </div>
           <h2 className="font-display text-4xl sm:text-6xl font-black text-[#171717] tracking-tight leading-none">
@@ -192,7 +192,7 @@ export const FranchisePage: React.FC = () => {
           
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-[#701A1A]">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#E6392F]">
                 COMPLETE OUTLET MENU SUITE
               </span>
               <h2 className="font-display text-3xl sm:text-5xl font-black text-[#171717] tracking-tight leading-none">
@@ -200,7 +200,7 @@ export const FranchisePage: React.FC = () => {
               </h2>
             </div>
             <div className="px-4 py-2 bg-white rounded-xl border border-[#E8D9BD] text-xs font-bold text-[#171717] shadow-xs shrink-0">
-              🍧 Ice-Gola priced at <strong className="text-[#701A1A]">₹30/piece</strong> — averaging 50 sales/day
+              🍧 Ice-Gola priced at <strong className="text-[#E6392F]">₹30/piece</strong> — averaging 50 sales/day
             </div>
           </div>
 
@@ -227,7 +227,7 @@ export const FranchisePage: React.FC = () => {
 
                 <div className="pt-3 border-t border-[#E8D9BD] flex items-center justify-between text-xs">
                   <span className="text-[#7A6B56] font-semibold">Tier 3 / Metro Price:</span>
-                  <span className="font-display text-lg font-black text-[#701A1A]">
+                  <span className="font-display text-lg font-black text-[#E6392F]">
                     ₹{fl.price} / ₹{fl.priceTier1}
                   </span>
                 </div>
@@ -268,7 +268,7 @@ export const FranchisePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#701A1A]">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#E6392F]">
               TURNKEY DELIVERABLES
             </span>
             <h3 className="font-display text-3xl sm:text-5xl font-black text-[#171717] tracking-tight leading-none mt-1">
@@ -308,7 +308,7 @@ export const FranchisePage: React.FC = () => {
           ───────────────────────────────────────────────────────────── */}
       <section className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#701A1A]">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#E6392F]">
             CLEAR OPERATIONAL RESPONSIBILITIES
           </span>
           <h3 className="font-display text-3xl sm:text-5xl font-black text-[#171717] tracking-tight leading-none mt-1">
@@ -319,9 +319,9 @@ export const FranchisePage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           
           {/* Company Provides Box */}
-          <div className="bg-white rounded-3xl p-8 border-2 border-[#701A1A] shadow-md">
+          <div className="bg-white rounded-3xl p-8 border-2 border-[#E6392F] shadow-md">
             <div className="flex items-center gap-3 pb-6 border-b border-[#E8D9BD] mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-[#701A1A] text-white flex items-center justify-center text-2xl shadow-sm">
+              <div className="w-12 h-12 rounded-2xl bg-[#E6392F] text-white flex items-center justify-center text-2xl shadow-sm">
                 🏢
               </div>
               <div>
@@ -347,7 +347,7 @@ export const FranchisePage: React.FC = () => {
           {/* Franchisee Handles Box */}
           <div className="bg-white rounded-3xl p-8 border-2 border-[#E6A15C] shadow-md">
             <div className="flex items-center gap-3 pb-6 border-b border-[#E8D9BD] mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-[#FAF2E2] text-[#701A1A] border border-[#E6A15C] flex items-center justify-center text-2xl shadow-sm">
+              <div className="w-12 h-12 rounded-2xl bg-[#FAF2E2] text-[#E6392F] border border-[#E6A15C] flex items-center justify-center text-2xl shadow-sm">
                 🤝
               </div>
               <div>
@@ -379,7 +379,7 @@ export const FranchisePage: React.FC = () => {
       <section className="py-16 bg-[#FAF2E2] border-t border-[#E8D9BD]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#701A1A]">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#E6392F]">
               TIMELINE TO LAUNCH
             </span>
             <h3 className="font-display text-3xl sm:text-5xl font-black text-[#171717] tracking-tight leading-none mt-1">
@@ -394,11 +394,11 @@ export const FranchisePage: React.FC = () => {
             {PATH_TO_PARTNERSHIP.map((step) => (
               <div
                 key={step.step}
-                className="bg-white rounded-2xl p-6 border border-[#E8D9BD] shadow-xs flex flex-col justify-between relative group hover:border-[#701A1A] transition-colors"
+                className="bg-white rounded-2xl p-6 border border-[#E8D9BD] shadow-xs flex flex-col justify-between relative group hover:border-[#E6392F] transition-colors"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="w-12 h-12 rounded-xl bg-[#701A1A] text-white flex items-center justify-center font-display text-2xl font-bold shadow-sm">
+                    <span className="w-12 h-12 rounded-xl bg-[#E6392F] text-white flex items-center justify-center font-display text-2xl font-bold shadow-sm">
                       {step.step}
                     </span>
                     {step.step === '04' && (
@@ -424,13 +424,13 @@ export const FranchisePage: React.FC = () => {
           8. CONTACT & INQUIRY FORM (BROCHURE PAGE 15)
           ───────────────────────────────────────────────────────────── */}
       <section className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div id="inquiry-form" className="bg-[#1C120C] text-white rounded-3xl p-8 sm:p-14 border-4 border-[#701A1A] shadow-2xl">
+        <div id="inquiry-form" className="bg-[#1C120C] text-white rounded-3xl p-8 sm:p-14 border-4 border-[#E6392F] shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             {/* Left Contact & Leadership Details */}
             <div className="lg:col-span-5 space-y-6">
               
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#701A1A] text-[#FAF2E2] text-xs font-bold uppercase tracking-wider">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E6392F] text-[#FAF2E2] text-xs font-bold uppercase tracking-wider">
                 <HimmatEmblem className="w-4 h-4" />
                 <span>50+ YEARS OF HIMMAT GROUP LEGACY</span>
               </div>
@@ -446,7 +446,7 @@ export const FranchisePage: React.FC = () => {
 
               <div className="space-y-4 pt-2">
                 <div className="p-4 rounded-2xl bg-[#24150D] border border-[#3E2618] flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-[#701A1A] flex items-center justify-center text-white shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-[#E6392F] flex items-center justify-center text-white shrink-0">
                     <Phone className="w-6 h-6" />
                   </div>
                   <div>
@@ -458,7 +458,7 @@ export const FranchisePage: React.FC = () => {
                 </div>
 
                 <div className="p-4 rounded-2xl bg-[#24150D] border border-[#3E2618] flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-[#701A1A] flex items-center justify-center text-white shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-[#E6392F] flex items-center justify-center text-white shrink-0">
                     <Mail className="w-6 h-6" />
                   </div>
                   <div>
@@ -493,7 +493,7 @@ export const FranchisePage: React.FC = () => {
                   </p>
                   <button
                     onClick={() => setSubmitted(false)}
-                    className="mt-4 px-6 py-2 rounded-xl bg-[#701A1A] text-white font-display text-sm cursor-pointer"
+                    className="mt-4 px-6 py-2 rounded-xl bg-[#E6392F] hover:bg-[#171717] text-white font-display text-sm cursor-pointer transition-colors"
                   >
                     Submit Another Inquiry
                   </button>
@@ -620,7 +620,7 @@ export const FranchisePage: React.FC = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-4 rounded-xl bg-[#701A1A] hover:bg-[#E6392F] text-white font-display text-xl tracking-wider transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer border border-[#E6A15C]/30 disabled:opacity-50"
+                    className="w-full py-4 rounded-xl bg-[#E6392F] hover:bg-[#171717] text-white font-display text-xl tracking-wider transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer border border-[#E6A15C]/30 disabled:opacity-50"
                   >
                     <span>{loading ? 'SUBMITTING APPLICATION...' : 'SUBMIT FRANCHISE APPLICATION'}</span>
                     <Send className="w-5 h-5" />

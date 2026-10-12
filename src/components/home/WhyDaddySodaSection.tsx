@@ -9,8 +9,8 @@ export default function WhyDaddySodaSection() {
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FAF2E2] border border-[#E8D9BD] text-xs font-black uppercase tracking-widest text-[#701A1A] mb-2">
-            <Zap className="w-3.5 h-3.5 fill-[#701A1A]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FAF2E2] border border-[#E8D9BD] text-xs font-black uppercase tracking-widest text-[#E6392F] mb-2">
+            <Zap className="w-3.5 h-3.5 fill-[#E6392F]" />
             <span>THE EASIEST BUSINESS TO RUN</span>
           </div>
 
@@ -62,7 +62,7 @@ export default function WhyDaddySodaSection() {
           </div>
           <Link
             to="/franchise"
-            className="px-6 py-3 rounded-xl bg-[#701A1A] hover:bg-[#E6392F] text-white font-display text-lg tracking-wider transition-all shadow-md shrink-0 flex items-center gap-2"
+            className="px-6 py-3 rounded-xl bg-[#E6392F] hover:bg-[#171717] text-white font-display text-lg tracking-wider transition-all shadow-md shrink-0 flex items-center gap-2"
           >
             <span>CALCULATE ROI</span>
             <ArrowRight className="w-4 h-4" />

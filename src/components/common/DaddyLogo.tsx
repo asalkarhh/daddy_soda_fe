@@ -21,7 +21,7 @@ export default function DaddyLogo({
 
   if (variant === 'badge') {
     return (
-      <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#701A1A]/10 border border-[#701A1A]/20 text-[#701A1A] ${className}`}>
+      <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E6392F]/10 border border-[#E6392F]/20 text-[#E6392F] ${className}`}>
         <HimmatEmblem className="w-4 h-4" />
         <span className="text-xs font-black tracking-wider uppercase">Himmat Group • Est. 1973</span>
       </div>
@@ -176,7 +176,7 @@ export default function DaddyLogo({
               Daddy SODA HOUSE
             </span>
           </div>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#701A1A] mt-0.5">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#E6392F] mt-0.5">
             HIMMAT BEVERAGES PVT. LTD.
           </span>
           <span className={`text-[9px] font-medium ${dark ? 'text-[#C4B79D]' : 'text-[#7A6B56]'}`}>

@@ -72,7 +72,7 @@ export default function Hero() {
 
         {/* Center Headline & Call to Action Overlay */}
         <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center my-auto py-20 space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#701A1A] text-white text-xs font-bold tracking-widest uppercase shadow-lg border border-[#E6A15C]/40">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#E6392F] text-white text-xs font-bold tracking-widest uppercase shadow-lg border border-[#E6A15C]/40">
             <Flame className="w-4 h-4 fill-white" />
             <span>FRANCHISE OPPORTUNITY • HIMMAT BEVERAGES PVT. LTD.</span>
           </div>
@@ -88,7 +88,7 @@ export default function Hero() {
           <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
             <Link
               to="/franchise"
-              className="px-8 py-4 rounded-2xl bg-[#701A1A] text-white font-display text-2xl tracking-wider hover:bg-[#E6392F] transition-all shadow-2xl hover:shadow-red-500/50 hover:-translate-y-1 flex items-center gap-2 group cursor-pointer border border-[#E6A15C]/30"
+              className="px-8 py-4 rounded-2xl bg-[#E6392F] hover:bg-[#171717] text-white font-display text-2xl tracking-wider transition-all shadow-2xl hover:shadow-red-500/50 hover:-translate-y-1 flex items-center gap-2 group cursor-pointer border border-[#E6A15C]/30"
             >
               <span>EXPLORE FRANCHISE</span>
               <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
@@ -237,7 +237,7 @@ export default function Hero() {
           <div className="mt-8 flex items-center justify-center gap-4">
             <Link
               to="/menu"
-              className="px-8 py-3.5 rounded-2xl bg-[#701A1A] hover:bg-[#E6392F] text-white font-display text-xl tracking-wider transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2"
+              className="px-8 py-3.5 rounded-2xl bg-[#E6392F] hover:bg-[#171717] text-white font-display text-xl tracking-wider transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2"
             >
               <span>EXPLORE ALL SIGNATURE FLAVORS</span>
               <ArrowRight className="w-5 h-5" />

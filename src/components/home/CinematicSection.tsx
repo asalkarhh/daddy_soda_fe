@@ -40,13 +40,13 @@ export default function CinematicSection() {
         <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
           <Link
             to="/story"
-            className="px-6 py-3 rounded-xl bg-white text-[#171717] font-display text-lg tracking-wider hover:bg-[#701A1A] hover:text-white transition-all shadow-lg hover:-translate-y-0.5"
+            className="px-6 py-3 rounded-xl bg-white text-[#171717] font-display text-lg tracking-wider hover:bg-[#E6392F] hover:text-white transition-all shadow-lg hover:-translate-y-0.5"
           >
             50+ YR LEGACY
           </Link>
           <Link
             to="/franchise"
-            className="px-6 py-3 rounded-xl bg-[#701A1A] text-white font-display text-lg tracking-wider hover:bg-white hover:text-[#171717] transition-all shadow-lg hover:-translate-y-0.5 flex items-center gap-2 border border-[#E6A15C]/30"
+            className="px-6 py-3 rounded-xl bg-[#E6392F] text-white font-display text-lg tracking-wider hover:bg-white hover:text-[#171717] transition-all shadow-lg hover:-translate-y-0.5 flex items-center gap-2 border border-[#E6A15C]/30"
           >
             <span>FRANCHISE INQUIRY</span>
             <ArrowRight className="w-4 h-4" />

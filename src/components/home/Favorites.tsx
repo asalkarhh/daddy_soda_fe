@@ -13,8 +13,8 @@ export default function Favorites() {
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
           <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-[#701A1A] mb-1">
-              <Sparkles className="w-3.5 h-3.5 fill-[#701A1A]" />
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-[#E6392F] mb-1">
+              <Sparkles className="w-3.5 h-3.5 fill-[#E6392F]" />
               <span>THE REBEL FOUNTAIN FLAVORS</span>
             </div>
             <h2 className="font-display text-4xl sm:text-6xl font-black text-[#171717] tracking-tight">
@@ -23,7 +23,7 @@ export default function Favorites() {
           </div>
           <Link
             to="/menu"
-            className="inline-flex items-center gap-2 font-display text-xl text-[#701A1A] hover:text-[#E6392F] transition-colors group"
+            className="inline-flex items-center gap-2 font-display text-xl text-[#E6392F] hover:text-[#171717] transition-colors group"
           >
             <span>VIEW COMPLETE PRODUCT RANGE</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -36,7 +36,7 @@ export default function Favorites() {
             return (
               <div
                 key={product.id}
-                className="group relative bg-[#FAF2E2] rounded-3xl p-5 border border-[#E8D9BD] flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-[#701A1A]/40 overflow-hidden"
+                className="group relative bg-[#FAF2E2] rounded-3xl p-5 border border-[#E8D9BD] flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-[#E6392F]/40 overflow-hidden"
               >
                 {/* Badge */}
                 {product.badge && (
@@ -97,7 +97,7 @@ export default function Favorites() {
 
                       <Link
                         to={`/menu/${product.slug}`}
-                        className="px-4 py-2 rounded-xl bg-[#701A1A] hover:bg-[#E6392F] text-white font-display text-sm tracking-wider transition-all shadow-xs"
+                        className="px-4 py-2 rounded-xl bg-[#E6392F] hover:bg-[#171717] text-white font-display text-sm tracking-wider transition-all shadow-xs"
                       >
                         DETAILS →
                       </Link>

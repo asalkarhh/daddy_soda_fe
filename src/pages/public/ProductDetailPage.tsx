@@ -21,7 +21,7 @@ export const ProductDetailPage: React.FC = () => {
         <p className="text-sm text-[#7A6B56] mb-6">The requested beverage flavor could not be located.</p>
         <Link
           to="/menu"
-          className="px-6 py-3 rounded-xl bg-[#701A1A] text-white font-display text-lg tracking-wider"
+          className="px-6 py-3 rounded-xl bg-[#E6392F] hover:bg-[#171717] text-white font-display text-lg tracking-wider transition-colors"
         >
           BACK TO ALL FLAVORS
         </Link>
@@ -36,7 +36,7 @@ export const ProductDetailPage: React.FC = () => {
         {/* Back Link */}
         <Link
           to="/menu"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7A6B56] hover:text-[#701A1A] transition-colors mb-6 uppercase tracking-wider"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7A6B56] hover:text-[#E6392F] transition-colors mb-6 uppercase tracking-wider"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to All Flavors</span>
@@ -86,7 +86,7 @@ export const ProductDetailPage: React.FC = () => {
                 <h1 className="font-display text-4xl sm:text-5xl font-black text-[#171717] tracking-tight leading-none">
                   {product.name}
                 </h1>
-                <p className="text-sm font-bold text-[#701A1A] mt-1">
+                <p className="text-sm font-bold text-[#E6392F] mt-1">
                   {product.tagline}
                 </p>
                 <p className="text-sm text-[#7A6B56] mt-3 leading-relaxed">
@@ -115,7 +115,7 @@ export const ProductDetailPage: React.FC = () => {
               <div className="p-4 rounded-2xl bg-[#FAF2E2] border border-[#E8D9BD] space-y-2">
                 <div className="flex items-center justify-between text-xs font-bold">
                   <span className="text-[#7A6B56] uppercase">Commercial Dispensing:</span>
-                  <span className="text-[#701A1A]">Dedicated Draft Tap</span>
+                  <span className="text-[#E6392F]">Dedicated Draft Tap</span>
                 </div>
                 <div className="grid grid-cols-2 gap-3 pt-1">
                   <div className="p-2.5 rounded-xl bg-white border border-[#E8D9BD] text-center">
@@ -124,7 +124,7 @@ export const ProductDetailPage: React.FC = () => {
                   </div>
                   <div className="p-2.5 rounded-xl bg-white border border-[#E8D9BD] text-center">
                     <span className="text-[10px] uppercase font-bold text-[#A8987E] block">Metro City Price</span>
-                    <span className="font-display text-2xl font-black text-[#701A1A]">₹30 / glass</span>
+                    <span className="font-display text-2xl font-black text-[#E6392F]">₹30 / glass</span>
                   </div>
                 </div>
               </div>
@@ -133,7 +133,7 @@ export const ProductDetailPage: React.FC = () => {
               <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
                 <Link
                   to="/franchise#inquiry-form"
-                  className="w-full sm:flex-1 py-3.5 rounded-xl bg-[#701A1A] hover:bg-[#E6392F] text-white font-display text-lg tracking-wider transition-all shadow-md flex items-center justify-center gap-2"
+                  className="w-full sm:flex-1 py-3.5 rounded-xl bg-[#E6392F] hover:bg-[#171717] text-white font-display text-lg tracking-wider transition-all shadow-md flex items-center justify-center gap-2"
                 >
                   <Briefcase className="w-4 h-4" />
                   <span>INQUIRE FOR YOUR OUTLET</span>
@@ -143,7 +143,7 @@ export const ProductDetailPage: React.FC = () => {
                   href="tel:8237522072"
                   className="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-[#FAF2E2] hover:bg-[#E8D9BD] text-[#171717] font-display text-base tracking-wider transition-all border border-[#E8D9BD] flex items-center justify-center gap-2"
                 >
-                  <Phone className="w-4 h-4 text-[#701A1A]" />
+                  <Phone className="w-4 h-4 text-[#E6392F]" />
                   <span>8237522072</span>
                 </a>
               </div>

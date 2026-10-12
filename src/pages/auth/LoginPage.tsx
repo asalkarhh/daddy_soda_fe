@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Phone, Lock, Eye, EyeOff, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Phone, Lock, Eye, EyeOff, Sparkles, CheckCircle2, AlertCircle, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
 import { authApi } from '../../api/auth.api';
@@ -98,6 +98,20 @@ export const LoginPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-md">
+        {/* Back to Home Button */}
+        <div className="mb-4">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => navigate('/')}
+            leftIcon={<ArrowLeft className="w-4 h-4" />}
+            className="bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 border-slate-200 shadow-sm"
+          >
+            Back to Home
+          </Button>
+        </div>
+
         {/* Brand Banner */}
         <div className="flex flex-col items-center mb-8 text-center">
           <div className="w-14 h-14 rounded-2xl bg-brand-700 text-white flex items-center justify-center mb-3 shadow-md shadow-brand-700/20">
@@ -179,8 +193,17 @@ export const LoginPage: React.FC = () => {
             </div>
           </form>
 
-          {/* Demo Helper Hint */}
-          <div className="mt-6 pt-4 border-t border-slate-100 text-center">
+          {/* Demo Helper Hint & Back to Home */}
+          <div className="mt-6 pt-4 border-t border-slate-100 text-center space-y-3">
+            <div>
+              <Link
+                to="/"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-brand-700 transition-colors"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Return to Website Home</span>
+              </Link>
+            </div>
             <p className="text-[11px] text-slate-400">
               For security reasons, access is strictly restricted to verified franchise owners and staff.
             </p>

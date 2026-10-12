@@ -21,7 +21,7 @@ export const RewardsPage: React.FC = () => {
         <div className="p-8 bg-white rounded-3xl border border-[#E8D9BD] shadow-lg max-w-lg mx-auto space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-xs font-black uppercase text-[#7A6B56]">Your Status</span>
-            <span className="px-3 py-1 rounded-full text-xs font-black bg-[#701A1A] text-white">
+            <span className="px-3 py-1 rounded-full text-xs font-black bg-[#E6392F] text-white">
               {tier}
             </span>
           </div>
@@ -51,7 +51,7 @@ export const RewardsPage: React.FC = () => {
           <div className="pt-4 flex flex-col gap-2">
             <Link
               to="/menu"
-              className="w-full py-3.5 rounded-xl bg-[#701A1A] text-white font-display text-lg tracking-wider hover:bg-[#E6392F] transition-all flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl bg-[#E6392F] text-white font-display text-lg tracking-wider hover:bg-[#171717] transition-all flex items-center justify-center gap-2"
             >
               <span>EXPLORE MENU & EARN</span>
               <ArrowRight className="w-4 h-4" />

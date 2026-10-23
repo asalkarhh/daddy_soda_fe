@@ -89,14 +89,14 @@ export function useOrderMutations() {
   });
 
   const deliverOrderMutation = useMutation({
-    mutationFn: (id: string) => orderApi.deliverOrder(id),
+    mutationFn: ({ id, remark }: { id: string; remark: string }) => orderApi.deliverOrder(id, remark),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       queryClient.invalidateQueries({ queryKey: ['my-orders'] });
       queryClient.invalidateQueries({ queryKey: ['order', data.id] });
       queryClient.invalidateQueries({ queryKey: ['warehouse-inventory'] });
       queryClient.invalidateQueries({ queryKey: ['stock-movements'] });
-      success(`Order "${data.orderNumber}" delivered! Warehouse stock updated.`);
+      success(`Order "${data.orderNumber}" dispatched! Warehouse stock updated.`);
     },
     onError: (err) => {
       toastError(getApiErrorMessage(err, 'Failed to deliver order.'));

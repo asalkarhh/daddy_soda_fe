@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { X, Sparkles } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { navigationConfig } from '../config/navigation';
 import { cn } from '../utils/cn';
+import { orderApi } from '../api/order.api';
+import { dashboardApi } from '../api/dashboard.api';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -11,8 +13,43 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  const { user } = useAuth();
+  const { user, accessToken } = useAuth();
   const userRole = user?.role;
+  const [counts, setCounts] = useState({ orders: 0, enquiries: 0 });
+
+  const readKey = (module: 'orders' | 'enquiries') =>
+    `daddy-soda:${user?.id || user?.mobile || 'user'}:${accessToken?.slice(-16) || 'session'}:${module}-read-at`;
+  const orderReadKey = () => `${readKey('orders')}-ids`;
+
+  const refreshCounts = async () => {
+    if (userRole !== 'SUPER_ADMIN' && userRole !== 'MANAGER') return;
+    try {
+      const [ordersResult, enquiriesResult] = await Promise.allSettled([
+        orderApi.getOrders({ page: 0, size: 100 }),
+        dashboardApi.getEnquiries({ page: 0, size: 100 }),
+      ]);
+      const unreadSince = (module: 'orders' | 'enquiries') => Number(localStorage.getItem(readKey(module)) || 0);
+      const readOrderIds = new Set<string>(JSON.parse(localStorage.getItem(orderReadKey()) || '[]'));
+      setCounts((current) => ({
+        orders: ordersResult.status === 'fulfilled'
+          ? ordersResult.value.content.filter((item) => item.status === 'PLACED' && !readOrderIds.has(item.id)).length
+          : current.orders,
+        enquiries: enquiriesResult.status === 'fulfilled'
+          ? enquiriesResult.value.content.filter((item) => new Date(item.submittedAt).getTime() > unreadSince('enquiries')).length
+          : current.enquiries,
+      }));
+    } catch {
+      // The sidebar must remain usable when a count request fails.
+    }
+  };
+
+  useEffect(() => { void refreshCounts(); }, [userRole, user?.id, accessToken]);
+
+  useEffect(() => {
+    const onOrderRead = () => { void refreshCounts(); };
+    window.addEventListener('daddy-soda:order-read', onOrderRead);
+    return () => window.removeEventListener('daddy-soda:order-read', onOrderRead);
+  }, [userRole, user?.id, accessToken]);
 
   // Filter groups according to user role
   const visibleGroups = navigationConfig
@@ -88,6 +125,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     {item.badge && (
                       <span className="ml-auto text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-brand-100 text-brand-700">
                         {item.badge}
+                      </span>
+                    )}
+                    {item.path === '/orders' && counts.orders > 0 && (
+                      <span aria-label={`${counts.orders} unread orders`} className="ml-auto min-w-5 text-center text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-100 text-red-700">
+                        {counts.orders > 99 ? '99+' : counts.orders}
+                      </span>
+                    )}
+                    {item.path === '/enquiries' && counts.enquiries > 0 && (
+                      <span aria-label={`${counts.enquiries} unread enquiries`} className="ml-auto min-w-5 text-center text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-100 text-red-700">
+                        {counts.enquiries > 99 ? '99+' : counts.enquiries}
                       </span>
                     )}
                   </NavLink>

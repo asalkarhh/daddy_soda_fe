@@ -47,8 +47,8 @@ export const orderApi = {
     return response.data.data;
   },
 
-  deliverOrder: async (id: string): Promise<SalesOrder> => {
-    const response = await apiClient.post<ApiResponse<SalesOrder>>(`/orders/${id}/deliver`);
+  deliverOrder: async (id: string, remark: string): Promise<SalesOrder> => {
+    const response = await apiClient.post<ApiResponse<SalesOrder>>(`/orders/${id}/deliver`, { remark });
     return response.data.data;
   },
 

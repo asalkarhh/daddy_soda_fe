@@ -86,6 +86,7 @@ export interface PaymentCreateRequest {
 }
 
 export interface InvoiceFilters {
+  salesOrderId?: string;
   franchiseId?: string;
   invoiceNumber?: string;
   invoiceType?: 'ALL' | InvoiceType;

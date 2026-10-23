@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -35,6 +35,9 @@ import { CancelOrderModal } from '../../components/orders/CancelOrderModal';
 import { DeliverOrderModal } from '../../components/orders/DeliverOrderModal';
 import { useOrderDetail, useOrderMutations } from '../../hooks/useOrderData';
 import { useWarehouseInventory } from '../../hooks/useInventoryData';
+import { useAuth } from '../../hooks/useAuth';
+import { invoiceApi } from '../../api/invoice.api';
+import { Invoice } from '../../types/invoice.types';
 import {
   formatDate,
   formatDateTime,
@@ -46,6 +49,23 @@ import {
 export const OrderDetailPage: React.FC = () => {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user, accessToken } = useAuth();
+  const [invoice, setInvoice] = useState<Invoice | null>(null);
+  const [invoiceType, setInvoiceType] = useState<'GST' | 'NORMAL'>('GST');
+  const [paymentTerm, setPaymentTerm] = useState<'FULL_PAYMENT' | 'PARTIAL_PAYMENT' | 'CREDIT'>('FULL_PAYMENT');
+  const [advancePayment, setAdvancePayment] = useState('0');
+  const [paymentMode, setPaymentMode] = useState<'CASH' | 'UPI' | 'BANK_TRANSFER' | 'CHEQUE' | 'OTHER'>('CASH');
+  const [invoiceBusy, setInvoiceBusy] = useState(false);
+  const [invoiceError, setInvoiceError] = useState('');
+
+  useEffect(() => {
+    if (!id || !accessToken || (user?.role !== 'SUPER_ADMIN' && user?.role !== 'MANAGER')) return;
+    const key = `daddy-soda:${user.id}:${accessToken.slice(-16)}:orders-read-at-ids`;
+    const readIds = new Set<string>(JSON.parse(localStorage.getItem(key) || '[]'));
+    readIds.add(id);
+    localStorage.setItem(key, JSON.stringify([...readIds]));
+    window.dispatchEvent(new Event('daddy-soda:order-read'));
+  }, [id, user?.id, user?.role, accessToken]);
 
   // Modal states
   const [isPlaceOpen, setIsPlaceOpen] = useState(false);
@@ -55,6 +75,10 @@ export const OrderDetailPage: React.FC = () => {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const { data: order, isLoading, isError, refetch } = useOrderDetail(id);
+  useEffect(() => {
+    if (!id) return;
+    invoiceApi.getInvoices({ salesOrderId: id, size: 1 }).then((page) => setInvoice(page.content[0] || null)).catch(() => undefined);
+  }, [id]);
   const { data: inventoryData } = useWarehouseInventory({ size: 100 });
   const stockMap = new Map(
     (inventoryData?.content || []).map((s) => [s.productId, s.availableQuantity])
@@ -161,8 +185,9 @@ export const OrderDetailPage: React.FC = () => {
                 variant="primary"
                 leftIcon={<PackageCheck className="w-4 h-4" />}
                 onClick={() => setIsDeliverOpen(true)}
+                disabled={isPrepared && !invoice}
               >
-                Deliver Order
+                Dispatch Order
               </Button>
             )}
 
@@ -279,33 +304,33 @@ export const OrderDetailPage: React.FC = () => {
               Lifecycle History
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-1 text-xs">
-            <div className="flex justify-between">
+          <CardContent className="space-y-3 text-xs">
+            <div className="space-y-1">
               <span className="text-slate-500">Created:</span>
-              <span className="text-slate-700">
-                {order.createdBy || 'System'} • {formatDateTime(order.createdAt)}
+              <span className="text-slate-700 block break-words leading-relaxed">
+                Created by admin • {formatDateTime(order.createdAt)}
               </span>
             </div>
             {order.placedAt && (
-              <div className="flex justify-between">
+              <div className="space-y-1">
                 <span className="text-slate-500">Placed:</span>
                 <span className="text-slate-700">{formatDateTime(order.placedAt)}</span>
               </div>
             )}
             {order.preparedAt && (
-              <div className="flex justify-between">
+              <div className="space-y-1">
                 <span className="text-slate-500">Prepared:</span>
                 <span className="text-slate-700">
-                  {order.preparedBy ? `${order.preparedBy} • ` : ''}
+                  Prepared by admin • {' '}
                   {formatDateTime(order.preparedAt)}
                 </span>
               </div>
             )}
             {order.deliveredAt && (
-              <div className="flex justify-between">
-                <span className="text-slate-500">Delivered:</span>
-                <span className="text-emerald-700 font-semibold">
-                  {order.deliveredBy ? `${order.deliveredBy} • ` : ''}
+              <div className="space-y-1">
+                <span className="text-slate-500">Dispatched:</span>
+                <span className="text-emerald-700 font-semibold block break-words leading-relaxed">
+                  Dispatched by admin • {' '}
                   {formatDateTime(order.deliveredAt)}
                 </span>
               </div>
@@ -416,6 +441,24 @@ export const OrderDetailPage: React.FC = () => {
         </CardContent>
       </Card>
 
+      {isPrepared && (
+        <Card>
+          <CardHeader><CardTitle>Invoice Before Dispatch</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            {!invoice ? <>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <label className="text-sm">Invoice Type<select className="mt-1 w-full border rounded-lg p-2" value={invoiceType} onChange={(e) => setInvoiceType(e.target.value as 'GST' | 'NORMAL')}><option value="GST">GST</option><option value="NORMAL">Normal</option></select></label>
+                <label className="text-sm">Payment Term<select className="mt-1 w-full border rounded-lg p-2" value={paymentTerm} onChange={(e) => setPaymentTerm(e.target.value as typeof paymentTerm)}><option value="FULL_PAYMENT">Full Payment</option><option value="PARTIAL_PAYMENT">Partial Payment</option><option value="CREDIT">Credit / No Advance</option></select></label>
+                <label className="text-sm">Advance Payment<input type="number" min="0" className="mt-1 w-full border rounded-lg p-2" value={advancePayment} onChange={(e) => setAdvancePayment(e.target.value)} /></label>
+                <label className="text-sm">Payment Mode<select className="mt-1 w-full border rounded-lg p-2" value={paymentMode} onChange={(e) => setPaymentMode(e.target.value as typeof paymentMode)}><option value="CASH">Cash</option><option value="UPI">UPI</option><option value="BANK_TRANSFER">Bank Transfer</option><option value="CHEQUE">Cheque</option><option value="OTHER">Other</option></select></label>
+              </div>
+              {invoiceError && <p className="text-sm text-red-600">{invoiceError}</p>}
+              <Button isLoading={invoiceBusy} onClick={async () => { setInvoiceBusy(true); setInvoiceError(''); try { const created = await invoiceApi.createInvoice({ salesOrderId: order.id, invoiceType, paymentTerm, invoiceDate: new Date().toISOString().slice(0, 10), notes: `Advance payment: ${advancePayment || '0'}` }); if (Number(advancePayment) > 0) await invoiceApi.recordPayment(created.id, { paymentDate: new Date().toISOString().slice(0, 10), amount: Number(advancePayment), paymentMode, remarks: 'Advance payment received before dispatch' }); const refreshed = await invoiceApi.getInvoiceById(created.id); setInvoice(refreshed); } catch (e) { setInvoiceError(e instanceof Error ? e.message : 'Could not generate invoice.'); } finally { setInvoiceBusy(false); } }}>Generate Invoice</Button>
+            </> : <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="font-semibold">{invoice.invoiceNumber}</p><p className="text-sm text-slate-500">Total: {formatCurrency(invoice.totalAmount)} · Advance: {formatCurrency(invoice.paidAmount)} · Pending: {formatCurrency(invoice.balanceAmount)}</p></div><Button variant="outline" onClick={() => invoiceApi.downloadInvoicePdf(invoice.id, invoice.invoiceNumber)}>Print Invoice</Button></div>}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Place Order Confirmation */}
       <ConfirmationModal
         isOpen={isPlaceOpen}
@@ -454,8 +497,8 @@ export const OrderDetailPage: React.FC = () => {
           refetch();
         }}
         order={order}
-        onConfirm={async () => {
-          await deliverOrderMutation.mutateAsync(order.id);
+        onConfirm={async (remark) => {
+          await deliverOrderMutation.mutateAsync({ id: order.id, remark });
           refetch();
         }}
         isLoading={deliverOrderMutation.isPending}

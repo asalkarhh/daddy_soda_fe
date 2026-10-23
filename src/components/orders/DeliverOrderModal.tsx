@@ -5,12 +5,13 @@ import { SalesOrder } from '../../types/order.types';
 import { useWarehouseInventory } from '../../hooks/useInventoryData';
 import { formatQuantity, formatCurrency } from '../../utils/formatters';
 import { AlertCircle, AlertTriangle, PackageCheck, Boxes } from 'lucide-react';
+import { Textarea } from '../ui/Textarea';
 
 interface DeliverOrderModalProps {
   isOpen: boolean;
   onClose: () => void;
   order: SalesOrder | null;
-  onConfirm: () => Promise<void>;
+  onConfirm: (remark: string) => Promise<void>;
   isLoading?: boolean;
 }
 
@@ -22,6 +23,7 @@ export const DeliverOrderModal: React.FC<DeliverOrderModalProps> = ({
   isLoading = false,
 }) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [remark, setRemark] = useState('');
 
   // Informational stock check for Admin/Manager
   const { data: inventoryData } = useWarehouseInventory({ size: 100 });
@@ -34,7 +36,8 @@ export const DeliverOrderModal: React.FC<DeliverOrderModalProps> = ({
   const handleConfirm = async () => {
     setErrorMessage(null);
     try {
-      await onConfirm();
+      if (!remark.trim()) { setErrorMessage('Dispatch remark is mandatory.'); return; }
+      await onConfirm(remark.trim());
       onClose();
     } catch (err: unknown) {
       // Extract backend message if provided
@@ -78,6 +81,8 @@ export const DeliverOrderModal: React.FC<DeliverOrderModalProps> = ({
             </p>
           </div>
         </div>
+
+        <Textarea label="Dispatch Remark" required value={remark} onChange={(e) => setRemark(e.target.value)} placeholder="Enter dispatch remark" />
 
         {/* Backend Error Banner if Delivery Failed */}
         {errorMessage && (
@@ -188,7 +193,7 @@ export const DeliverOrderModal: React.FC<DeliverOrderModalProps> = ({
             onClick={handleConfirm}
             isLoading={isLoading}
           >
-            Confirm Full Delivery
+            Confirm Dispatch
           </Button>
         </div>
       </div>

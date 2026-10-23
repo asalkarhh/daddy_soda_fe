@@ -27,6 +27,7 @@ import { NotFoundPage } from '../pages/common/NotFoundPage';
 
 // Master Data Pages
 import { FranchisesPage } from '../pages/masters/FranchisesPage';
+import { FranchiseOverviewPage } from '../pages/masters/FranchiseOverviewPage';
 import { OutletsPage } from '../pages/masters/OutletsPage';
 import { MachinesPage } from '../pages/masters/MachinesPage';
 import { ProductsPage as MasterProductsPage } from '../pages/masters/ProductsPage';
@@ -111,6 +112,7 @@ export const AppRoutes: React.FC = () => {
         <Route element={<RoleRoute allowedRoles={['SUPER_ADMIN', 'MANAGER']} />}>
           <Route path="/dashboard" element={<AdminDashboardPage />} />
           <Route path="/franchises" element={<FranchisesPage />} />
+          <Route path="/franchises/:id" element={<FranchiseOverviewPage />} />
           <Route path="/outlets" element={<OutletsPage />} />
           <Route path="/machines" element={<MachinesPage />} />
           <Route path="/products-master" element={<MasterProductsPage />} />

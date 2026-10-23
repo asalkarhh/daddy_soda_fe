@@ -44,6 +44,12 @@ export function formatDateTime(dateString: string | null | undefined): string {
   }
 }
 
+/** Convert UUID-only audit fields into a readable actor label. */
+export function formatActor(value: string | null | undefined, fallback = 'System Administrator'): string {
+  if (!value) return fallback;
+  return /^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(value) ? 'Administrator' : value;
+}
+
 /**
  * Format numeric value as Indian Rupee display (e.g., ₹500.00)
  */

@@ -35,7 +35,7 @@ import { DeliverOrderModal } from '../../components/orders/DeliverOrderModal';
 import { useOrders, useOrderMutations } from '../../hooks/useOrderData';
 import { useActiveFranchises } from '../../hooks/useMasterData';
 import { SalesOrder, SalesOrderStatus } from '../../types/order.types';
-import { formatDate, formatDateTime, formatQuantity, formatCurrency } from '../../utils/formatters';
+import { formatDate, formatDateTime, formatQuantity, formatCurrency, formatActor } from '../../utils/formatters';
 
 export const OrdersListPage: React.FC = () => {
   const navigate = useNavigate();
@@ -295,7 +295,7 @@ export const OrdersListPage: React.FC = () => {
                     {formatCurrency(order.orderTotal)}
                   </TableCell>
                   <TableCell className="text-xs text-slate-600">
-                    {order.createdBy || 'System'}
+                    {formatActor(order.createdBy, 'System')}
                   </TableCell>
                   <TableCell className="text-xs text-slate-500">
                     {formatDateTime(order.createdAt)}
@@ -445,9 +445,9 @@ export const OrdersListPage: React.FC = () => {
         isOpen={Boolean(deliverTarget)}
         onClose={() => setDeliverTarget(null)}
         order={deliverTarget}
-        onConfirm={async () => {
+        onConfirm={async (remark) => {
           if (!deliverTarget) return;
-          await deliverOrderMutation.mutateAsync(deliverTarget.id);
+          await deliverOrderMutation.mutateAsync({ id: deliverTarget.id, remark });
         }}
         isLoading={deliverOrderMutation.isPending}
       />

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Sparkles, Phone, Mail, ShieldCheck } from 'lucide-react';
+import { Sparkles, Phone, Mail, ShieldCheck, MapPin } from 'lucide-react';
 import DaddyLogo, { HimmatEmblem } from '@/components/common/DaddyLogo';
 
 export default function Footer() {
@@ -11,7 +11,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-[#333333]">
           
           {/* Brand & Himmat Group Parentage */}
-          <div className="md:col-span-5 space-y-4">
+          <div className="md:col-span-4 space-y-4">
             <DaddyLogo size="xl" variant="logo-only" />
             
             <p className="text-sm text-[#C4B79D] leading-relaxed max-w-sm">
@@ -79,16 +79,43 @@ export default function Footer() {
           </div>
 
           {/* Contact & Get In Touch (Brochure Page 15) */}
-          <div className="md:col-span-3 space-y-3">
+          <div className="md:col-span-4 space-y-3">
             <h4 className="font-display text-lg text-white tracking-wider">GET IN TOUCH</h4>
-            <div className="space-y-2 text-xs text-[#C4B79D]">
-              <div className="flex items-center gap-2">
+            <div className="space-y-3 text-xs text-[#C4B79D]">
+              {/* Main Address with Google Maps link */}
+              <div className="flex items-start gap-2.5">
+                <MapPin className="w-4 h-4 text-[#E6392F] shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-white font-bold block mb-0.5 uppercase tracking-wide text-[11px]">
+                    Main Address
+                  </span>
+                  <a
+                    href="https://maps.app.goo.gl/yz776Q3ViB7GKHx96?g_st=aw"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-[#F8E71C] transition-colors leading-relaxed block group"
+                    title="Open address in Google Maps"
+                  >
+                    <p className="text-[#C4B79D] group-hover:text-white transition-colors">
+                      Lower ground floor, Shop No -005 , 006, Jaybhavani Business Hub, Mayani Rd, near Domino&apos;s Pizza, Hanmant Bazar, Vita, Maharashtra 415311
+                    </p>
+                    <span className="inline-flex items-center gap-1 text-[#F8E71C] font-semibold text-[11px] mt-1 group-hover:underline">
+                      📍 View on Google Maps →
+                    </span>
+                  </a>
+                </div>
+              </div>
+
+              {/* Phone */}
+              <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-[#E6392F] shrink-0" />
                 <a href="tel:8237522072" className="text-white hover:text-[#E6392F] font-bold text-sm">
-                  8237522072
+                  +91 8237522072
                 </a>
               </div>
-              <div className="flex items-start gap-2">
+
+              {/* Email */}
+              <div className="flex items-start gap-2.5">
                 <Mail className="w-4 h-4 text-[#E6392F] shrink-0 mt-0.5" />
                 <a href="mailto:himmat.beverages1290@gmail.com" className="text-white hover:text-[#E6392F] break-all">
                   himmat.beverages1290@gmail.com

@@ -51,6 +51,7 @@ const manualSalesSchema = z.object({
   quantityUnit: z.enum(['GLASSES', 'ML'], {
     required_error: 'Quantity unit is required.',
   }),
+  retailUnitPrice: z.string().refine((val) => val === '' || (!isNaN(Number(val)) && Number(val) >= 0), 'Retail price must be zero or greater.'),
   notes: z.string().max(500, 'Notes cannot exceed 500 characters.').optional(),
 });
 
@@ -129,6 +130,7 @@ export const ManualDailySalesFormPage: React.FC = () => {
       salesDate: todayStr,
       quantity: '',
       quantityUnit: 'GLASSES',
+      retailUnitPrice: '',
       notes: '',
     },
   });
@@ -144,6 +146,7 @@ export const ManualDailySalesFormPage: React.FC = () => {
       setValue('salesDate', existingEntry.salesDate || todayStr);
       setValue('quantity', existingEntry.quantity?.toString() || '');
       setValue('quantityUnit', existingEntry.quantityUnit || 'GLASSES');
+      setValue('retailUnitPrice', existingEntry.retailUnitPrice?.toString() || '');
       setValue('notes', existingEntry.notes || '');
     }
   }, [existingEntry, setValue, todayStr]);
@@ -209,6 +212,7 @@ export const ManualDailySalesFormPage: React.FC = () => {
       salesDate: data.salesDate,
       quantity: Number(data.quantity),
       quantityUnit: data.quantityUnit,
+      retailUnitPrice: data.retailUnitPrice === '' ? undefined : Number(data.retailUnitPrice),
       notes: data.notes?.trim() || undefined,
     };
 
@@ -408,6 +412,19 @@ export const ManualDailySalesFormPage: React.FC = () => {
                   error={errors.quantityUnit?.message}
                 />
               </div>
+            </div>
+
+            <div>
+              <Input
+                label="Franchise Retail Price per Unit (₹)"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="Enter glass/ML retail price"
+                {...register('retailUnitPrice')}
+                error={errors.retailUnitPrice?.message}
+              />
+              <p className="text-[11px] text-slate-500 mt-1">This is the customer retail rate, not the warehouse 5-litre price.</p>
             </div>
 
             {/* Notes */}

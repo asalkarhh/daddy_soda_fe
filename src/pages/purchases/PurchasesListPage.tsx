@@ -29,7 +29,7 @@ import {
 import { usePurchases, usePurchaseMutations } from '../../hooks/useInventoryData';
 import { useSuppliers } from '../../hooks/useMasterData';
 import { PurchaseEntry } from '../../types/inventory.types';
-import { formatDate, formatDateTime, formatQuantity } from '../../utils/formatters';
+import { formatDate, formatDateTime, formatQuantity, formatActor } from '../../utils/formatters';
 
 export const PurchasesListPage: React.FC = () => {
   const navigate = useNavigate();
@@ -319,7 +319,7 @@ export const PurchasesListPage: React.FC = () => {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-xs text-slate-600">
-                    {purchase.createdBy || 'System'}
+                    {formatActor(purchase.createdBy, 'System')}
                   </TableCell>
                   <TableCell className="text-xs text-slate-500">
                     {formatDateTime(purchase.createdAt)}

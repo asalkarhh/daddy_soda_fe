@@ -27,10 +27,13 @@ import {
   TableCell,
 } from '../../components/ui/Table';
 import { StatusBadge } from '../../components/common/StatusBadge';
+import { OrderStatusBadge } from '../../components/orders/OrderStatusBadge';
 import { ErrorMessage } from '../../components/common/ErrorMessage';
 import { useAuth } from '../../hooks/useAuth';
 import { useMyFranchiseDetails } from '../../hooks/useMasterData';
 import { useFranchiseSummary } from '../../hooks/useDashboardData';
+import { useManualDailySales } from '../../hooks/useIotData';
+import { useMyOrders } from '../../hooks/useOrderData';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 
 export const FranchiseDashboardPage: React.FC = () => {
@@ -39,6 +42,8 @@ export const FranchiseDashboardPage: React.FC = () => {
   const { franchiseQuery, outletsQuery } = useMyFranchiseDetails();
   const { data: franchise } = franchiseQuery;
   const { data: outlets = [] } = outletsQuery;
+  const { data: myOrdersData } = useMyOrders({ page: 0, size: 100 });
+  const myOrders = myOrdersData?.content || [];
 
   const {
     data: summary,
@@ -51,8 +56,31 @@ export const FranchiseDashboardPage: React.FC = () => {
   const isNextDueOverdue = nextDue?.dueType === 'OVERDUE' || nextDue?.displaySeverity === 'RED';
   const isNextDueToday = nextDue?.dueType === 'DUE_TODAY' || nextDue?.displaySeverity === 'AMBER';
 
-  const recentOrders = summary?.recentOrders || [];
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setHours(0, 0, 0, 0);
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+  const recentOrders = myOrders
+    .filter((order) => {
+      const orderDate = new Date(order.orderDate);
+      return !Number.isNaN(orderDate.getTime()) && orderDate >= sevenDaysAgo;
+    })
+    .sort((a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime());
   const recentInvoices = summary?.recentInvoices || [];
+  const { data: dailySalesData } = useManualDailySales(franchise?.id ? { franchiseId: franchise.id, size: 100 } : undefined);
+  const dailySales = dailySalesData?.content || [];
+  const salesByMachine = dailySales.reduce<Record<string, { machine: string; quantity: number; unit: string }>>((acc, sale) => {
+    const key = sale.machineId;
+    const current = acc[key] || { machine: `${sale.machineName || 'Machine'} (${sale.machineCode})`, quantity: 0, unit: sale.quantityUnit };
+    current.quantity += sale.quantity;
+    acc[key] = current;
+    return acc;
+  }, {});
+  const today = new Date().toISOString().slice(0, 10);
+  const month = today.slice(0, 7);
+  const salesIncome = (rows: typeof dailySales) => rows.reduce((sum, sale) => sum + sale.quantity * (sale.retailUnitPrice || 0), 0);
+  const todayIncome = salesIncome(dailySales.filter((sale) => sale.salesDate === today));
+  const monthIncome = salesIncome(dailySales.filter((sale) => sale.salesDate.startsWith(month)));
+  const orderCounts = myOrders.reduce<Record<string, number>>((counts, order) => { counts[order.status] = (counts[order.status] || 0) + 1; return counts; }, {});
 
   return (
     <div className="space-y-8 pb-12">
@@ -171,7 +199,7 @@ export const FranchiseDashboardPage: React.FC = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigate(`/my-invoices/${nextDue.id}`)}
+                onClick={() => navigate(`/my-invoices/${nextDue.invoiceId || nextDue.id}`)}
               >
                 <Eye className="w-4 h-4 mr-1 text-slate-500" />
                 View Invoice
@@ -295,6 +323,8 @@ export const FranchiseDashboardPage: React.FC = () => {
         </div>
       ) : null}
 
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4"><SalesIncomeCard label="Today's Sales Income" value={todayIncome} /><SalesIncomeCard label="This Month's Sales Income" value={monthIncome} /><SalesIncomeCard label="Total Sales Income" value={salesIncome(dailySales)} /></div>
+
       {/* Orders Breakdown by Status Strip */}
       {summary?.ordersByStatus && (
         <Card>
@@ -317,31 +347,31 @@ export const FranchiseDashboardPage: React.FC = () => {
             <div className="p-3 bg-slate-50 rounded-lg">
               <span className="text-xs text-slate-500 block">Draft</span>
               <span className="text-lg font-bold text-slate-800">
-                {summary.ordersByStatus.draft ?? 0}
+                {orderCounts.DRAFT ?? 0}
               </span>
             </div>
             <div className="p-3 bg-blue-50/60 rounded-lg">
               <span className="text-xs text-blue-700 block font-medium">Placed</span>
               <span className="text-lg font-bold text-blue-900">
-                {summary.ordersByStatus.placed ?? 0}
+                {orderCounts.PLACED ?? 0}
               </span>
             </div>
             <div className="p-3 bg-purple-50/60 rounded-lg">
               <span className="text-xs text-purple-700 block font-medium">Prepared</span>
               <span className="text-lg font-bold text-purple-900">
-                {summary.ordersByStatus.prepared ?? 0}
+                {orderCounts.PREPARED ?? 0}
               </span>
             </div>
             <div className="p-3 bg-emerald-50/60 rounded-lg">
               <span className="text-xs text-emerald-700 block font-medium">Delivered</span>
               <span className="text-lg font-bold text-emerald-900">
-                {summary.ordersByStatus.delivered ?? 0}
+                {orderCounts.DELIVERED ?? 0}
               </span>
             </div>
             <div className="p-3 bg-slate-100/60 rounded-lg col-span-2 sm:col-span-1">
               <span className="text-xs text-slate-500 block">Cancelled</span>
               <span className="text-lg font-bold text-slate-600">
-                {summary.ordersByStatus.cancelled ?? 0}
+                {orderCounts.CANCELLED ?? 0}
               </span>
             </div>
           </CardContent>
@@ -358,7 +388,7 @@ export const FranchiseDashboardPage: React.FC = () => {
                 <ClipboardList className="w-4 h-4 text-brand-600" />
                 My Recent Orders
               </CardTitle>
-              <p className="text-xs text-slate-500 mt-0.5">Latest syrup replenishment orders.</p>
+              <p className="text-xs text-slate-500 mt-0.5">Orders placed in the past 7 days with current status.</p>
             </div>
             <Button
               variant="ghost"
@@ -382,7 +412,6 @@ export const FranchiseDashboardPage: React.FC = () => {
                     <TableHead>Order #</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -396,12 +425,7 @@ export const FranchiseDashboardPage: React.FC = () => {
                         {formatDate(ord.orderDate)}
                       </TableCell>
                       <TableCell>
-                        <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-800">
-                          {ord.status}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right font-medium text-slate-900 text-xs">
-                        {formatCurrency(ord.orderTotal)}
+                        <OrderStatusBadge status={ord.status} />
                       </TableCell>
                       <TableCell className="text-right">
                         <Button
@@ -499,6 +523,18 @@ export const FranchiseDashboardPage: React.FC = () => {
         </Card>
       </div>
 
+      <Card className="shadow-sm overflow-hidden">
+        <CardHeader className="bg-slate-50 border-b border-slate-100">
+          <CardTitle className="text-base text-slate-800 flex items-center gap-2 font-bold">
+            <Cpu className="w-4 h-4 text-brand-600" /> Daily Sales by Machine
+          </CardTitle>
+          <p className="text-xs text-slate-500 mt-0.5">Manual daily sales recorded for each machine.</p>
+        </CardHeader>
+        <CardContent className="p-0">
+          {Object.keys(salesByMachine).length === 0 ? <div className="p-8 text-center text-xs text-slate-500">No daily sales recorded for your machines.</div> : <Table><TableHeader><TableRow><TableHead>Machine</TableHead><TableHead className="text-right">Total Daily Sales</TableHead><TableHead>Unit</TableHead></TableRow></TableHeader><TableBody>{Object.values(salesByMachine).map((sale) => <TableRow key={sale.machine}><TableCell className="font-medium">{sale.machine}</TableCell><TableCell className="text-right font-bold text-brand-700">{sale.quantity}</TableCell><TableCell>{sale.unit}</TableCell></TableRow>)}</TableBody></Table>}
+        </CardContent>
+      </Card>
+
       {/* Franchise Business Details & Outlets Card */}
       {franchise && (
         <Card>
@@ -562,3 +598,9 @@ export const FranchiseDashboardPage: React.FC = () => {
     </div>
   );
 };
+
+const SalesIncomeCard = ({ label, value }: { label: string; value: number }) => (
+  <Card className="border-emerald-100 bg-emerald-50/30">
+    <CardContent className="p-4"><p className="text-xs font-medium text-slate-500">{label}</p><p className="mt-2 text-2xl font-bold text-emerald-700">{formatCurrency(value)}</p><p className="mt-1 text-[11px] text-slate-500">Calculated from recorded machine sales</p></CardContent>
+  </Card>
+);

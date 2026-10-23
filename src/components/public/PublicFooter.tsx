@@ -110,7 +110,14 @@ export const PublicFooter: React.FC = () => {
             <ul className="space-y-2.5 text-xs text-slate-400">
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
-                <span>{siteConfig.contact.address}, {siteConfig.contact.city}</span>
+                <a
+                  href={siteConfig.contact.googleMapsUrl || "https://maps.app.goo.gl/yz776Q3ViB7GKHx96?g_st=aw"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-teal-300 transition-colors"
+                >
+                  {siteConfig.contact.address}, {siteConfig.contact.city}
+                </a>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-teal-400 shrink-0" />

@@ -28,7 +28,7 @@ import { StockAdjustmentModal } from '../../components/inventory/StockAdjustment
 import { useStockMovements } from '../../hooks/useInventoryData';
 import { useProducts } from '../../hooks/useMasterData';
 import { StockMovementType } from '../../types/inventory.types';
-import { formatDateTime, formatQuantity } from '../../utils/formatters';
+import { formatDateTime, formatQuantity, formatActor } from '../../utils/formatters';
 
 export const StockMovementsPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -319,7 +319,7 @@ export const StockMovementsPage: React.FC = () => {
                 <TableCell className="text-xs text-slate-600 max-w-xs truncate" title={m.note}>
                   {m.note || '—'}
                 </TableCell>
-                <TableCell className="text-xs text-slate-500">{m.createdBy || 'System'}</TableCell>
+                <TableCell className="text-xs text-slate-500">{formatActor(m.createdBy, 'System')}</TableCell>
               </TableRow>
             ))
           )}

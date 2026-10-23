@@ -3,7 +3,8 @@ export type DueType = 'OVERDUE' | 'DUE_TODAY' | 'UPCOMING';
 export type DisplaySeverity = 'RED' | 'AMBER' | 'NORMAL';
 
 export interface DueInvoice {
-  id: string;
+  id?: string;
+  invoiceId?: string;
   invoiceNumber: string;
   salesOrderId?: string;
   orderNumber?: string;

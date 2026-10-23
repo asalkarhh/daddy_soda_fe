@@ -57,7 +57,7 @@ export default function StoreLocatorCTA() {
 
               <div className="flex flex-wrap gap-2 text-xs font-bold text-[#7A6B56]">
                 <span>Popular:</span>
-                {['Kolhapur', 'Pune', 'Mumbai', 'Bengaluru'].map((city) => (
+                {['Vita', 'Kolhapur', 'Pune', 'Mumbai', 'Bengaluru'].map((city) => (
                   <button
                     key={city}
                     onClick={() => setSearchQuery(city)}

@@ -25,7 +25,7 @@ import {
 import { StockAdjustmentModal } from '../../components/inventory/StockAdjustmentModal';
 import { useProductInventory, useStockMovements } from '../../hooks/useInventoryData';
 import { useProducts } from '../../hooks/useMasterData';
-import { formatDateTime, formatQuantity, formatBottleSize } from '../../utils/formatters';
+import { formatDateTime, formatQuantity, formatBottleSize, formatActor } from '../../utils/formatters';
 import { StockMovementType } from '../../types/inventory.types';
 
 export const InventoryProductDetailPage: React.FC = () => {
@@ -256,7 +256,7 @@ export const InventoryProductDetailPage: React.FC = () => {
                       {m.note || '—'}
                     </TableCell>
                     <TableCell className="text-xs text-slate-500">
-                      {m.createdBy || 'System'}
+                      {formatActor(m.createdBy, 'System')}
                     </TableCell>
                   </TableRow>
                 ))

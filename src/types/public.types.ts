@@ -68,6 +68,7 @@ export interface SiteConfig {
     state: string;
     country: string;
     workingHours: string;
+    googleMapsUrl?: string;
   };
   socialLinks: {
     instagram?: string;

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -53,6 +54,7 @@ const franchiseSchema = z.object({
 type FormValues = z.infer<typeof franchiseSchema>;
 
 export const FranchisesPage: React.FC = () => {
+  const navigate = useNavigate();
   // Filter States
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');
@@ -267,7 +269,7 @@ export const FranchisesPage: React.FC = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => setViewingFranchise(f)}
+                      onClick={() => navigate(`/franchises/${f.id}`)}
                       title="View Details"
                       className="p-1.5 text-slate-500 hover:text-slate-800"
                     >

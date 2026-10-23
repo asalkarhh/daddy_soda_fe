@@ -465,8 +465,8 @@ export const DuePaymentsPage: React.FC = () => {
                               onClick={() =>
                                 navigate(
                                   isFranchiseOwner
-                                    ? `/my-invoices/${due.id}`
-                                    : `/invoices/${due.id}`
+                                    ? `/my-invoices/${due.invoiceId || due.id}`
+                                    : `/invoices/${due.invoiceId || due.id}`
                                 )
                               }
                             >
@@ -568,8 +568,8 @@ export const DuePaymentsPage: React.FC = () => {
                         onClick={() =>
                           navigate(
                             isFranchiseOwner
-                              ? `/my-invoices/${due.id}`
-                              : `/invoices/${due.id}`
+                              ? `/my-invoices/${due.invoiceId || due.id}`
+                              : `/invoices/${due.invoiceId || due.id}`
                           )
                         }
                       >

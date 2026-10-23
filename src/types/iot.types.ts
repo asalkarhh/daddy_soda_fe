@@ -80,6 +80,7 @@ export interface ManualDailySales {
   flavourName: string;
   quantity: number;
   quantityUnit: ManualSalesQuantityUnit;
+  retailUnitPrice?: number;
   notes?: string;
   enteredBy?: string;
   createdAt?: string;
@@ -93,6 +94,7 @@ export interface ManualDailySalesFormData {
   salesDate: string;
   quantity: number | string;
   quantityUnit: ManualSalesQuantityUnit;
+  retailUnitPrice?: number | string;
   notes?: string;
 }
 

@@ -57,6 +57,9 @@ export const OrderDetailPage: React.FC = () => {
   const [paymentMode, setPaymentMode] = useState<'CASH' | 'UPI' | 'BANK_TRANSFER' | 'CHEQUE' | 'OTHER'>('CASH');
   const [invoiceBusy, setInvoiceBusy] = useState(false);
   const [invoiceError, setInvoiceError] = useState('');
+  const [showInvoiceUpdate, setShowInvoiceUpdate] = useState(false);
+  const [additionalPayment, setAdditionalPayment] = useState('');
+  const [additionalPaymentMode, setAdditionalPaymentMode] = useState<'CASH' | 'UPI' | 'BANK_TRANSFER' | 'CHEQUE' | 'OTHER'>('CASH');
 
   useEffect(() => {
     if (!id || !accessToken || (user?.role !== 'SUPER_ADMIN' && user?.role !== 'MANAGER')) return;
@@ -185,7 +188,7 @@ export const OrderDetailPage: React.FC = () => {
                 variant="primary"
                 leftIcon={<PackageCheck className="w-4 h-4" />}
                 onClick={() => setIsDeliverOpen(true)}
-                disabled={isPrepared && !invoice}
+                disabled={!invoice}
               >
                 Dispatch Order
               </Button>
@@ -441,7 +444,7 @@ export const OrderDetailPage: React.FC = () => {
         </CardContent>
       </Card>
 
-      {isPrepared && (
+      {(isPlaced || isPrepared) && (
         <Card>
           <CardHeader><CardTitle>Invoice Before Dispatch</CardTitle></CardHeader>
           <CardContent className="space-y-4">
@@ -454,7 +457,19 @@ export const OrderDetailPage: React.FC = () => {
               </div>
               {invoiceError && <p className="text-sm text-red-600">{invoiceError}</p>}
               <Button isLoading={invoiceBusy} onClick={async () => { setInvoiceBusy(true); setInvoiceError(''); try { const created = await invoiceApi.createInvoice({ salesOrderId: order.id, invoiceType, paymentTerm, invoiceDate: new Date().toISOString().slice(0, 10), notes: `Advance payment: ${advancePayment || '0'}` }); if (Number(advancePayment) > 0) await invoiceApi.recordPayment(created.id, { paymentDate: new Date().toISOString().slice(0, 10), amount: Number(advancePayment), paymentMode, remarks: 'Advance payment received before dispatch' }); const refreshed = await invoiceApi.getInvoiceById(created.id); setInvoice(refreshed); } catch (e) { setInvoiceError(e instanceof Error ? e.message : 'Could not generate invoice.'); } finally { setInvoiceBusy(false); } }}>Generate Invoice</Button>
-            </> : <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="font-semibold">{invoice.invoiceNumber}</p><p className="text-sm text-slate-500">Total: {formatCurrency(invoice.totalAmount)} · Advance: {formatCurrency(invoice.paidAmount)} · Pending: {formatCurrency(invoice.balanceAmount)}</p></div><Button variant="outline" onClick={() => invoiceApi.downloadInvoicePdf(invoice.id, invoice.invoiceNumber)}>Print Invoice</Button></div>}
+            </> : <div className="space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div><p className="font-semibold">{invoice.invoiceNumber}</p><p className="text-sm text-slate-500">Total: {formatCurrency(invoice.totalAmount)} · Paid: {formatCurrency(invoice.paidAmount)} · Pending: {formatCurrency(invoice.balanceAmount)}</p></div>
+                <div className="flex flex-wrap gap-2"><Button variant="outline" onClick={() => invoiceApi.downloadInvoicePdf(invoice.id, invoice.invoiceNumber)}>Print Invoice</Button><Button variant="outline" onClick={() => setShowInvoiceUpdate((value) => !value)}>Update Invoice</Button></div>
+              </div>
+              {showInvoiceUpdate && invoice.balanceAmount > 0 && <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                <label className="text-sm">Additional Payment<input type="number" min="0" max={invoice.balanceAmount} className="mt-1 w-full border rounded-lg p-2" value={additionalPayment} onChange={(e) => setAdditionalPayment(e.target.value)} placeholder="Enter amount" /></label>
+                <label className="text-sm">Payment Mode<select className="mt-1 w-full border rounded-lg p-2" value={additionalPaymentMode} onChange={(e) => setAdditionalPaymentMode(e.target.value as typeof additionalPaymentMode)}><option value="CASH">Cash</option><option value="UPI">UPI</option><option value="BANK_TRANSFER">Bank Transfer</option><option value="CHEQUE">Cheque</option><option value="OTHER">Other</option></select></label>
+                <div className="flex items-end"><Button isLoading={invoiceBusy} onClick={async () => { const amount = Number(additionalPayment); if (!amount || amount <= 0 || amount > invoice.balanceAmount) { setInvoiceError(`Enter an amount between 0 and ${invoice.balanceAmount}.`); return; } setInvoiceBusy(true); setInvoiceError(''); try { await invoiceApi.recordPayment(invoice.id, { paymentDate: new Date().toISOString().slice(0, 10), amount, paymentMode: additionalPaymentMode, remarks: 'Payment updated before dispatch' }); setInvoice(await invoiceApi.getInvoiceById(invoice.id)); setAdditionalPayment(''); setShowInvoiceUpdate(false); } catch (e) { setInvoiceError(e instanceof Error ? e.message : 'Could not update invoice payment.'); } finally { setInvoiceBusy(false); } }}>Save Payment</Button></div>
+                {invoiceError && <p className="md:col-span-3 text-sm text-red-600">{invoiceError}</p>}
+              </div>}
+              {showInvoiceUpdate && invoice.balanceAmount <= 0 && <p className="text-sm text-emerald-700 font-medium">This invoice is fully paid.</p>}
+            </div>}
           </CardContent>
         </Card>
       )}

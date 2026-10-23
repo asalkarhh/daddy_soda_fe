@@ -2,6 +2,20 @@ import { StoreLocation } from '@/types';
 
 export const STORES: StoreLocation[] = [
   {
+    id: 'vita-main-hub',
+    name: 'Daddy Soda — Vita Main Hub (Flagship)',
+    city: 'Vita',
+    address: 'Lower ground floor, Shop No -005 , 006, Jaybhavani Business Hub, Mayani Rd, near Domino\'s Pizza, Hanmant Bazar',
+    pincode: '415311',
+    distanceKm: 0.1,
+    openHours: '10:00 AM – 11:30 PM',
+    isOpen: true,
+    phone: '+91 82375 22072',
+    features: ['Flagship Soda Bar', '8-Tap Soda Draft', 'Ice-Gola Counter', 'Curbside Pickup'],
+    lat: 17.278,
+    lng: 74.536
+  },
+  {
     id: 'kolhapur-tarabai',
     name: 'Daddy Soda — Tarabai Park',
     city: 'Kolhapur',

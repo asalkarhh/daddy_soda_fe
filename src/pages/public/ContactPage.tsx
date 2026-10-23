@@ -97,6 +97,28 @@ export const ContactPage: React.FC = () => {
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
+                  <h4 className="font-bold text-[#171717] text-xs uppercase tracking-wide">Main Address</h4>
+                  <a
+                    href="https://maps.app.goo.gl/yz776Q3ViB7GKHx96?g_st=aw"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group block"
+                  >
+                    <p className="text-[#7A6B56] text-xs mt-0.5 leading-relaxed group-hover:text-[#E6392F] transition-colors">
+                      Lower ground floor, Shop No -005 , 006, Jaybhavani Business Hub, Mayani Rd, near Domino&apos;s Pizza, Hanmant Bazar, Vita, Maharashtra 415311
+                    </p>
+                    <span className="inline-flex items-center gap-1 text-[#E6392F] font-bold text-[11px] mt-1 group-hover:underline">
+                      📍 View on Google Maps →
+                    </span>
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-[#FAF2E2] text-[#E6392F] flex items-center justify-center shrink-0 border border-[#E8D9BD]">
+                  <MapPin className="w-5 h-5" />
+                </div>
+                <div>
                   <h4 className="font-bold text-[#171717] text-xs uppercase tracking-wide">Corporate Office</h4>
                   <p className="text-[#7A6B56] text-xs mt-0.5 leading-relaxed">
                     Himmat House, Station Road, Kolhapur &amp; Regional Operations Hub, Pune, Maharashtra, India.

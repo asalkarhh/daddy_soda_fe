@@ -58,12 +58,9 @@ export default function ProductRangeShowcase() {
               </div>
 
               <div className="pt-4 border-t border-[#E8D9BD] flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-[#A8987E]">Tier 3 / Tier 1 Price</span>
-                  <p className="font-display text-2xl font-black text-[#171717]">
-                    ₹{item.price} <span className="text-xs text-[#A8987E]">/ ₹{item.priceTier1}</span>
-                  </p>
-                </div>
+                <span className="text-[11px] uppercase font-bold tracking-wider text-[#A8987E]">
+                  {item.type === 'gola' ? 'Specialty Treat' : 'Dedicated Soda Tap'}
+                </span>
 
                 <Link
                   to={`/menu/${item.id}`}

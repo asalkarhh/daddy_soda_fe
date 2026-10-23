@@ -309,6 +309,6 @@ export const BROCHURE_SODA_FLAVORS = [
     price: 30,
     priceTier1: 50,
     type: 'gola',
-    badge: 'NEW: ₹30/PIECE',
+    badge: 'NEW LAUNCH',
   },
 ];

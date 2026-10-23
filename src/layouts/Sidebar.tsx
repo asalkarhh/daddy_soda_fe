@@ -15,7 +15,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { user, accessToken } = useAuth();
   const userRole = user?.role;
-  const [counts, setCounts] = useState({ orders: 0, enquiries: 0 });
+  const [counts, setCounts] = useState({ orders: 0, enquiries: 0, dues: 0 });
 
   const readKey = (module: 'orders' | 'enquiries') =>
     `daddy-soda:${user?.id || user?.mobile || 'user'}:${accessToken?.slice(-16) || 'session'}:${module}-read-at`;
@@ -24,9 +24,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const refreshCounts = async () => {
     if (userRole !== 'SUPER_ADMIN' && userRole !== 'MANAGER') return;
     try {
-      const [ordersResult, enquiriesResult] = await Promise.allSettled([
+      const [ordersResult, enquiriesResult, duesResult] = await Promise.allSettled([
         orderApi.getOrders({ page: 0, size: 100 }),
         dashboardApi.getEnquiries({ page: 0, size: 100 }),
+        dashboardApi.getDues({ page: 0, size: 100 }),
       ]);
       const unreadSince = (module: 'orders' | 'enquiries') => Number(localStorage.getItem(readKey(module)) || 0);
       const readOrderIds = new Set<string>(JSON.parse(localStorage.getItem(orderReadKey()) || '[]'));
@@ -37,6 +38,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         enquiries: enquiriesResult.status === 'fulfilled'
           ? enquiriesResult.value.content.filter((item) => new Date(item.submittedAt).getTime() > unreadSince('enquiries')).length
           : current.enquiries,
+        dues: duesResult.status === 'fulfilled'
+          ? duesResult.value.content.filter((item) => item.balanceAmount > 0).length
+          : current.dues,
       }));
     } catch {
       // The sidebar must remain usable when a count request fails.
@@ -135,6 +139,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     {item.path === '/enquiries' && counts.enquiries > 0 && (
                       <span aria-label={`${counts.enquiries} unread enquiries`} className="ml-auto min-w-5 text-center text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-100 text-red-700">
                         {counts.enquiries > 99 ? '99+' : counts.enquiries}
+                      </span>
+                    )}
+                    {item.path === '/dues' && counts.dues > 0 && (
+                      <span aria-label={`${counts.dues} due payments`} className="ml-auto min-w-5 text-center text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-100 text-red-700">
+                        {counts.dues > 99 ? '99+' : counts.dues}
                       </span>
                     )}
                   </NavLink>

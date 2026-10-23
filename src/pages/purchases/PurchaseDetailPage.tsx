@@ -31,6 +31,7 @@ import {
   formatDateTime,
   formatQuantity,
   formatBottleSize,
+  formatActor,
 } from '../../utils/formatters';
 
 export const PurchaseDetailPage: React.FC = () => {
@@ -203,7 +204,7 @@ export const PurchaseDetailPage: React.FC = () => {
           <CardContent className="space-y-1.5 text-xs">
             <div className="flex justify-between">
               <span className="text-slate-500">Created By:</span>
-              <span className="font-medium text-slate-800">{purchase.createdBy || 'System'}</span>
+              <span className="font-medium text-slate-800">{formatActor(purchase.createdBy, 'System')}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500">Created At:</span>

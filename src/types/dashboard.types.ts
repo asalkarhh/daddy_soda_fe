@@ -63,6 +63,7 @@ export interface FranchiseDashboardSummary {
   ordersByStatus: FranchiseOrdersByStatus;
   invoiceTotalThisMonth: number;
   pendingAmount: number;
+  availableCredit?: number;
   overdueAmount: number;
   overdueInvoiceCount: number;
   nextDueInvoice?: DueInvoice | null;

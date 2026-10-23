@@ -40,6 +40,9 @@ export interface Invoice {
   gstRate: number;
   gstAmount: number;
   totalAmount: number;
+  originalTotalAmount?: number;
+  creditAppliedAmount?: number;
+  excessCreditAmount?: number;
   paidAmount: number;
   balanceAmount: number;
   paymentStatus: InvoicePaymentStatus;

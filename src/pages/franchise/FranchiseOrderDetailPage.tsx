@@ -381,6 +381,12 @@ export const FranchiseOrderDetailPage: React.FC = () => {
                 {formatCurrency(order.orderTotal)}
               </span>
             </div>
+            {(order.estimatedCreditApplied || 0) > 0 && (
+              <div className="w-full sm:w-auto text-right text-xs text-emerald-700">
+                <div>Available Credit Applied: {formatCurrency(order.estimatedCreditApplied)}</div>
+                <div className="font-bold">Total Payable: {formatCurrency(order.estimatedPayableAmount)}</div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

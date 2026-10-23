@@ -27,6 +27,9 @@ export interface SalesOrder {
   totalItems: number;
   totalQuantity: number;
   orderTotal: number;
+  availableCredit?: number;
+  estimatedCreditApplied?: number;
+  estimatedPayableAmount?: number;
   subtotal?: number;
   notes?: string;
   updateReason?: string;

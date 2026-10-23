@@ -334,6 +334,14 @@ export const InvoiceDetailPage: React.FC = () => {
                 <span className="text-base text-slate-900">{formatCurrency(invoice.totalAmount)}</span>
               </div>
 
+              {((invoice.originalTotalAmount || 0) > invoice.totalAmount || (invoice.excessCreditAmount || 0) > 0 || (invoice.creditAppliedAmount || 0) > 0) && (
+                <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 space-y-1 text-xs">
+                  {(invoice.originalTotalAmount || 0) > invoice.totalAmount && <div className="flex justify-between"><span>Previous Total:</span><b>{formatCurrency(invoice.originalTotalAmount)}</b></div>}
+                  {(invoice.excessCreditAmount || 0) > 0 && <div className="flex justify-between text-emerald-700"><span>Credit Generated:</span><b>{formatCurrency(invoice.excessCreditAmount)}</b></div>}
+                  {(invoice.creditAppliedAmount || 0) > 0 && <div className="flex justify-between text-emerald-700"><span>Credit Applied:</span><b>- {formatCurrency(invoice.creditAppliedAmount)}</b></div>}
+                </div>
+              )}
+
               <div className="flex justify-between items-center text-emerald-700 font-semibold">
                 <span>Paid to Date:</span>
                 <span>{formatCurrency(invoice.paidAmount)}</span>

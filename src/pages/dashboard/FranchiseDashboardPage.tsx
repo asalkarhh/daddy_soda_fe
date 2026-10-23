@@ -323,7 +323,7 @@ export const FranchiseDashboardPage: React.FC = () => {
         </div>
       ) : null}
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4"><SalesIncomeCard label="Today's Sales Income" value={todayIncome} /><SalesIncomeCard label="This Month's Sales Income" value={monthIncome} /><SalesIncomeCard label="Total Sales Income" value={salesIncome(dailySales)} /></div>
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4"><SalesIncomeCard label="Today's Sales Income" value={todayIncome} /><SalesIncomeCard label="This Month's Sales Income" value={monthIncome} /><SalesIncomeCard label="Total Sales Income" value={salesIncome(dailySales)} /><SalesIncomeCard label="Available Credit" value={summary?.availableCredit || 0} subtitle="Credit available for your next order" /></div>
 
       {/* Orders Breakdown by Status Strip */}
       {summary?.ordersByStatus && (
@@ -599,8 +599,8 @@ export const FranchiseDashboardPage: React.FC = () => {
   );
 };
 
-const SalesIncomeCard = ({ label, value }: { label: string; value: number }) => (
+const SalesIncomeCard = ({ label, value, subtitle = 'Calculated from recorded machine sales' }: { label: string; value: number; subtitle?: string }) => (
   <Card className="border-emerald-100 bg-emerald-50/30">
-    <CardContent className="p-4"><p className="text-xs font-medium text-slate-500">{label}</p><p className="mt-2 text-2xl font-bold text-emerald-700">{formatCurrency(value)}</p><p className="mt-1 text-[11px] text-slate-500">Calculated from recorded machine sales</p></CardContent>
+    <CardContent className="p-4"><p className="text-xs font-medium text-slate-500">{label}</p><p className="mt-2 text-2xl font-bold text-emerald-700">{formatCurrency(value)}</p><p className="mt-1 text-[11px] text-slate-500">{subtitle}</p></CardContent>
   </Card>
 );

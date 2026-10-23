@@ -12,6 +12,7 @@ export interface PaginatedData<T> {
 
 export interface StatusUpdateRequest {
   active: boolean;
+  availableCredit?: number;
 }
 
 // ----------------------------------------------------
@@ -30,6 +31,7 @@ export interface Franchise {
   state?: string;
   pincode?: string;
   active: boolean;
+  availableCredit?: number;
   createdAt?: string;
   updatedAt?: string;
   outletsCount?: number;

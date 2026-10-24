@@ -234,7 +234,7 @@ export const FranchisePage: React.FC = () => {
               </div>
             ))}
 
-            {/* Health and Zero Sugar Banner Card */}
+            {/* Health and No added sugar Banner Card */}
             <div className="bg-gradient-to-br from-[#171717] to-[#333333] text-white rounded-2xl p-5 flex flex-col justify-between shadow-xs">
               <div>
                 <span className="text-3xl mb-3 block">🥗</span>
@@ -242,7 +242,7 @@ export const FranchisePage: React.FC = () => {
                   HEALTH &amp; PREBIOTICS
                 </h3>
                 <p className="text-xs text-[#C4B79D] mt-1">
-                  Zero sugar craft options + Prebiotic gut-health drinks available across all franchise outlets.
+                  No added sugar craft options + Prebiotic gut-health drinks available across all franchise outlets.
                 </p>
               </div>
               <div className="pt-3 border-t border-white/20 text-xs text-[#FFB000] font-bold">
@@ -401,7 +401,7 @@ export const FranchisePage: React.FC = () => {
                     <span className="w-12 h-12 rounded-xl bg-[#E6392F] text-white flex items-center justify-center font-display text-2xl font-bold shadow-sm">
                       {step.step}
                     </span>
-                    {step.step === '04' && (
+                    {step.step === '03' && (
                       <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase bg-[#E6392F] text-white animate-pulse">
                         ⏱ 1.5 Months Window
                       </span>

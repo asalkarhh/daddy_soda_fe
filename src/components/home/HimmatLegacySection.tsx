@@ -19,7 +19,7 @@ export default function HimmatLegacySection() {
               BACKED BY 50+ YEARS OF LEGACY
             </h2>
             <p className="font-display text-xl text-[#7A6B56] uppercase tracking-wide mt-2">
-              From a single restaurant to a diversified business conglomerate across Maharashtra.
+              From a single Business to a diversified business conglomerate across Maharashtra.
             </p>
           </div>
 

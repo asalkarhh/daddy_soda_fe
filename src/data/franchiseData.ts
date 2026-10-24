@@ -101,14 +101,15 @@ export const PATH_TO_PARTNERSHIP = [
   },
   {
     step: '03',
-    title: 'Site Evaluation',
-    desc: 'Identify and finalize the best high-footfall outlet location with our retail location experts.',
-  },
-  {
-    step: '04',
     title: 'Sign Agreement',
     desc: 'Execute the formal franchise agreement and pay the franchise fee. (⏱ 1.5 months countdown to grand opening starts).',
   },
+  {
+    step: '04',
+    title: 'Site Evaluation',
+    desc: 'Identify and finalize the best high-footfall outlet location with our retail location experts.',
+  },
+  
   {
     step: '05',
     title: 'Setup & Training',
@@ -124,13 +125,13 @@ export const PATH_TO_PARTNERSHIP = [
 export const LEADERSHIP = [
   {
     name: 'Mr. Milind Nandkumar Kadam',
-    role: 'CEO & Managing Director',
+    role: 'FOUNDER & DIRECTOR',
     desc: "Seasoned business entrepreneur driving the group's strategic vision and successful presence in the society.",
     initials: 'MK',
   },
   {
     name: 'Mr. Ketan Nandkumar Kadam',
-    role: 'CEO & Managing Director',
+    role: 'FOUNDER & DIRECTOR',
     desc: 'Responsible for strategic growth and operational management across all group businesses, ensuring consistent performance.',
     initials: 'KK',
   },

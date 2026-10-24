@@ -72,7 +72,7 @@ export default function ProductRangeShowcase() {
             </div>
           ))}
 
-          {/* Health & Zero Sugar Callout Card */}
+          {/* Health & No added sugar Callout Card */}
           <div className="bg-gradient-to-br from-[#E6392F] to-[#171717] text-white rounded-3xl p-6 flex flex-col justify-between shadow-md">
             <div>
               <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-3xl border border-white/20 mb-4">
@@ -82,10 +82,10 @@ export default function ProductRangeShowcase() {
                 HEALTH CONSCIOUS
               </span>
               <h3 className="font-display text-2xl font-black text-white">
-                ZERO SUGAR & PREBIOTICS
+                No added sugar & PREBIOTICS
               </h3>
               <p className="text-xs text-[#FAF2E2]/80 mt-1.5 leading-relaxed">
-                Zero sugar variants and prebiotic gut-health craft sodas crafted for health-conscious consumers.
+                No added sugar variants and prebiotic gut-health craft sodas crafted for health-conscious consumers.
               </p>
             </div>
 

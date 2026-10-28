@@ -10,11 +10,11 @@ export interface CityTierModel {
   dailyIceGolaSales: number;
   iceGolaPricePerPiece: number;
   dailyRevenue: number;
-  monthlyRevenue: string;
+  monthlyRevenue: string; 
   annualRevenue: string;
   annualProfit25: string;
   annualProfit30: string;
-  expectedRoi: string;
+  expectedRoi: string; 
   notes: string;
 }
 

@@ -34,6 +34,7 @@ import {
   useInvoiceMutations,
 } from '../../hooks/useInvoiceData';
 import { useOrderDetail } from '../../hooks/useOrderData';
+import { PaymentMode } from '../../types/invoice.types';
 import {
   formatDate,
   formatDateTime,
@@ -83,6 +84,20 @@ export const InvoiceDetailPage: React.FC = () => {
     (invoice.paymentTerm === 'CREDIT' || invoice.paymentTerm === 'PARTIAL_PAYMENT') &&
     hasBalance;
   const items = invoice.items || [];
+
+  const creditPayment = (Number(invoice.creditAppliedAmount) > 0) ? {
+    id: 'applied-credit-record',
+    invoiceId: invoice.id,
+    paymentDate: invoice.invoiceDate,
+    amount: Number(invoice.creditAppliedAmount),
+    paymentMode: 'CREDIT' as PaymentMode,
+    referenceNumber: 'CREDIT-APPLIED',
+    remarks: 'Available credit applied from franchise account',
+    recordedBy: 'SYSTEM',
+    createdAt: invoice.createdAt || invoice.invoiceDate,
+  } : null;
+
+  const allPayments = creditPayment ? [creditPayment, ...payments] : payments;
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12">

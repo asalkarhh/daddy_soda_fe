@@ -56,6 +56,14 @@ export const invoiceApi = {
     return response.data.data;
   },
 
+  applyCredit: async (id: string, amount?: number): Promise<Invoice> => {
+    const response = await apiClient.post<ApiResponse<Invoice>>(
+      `/invoices/${id}/apply-credit`,
+      amount ? { amount } : {}
+    );
+    return response.data.data;
+  },
+
   downloadInvoicePdf: async (id: string, invoiceNumber?: string): Promise<void> => {
     const response = await apiClient.get(`/invoices/${id}/download`, {
       responseType: 'blob',

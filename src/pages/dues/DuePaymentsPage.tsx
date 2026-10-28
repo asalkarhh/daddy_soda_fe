@@ -8,12 +8,14 @@ import {
   Eye,
   X,
   Clock,
+  Coins,
 } from 'lucide-react';
 import { PageHeader } from '../../components/common/PageHeader';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { Card, CardContent } from '../../components/ui/Card';
+import { Modal } from '../../components/ui/Modal';
 import {
   Table,
   TableHeader,
@@ -27,7 +29,10 @@ import { TableSkeleton } from '../../components/common/TableSkeleton';
 import { EmptyState } from '../../components/common/EmptyState';
 import { ErrorMessage } from '../../components/common/ErrorMessage';
 import { useAuth } from '../../hooks/useAuth';
-import { useDues } from '../../hooks/useDashboardData';
+import { useDues, useFranchiseSummary } from '../../hooks/useDashboardData';
+import { useToast } from '../../hooks/useToast';
+import { invoiceApi } from '../../api/invoice.api';
+import { getApiErrorMessage } from '../../api/apiHelpers';
 import { useActiveFranchises } from '../../hooks/useMasterData';
 import { DueType, DueFilters, DueInvoice } from '../../types/dashboard.types';
 import { Franchise } from '../../types/master.types';
@@ -46,6 +51,43 @@ export const DuePaymentsPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const isFranchiseOwner = user?.role === 'FRANCHISE_OWNER';
+  const { success } = useToast();
+  const { data: franchiseSummary, refetch: refetchSummary } = useFranchiseSummary({ enabled: isFranchiseOwner });
+  const availableCredit = isFranchiseOwner ? (franchiseSummary?.availableCredit || 0) : 0;
+
+  const [selectedDueForCredit, setSelectedDueForCredit] = useState<DueInvoice | null>(null);
+  const [creditAmountToApply, setCreditAmountToApply] = useState<string>('');
+  const [isApplyingCredit, setIsApplyingCredit] = useState(false);
+  const [creditApplyError, setCreditApplyError] = useState('');
+
+  const openCreditModal = (due: DueInvoice) => {
+    setSelectedDueForCredit(due);
+    setCreditAmountToApply(String(Math.min(due.balanceAmount, availableCredit)));
+    setCreditApplyError('');
+  };
+
+  const handleApplyCredit = async () => {
+    if (!selectedDueForCredit) return;
+    const amt = Number(creditAmountToApply);
+    if (!amt || amt <= 0 || amt > availableCredit || amt > selectedDueForCredit.balanceAmount) {
+      setCreditApplyError('Please enter a valid amount within your available credit and invoice balance.');
+      return;
+    }
+    setIsApplyingCredit(true);
+    setCreditApplyError('');
+    try {
+      const invoiceId = selectedDueForCredit.invoiceId || selectedDueForCredit.id;
+      await invoiceApi.applyCredit(invoiceId, amt);
+      success(`Applied ${formatCurrency(amt)} credit to ${selectedDueForCredit.invoiceNumber}.`, 'Credit Applied');
+      setSelectedDueForCredit(null);
+      refetch();
+      refetchSummary();
+    } catch (err) {
+      setCreditApplyError(getApiErrorMessage(err, 'Failed to apply credit. Please try again.'));
+    } finally {
+      setIsApplyingCredit(false);
+    }
+  };
 
   // Read filter query params
   const typeParam = (searchParams.get('dueType') as DueType | 'ALL') || 'ALL';
@@ -163,7 +205,7 @@ export const DuePaymentsPage: React.FC = () => {
       />
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className={`grid grid-cols-1 sm:grid-cols-2 ${isFranchiseOwner ? "lg:grid-cols-4" : "lg:grid-cols-3"} gap-4`}>
         {/* Overdue Amount */}
         <Card
           className={`${
@@ -237,6 +279,26 @@ export const DuePaymentsPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Available Credit Card (Franchise Owner) */}
+        {isFranchiseOwner && (
+          <Card className="border-emerald-200 bg-emerald-50/40">
+            <CardContent className="p-4 flex items-center justify-between">
+              <div className="space-y-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
+                  Available Credit
+                </span>
+                <span className="text-2xl font-extrabold text-emerald-700 block">
+                  {formatCurrency(availableCredit)}
+                </span>
+                <span className="text-[11px] text-emerald-700">Credit available to pay dues</span>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                <Coins className="w-5 h-5" />
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Filter Toolbar */}
@@ -353,7 +415,7 @@ export const DuePaymentsPage: React.FC = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {dues.map((due: DueInvoice) => {
+                    {dues.map((due: DueInvoice, idx: number) => {
                       const isOverdue =
                         due.dueType === 'OVERDUE' || due.displaySeverity === 'RED';
                       const isDueToday =
@@ -361,7 +423,7 @@ export const DuePaymentsPage: React.FC = () => {
 
                       return (
                         <TableRow
-                          key={due.id}
+                          key={due.invoiceId || due.id || `${due.invoiceNumber}-${idx}`}
                           className={`transition-colors ${
                             isOverdue
                               ? 'bg-red-50/60 hover:bg-red-100/60 border-l-4 border-red-500 font-medium'
@@ -459,20 +521,33 @@ export const DuePaymentsPage: React.FC = () => {
                           </TableCell>
 
                           <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() =>
-                                navigate(
-                                  isFranchiseOwner
-                                    ? `/my-invoices/${due.invoiceId || due.id}`
-                                    : `/invoices/${due.invoiceId || due.id}`
-                                )
-                              }
-                            >
-                              <Eye className="w-3.5 h-3.5 mr-1 text-slate-500" />
-                              View
-                            </Button>
+                            <div className="flex items-center justify-end gap-1.5">
+                              {isFranchiseOwner && availableCredit > 0 && due.balanceAmount > 0 && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-semibold"
+                                  onClick={() => openCreditModal(due)}
+                                >
+                                  <Coins className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                                  Pay with Credit
+                                </Button>
+                              )}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  navigate(
+                                    isFranchiseOwner
+                                      ? `/my-invoices/${due.invoiceId || due.id}`
+                                      : `/invoices/${due.invoiceId || due.id}`
+                                  )
+                                }
+                              >
+                                <Eye className="w-3.5 h-3.5 mr-1 text-slate-500" />
+                                View
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       );
@@ -485,7 +560,7 @@ export const DuePaymentsPage: React.FC = () => {
 
           {/* Mobile Card View */}
           <div className="grid grid-cols-1 gap-4 md:hidden">
-            {dues.map((due: DueInvoice) => {
+            {dues.map((due: DueInvoice, idx: number) => {
               const isOverdue =
                 due.dueType === 'OVERDUE' || due.displaySeverity === 'RED';
               const isDueToday =
@@ -493,7 +568,7 @@ export const DuePaymentsPage: React.FC = () => {
 
               return (
                 <Card
-                  key={due.id}
+                  key={due.invoiceId || due.id || `${due.invoiceNumber}-${idx}`}
                   className={`${
                     isOverdue
                       ? 'border-red-300 bg-red-50/40 ring-1 ring-red-200'
@@ -561,6 +636,17 @@ export const DuePaymentsPage: React.FC = () => {
                     </div>
 
                     <div className="pt-2 border-t border-slate-100 flex justify-end">
+                      {isFranchiseOwner && availableCredit > 0 && due.balanceAmount > 0 && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full sm:w-auto border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-semibold"
+                          onClick={() => openCreditModal(due)}
+                        >
+                          <Coins className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                          Pay with Credit
+                        </Button>
+                      )}
                       <Button
                         variant="outline"
                         size="sm"
@@ -597,6 +683,115 @@ export const DuePaymentsPage: React.FC = () => {
             </div>
           )}
         </div>
+      )}
+
+      {/* Pay with Credit Modal */}
+      {selectedDueForCredit && (
+        <Modal
+          isOpen={Boolean(selectedDueForCredit)}
+          onClose={() => {
+            if (!isApplyingCredit) {
+              setSelectedDueForCredit(null);
+            }
+          }}
+          title={`Pay Invoice ${selectedDueForCredit.invoiceNumber} with Credit`}
+          description="Use your available credit points to settle or pay down this due invoice."
+          size="md"
+        >
+          <div className="space-y-4 py-2">
+            <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs">
+              <div>
+                <span className="text-slate-500 block">Invoice Total:</span>
+                <span className="font-semibold text-slate-900">{formatCurrency(selectedDueForCredit.totalAmount)}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block">Remaining Due:</span>
+                <span className="font-bold text-red-700">{formatCurrency(selectedDueForCredit.balanceAmount)}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block">Available Credit:</span>
+                <span className="font-bold text-emerald-700">{formatCurrency(availableCredit)}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block">Max Applicable:</span>
+                <span className="font-semibold text-slate-900">
+                  {formatCurrency(Math.min(selectedDueForCredit.balanceAmount, availableCredit))}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                Credit Amount to Apply (₹)
+              </label>
+              <input
+                type="number"
+                min="1"
+                max={Math.min(selectedDueForCredit.balanceAmount, availableCredit)}
+                step="0.01"
+                className="w-full border border-slate-300 rounded-lg p-2.5 text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                value={creditAmountToApply}
+                onChange={(e) => setCreditAmountToApply(e.target.value)}
+              />
+              <div className="flex justify-between text-[11px] text-slate-500 mt-1">
+                <span>Min: ₹1.00</span>
+                <button
+                  type="button"
+                  className="text-brand-600 hover:underline font-semibold"
+                  onClick={() => setCreditAmountToApply(String(Math.min(selectedDueForCredit.balanceAmount, availableCredit)))}
+                >
+                  Apply Maximum ({formatCurrency(Math.min(selectedDueForCredit.balanceAmount, availableCredit))})
+                </button>
+              </div>
+            </div>
+
+            {/* Live Calculation Preview */}
+            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs space-y-1.5 text-emerald-950">
+              <div className="flex justify-between">
+                <span>New Due Balance:</span>
+                <span className="font-bold">
+                  {formatCurrency(
+                    Math.max(0, selectedDueForCredit.balanceAmount - (Number(creditAmountToApply) || 0))
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>Remaining Credit After:</span>
+                <span className="font-bold">
+                  {formatCurrency(
+                    Math.max(0, availableCredit - (Number(creditAmountToApply) || 0))
+                  )}
+                </span>
+              </div>
+              {Number(creditAmountToApply) >= selectedDueForCredit.balanceAmount && (
+                <p className="text-[11px] text-emerald-800 font-medium pt-1 border-t border-emerald-200">
+                  ✓ This invoice will be fully settled and marked as <strong>PAID</strong>.
+                </p>
+              )}
+            </div>
+
+            {creditApplyError && (
+              <p className="text-xs text-red-600 font-medium">{creditApplyError}</p>
+            )}
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
+              <Button
+                variant="outline"
+                onClick={() => setSelectedDueForCredit(null)}
+                disabled={isApplyingCredit}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+                isLoading={isApplyingCredit}
+                onClick={handleApplyCredit}
+              >
+                Confirm & Pay with Credit
+              </Button>
+            </div>
+          </div>
+        </Modal>
       )}
     </div>
   );

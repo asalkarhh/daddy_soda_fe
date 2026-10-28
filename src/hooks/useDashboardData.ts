@@ -21,11 +21,12 @@ export function useOperationalSummary() {
   });
 }
 
-export function useFranchiseSummary() {
+export function useFranchiseSummary(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ['franchise-summary'],
     queryFn: dashboardApi.getFranchiseSummary,
     staleTime: 60 * 1000,
+    enabled: options?.enabled ?? true,
   });
 }
 

@@ -77,6 +77,10 @@ export const DuePaymentsPage: React.FC = () => {
     setCreditApplyError('');
     try {
       const invoiceId = selectedDueForCredit.invoiceId || selectedDueForCredit.id;
+      if (!invoiceId) {
+        setCreditApplyError('Invalid invoice identifier.');
+        return;
+      }
       await invoiceApi.applyCredit(invoiceId, amt);
       success(`Applied ${formatCurrency(amt)} credit to ${selectedDueForCredit.invoiceNumber}.`, 'Credit Applied');
       setSelectedDueForCredit(null);

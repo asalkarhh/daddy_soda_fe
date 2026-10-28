@@ -4,7 +4,7 @@ export type PaymentTerm = 'FULL_PAYMENT' | 'PARTIAL_PAYMENT' | 'CREDIT';
 
 export type InvoicePaymentStatus = 'UNPAID' | 'PARTIALLY_PAID' | 'PAID' | 'OVERDUE';
 
-export type PaymentMode = 'CASH' | 'UPI' | 'BANK_TRANSFER' | 'CHEQUE' | 'OTHER';
+export type PaymentMode = 'CASH' | 'UPI' | 'BANK_TRANSFER' | 'CHEQUE' | 'OTHER' | 'CREDIT';
 
 export interface InvoiceItem {
   id?: string;
@@ -37,7 +37,9 @@ export interface Invoice {
   dueDate?: string;
   dueDateExtensionReason?: string;
   subtotal: number;
+  subtotalAmount?: number;
   gstRate: number;
+  gstRatePercent?: number;
   gstAmount: number;
   totalAmount: number;
   originalTotalAmount?: number;

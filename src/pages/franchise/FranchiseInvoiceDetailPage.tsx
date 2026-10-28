@@ -24,6 +24,7 @@ import {
 import { LoadingScreen } from '../../components/common/LoadingScreen';
 import { ErrorMessage } from '../../components/common/ErrorMessage';
 import { EmptyState } from '../../components/common/EmptyState';
+import { PaymentMode } from '../../types/invoice.types';
 import { InvoiceStatusBadge } from '../../components/invoices/InvoiceStatusBadge';
 import { InvoiceTypeBadge } from '../../components/invoices/InvoiceTypeBadge';
 import {
@@ -69,6 +70,20 @@ export const FranchiseInvoiceDetailPage: React.FC = () => {
   const isOverdue = invoice.paymentStatus === 'OVERDUE';
   const hasBalance = invoice.balanceAmount > 0;
   const items = invoice.items || [];
+
+  const creditPayment = (Number(invoice.creditAppliedAmount) > 0) ? {
+    id: 'applied-credit-record',
+    invoiceId: invoice.id,
+    paymentDate: invoice.invoiceDate,
+    amount: Number(invoice.creditAppliedAmount),
+    paymentMode: 'CREDIT' as PaymentMode,
+    referenceNumber: 'CREDIT-APPLIED',
+    remarks: 'Available credit applied from franchise account',
+    recordedBy: 'SYSTEM',
+    createdAt: invoice.createdAt || invoice.invoiceDate,
+  } : null;
+
+  const allPayments = creditPayment ? [creditPayment, ...payments] : payments;
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12">
@@ -308,7 +323,7 @@ export const FranchiseInvoiceDetailPage: React.FC = () => {
                 <div className="flex justify-between py-1 border-b border-slate-200">
                   <span className="text-slate-600">Subtotal:</span>
                   <span className="font-medium text-slate-900">
-                    {formatCurrency(invoice.subtotal)}
+                    {formatCurrency(invoice.subtotalAmount ?? invoice.subtotal ?? 0)}
                   </span>
                 </div>
 
@@ -316,7 +331,7 @@ export const FranchiseInvoiceDetailPage: React.FC = () => {
                   <>
                     <div className="flex justify-between py-1 border-b border-slate-200">
                       <span className="text-slate-600">
-                        GST ({invoice.gstRate || 0}%):
+                        GST ({invoice.gstRatePercent ?? invoice.gstRate ?? 0}%):
                       </span>
                       <span className="font-medium text-slate-900">
                         {formatCurrency(invoice.gstAmount || 0)}
@@ -334,6 +349,13 @@ export const FranchiseInvoiceDetailPage: React.FC = () => {
                   <span>Grand Total:</span>
                   <span className="text-brand-700">{formatCurrency(invoice.totalAmount)}</span>
                 </div>
+
+                {(Number(invoice.creditAppliedAmount) > 0) && (
+                  <div className="flex justify-between py-1 text-emerald-700 font-semibold">
+                    <span>Available Credit Applied:</span>
+                    <span>{formatCurrency(invoice.creditAppliedAmount)}</span>
+                  </div>
+                )}
 
                 <div className="flex justify-between py-1 text-emerald-700 font-medium">
                   <span>Total Paid:</span>
@@ -363,7 +385,7 @@ export const FranchiseInvoiceDetailPage: React.FC = () => {
         <CardHeader className="pb-3 border-b border-slate-100 flex flex-row items-center justify-between">
           <CardTitle className="text-base font-semibold text-slate-800 flex items-center gap-2">
             <CreditCard className="w-4 h-4 text-brand-500" />
-            Payment History Ledger ({payments.length})
+            Payment History Ledger ({allPayments.length})
           </CardTitle>
           {invoice.paidAmount >= invoice.totalAmount && (
             <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">
@@ -377,7 +399,7 @@ export const FranchiseInvoiceDetailPage: React.FC = () => {
             <div className="p-6 text-center text-sm text-slate-500">
               Loading payment history...
             </div>
-          ) : payments.length === 0 ? (
+          ) : allPayments.length === 0 ? (
             <div className="py-8 text-center">
               <EmptyState
                 icon={<CreditCard className="w-6 h-6 text-slate-400" />}
@@ -400,7 +422,7 @@ export const FranchiseInvoiceDetailPage: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {payments.map((pmt, idx) => (
+                  {allPayments.map((pmt, idx) => (
                     <TableRow key={pmt.id || idx}>
                       <TableCell className="text-slate-400">{idx + 1}</TableCell>
                       <TableCell className="font-medium text-slate-900">
@@ -410,8 +432,12 @@ export const FranchiseInvoiceDetailPage: React.FC = () => {
                         {formatCurrency(pmt.amount)}
                       </TableCell>
                       <TableCell>
-                        <span className="inline-block px-2 py-0.5 text-xs font-medium rounded bg-slate-100 text-slate-700">
-                          {pmt.paymentMode.replace('_', ' ')}
+                        <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${
+                          pmt.paymentMode === 'CREDIT'
+                            ? 'bg-emerald-100 text-emerald-800 font-semibold border border-emerald-300'
+                            : 'bg-slate-100 text-slate-700'
+                        }`}>
+                          {pmt.paymentMode === 'CREDIT' ? 'CREDIT APPLIED' : pmt.paymentMode.replace('_', ' ')}
                         </span>
                       </TableCell>
                       <TableCell className="font-mono text-xs text-slate-600">

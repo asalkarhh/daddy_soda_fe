@@ -319,12 +319,12 @@ export const InvoiceDetailPage: React.FC = () => {
             <div className="w-full sm:w-80 space-y-2 text-xs">
               <div className="flex justify-between items-center text-slate-600">
                 <span>Subtotal (Base Value):</span>
-                <span className="font-semibold text-slate-900">{formatCurrency(invoice.subtotal)}</span>
+                <span className="font-semibold text-slate-900">{formatCurrency(invoice.subtotalAmount ?? invoice.subtotal ?? 0)}</span>
               </div>
 
               {invoice.invoiceType === 'GST' && (
                 <div className="flex justify-between items-center text-slate-600">
-                  <span>GST ({invoice.gstRate}%):</span>
+                  <span>GST ({invoice.gstRatePercent ?? invoice.gstRate ?? 0}%):</span>
                   <span className="font-semibold text-slate-900">{formatCurrency(invoice.gstAmount)}</span>
                 </div>
               )}
@@ -384,7 +384,7 @@ export const InvoiceDetailPage: React.FC = () => {
           )}
         </CardHeader>
         <CardContent className="p-0">
-          {payments.length === 0 ? (
+          {allPayments.length === 0 ? (
             <div className="p-8 text-center text-xs text-slate-500">
               No payments have been recorded for this invoice yet.
             </div>
@@ -401,14 +401,18 @@ export const InvoiceDetailPage: React.FC = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {payments.map((p) => (
+                {allPayments.map((p) => (
                   <TableRow key={p.id}>
                     <TableCell className="font-semibold text-slate-900 text-xs">
                       {formatDate(p.paymentDate)}
                     </TableCell>
                     <TableCell className="text-xs">
-                      <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">
-                        {p.paymentMode.replace('_', ' ')}
+                      <span className={`px-2 py-0.5 rounded font-medium ${
+                        p.paymentMode === 'CREDIT'
+                          ? 'bg-emerald-100 text-emerald-800 font-semibold border border-emerald-300'
+                          : 'bg-slate-100 text-slate-700'
+                      }`}>
+                        {p.paymentMode === 'CREDIT' ? 'CREDIT APPLIED' : p.paymentMode.replace('_', ' ')}
                       </span>
                     </TableCell>
                     <TableCell className="font-mono text-xs text-slate-600">

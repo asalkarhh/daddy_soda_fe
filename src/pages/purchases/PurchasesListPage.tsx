@@ -29,7 +29,7 @@ import {
 import { usePurchases, usePurchaseMutations } from '../../hooks/useInventoryData';
 import { useSuppliers } from '../../hooks/useMasterData';
 import { PurchaseEntry } from '../../types/inventory.types';
-import { formatDate, formatDateTime, formatQuantity, formatActor } from '../../utils/formatters';
+import { formatDate, formatDateTimeParts, formatQuantity, formatActor } from '../../utils/formatters';
 
 export const PurchasesListPage: React.FC = () => {
   const navigate = useNavigate();
@@ -322,7 +322,16 @@ export const PurchasesListPage: React.FC = () => {
                     {formatActor(purchase.createdBy, 'System')}
                   </TableCell>
                   <TableCell className="text-xs text-slate-500">
-                    {formatDateTime(purchase.createdAt)}
+                    {(() => {
+                      const parts = formatDateTimeParts(purchase.createdAt);
+                      if (!parts) return '—';
+                      return (
+                        <div className="leading-tight">
+                          <div className="text-slate-800 font-medium whitespace-nowrap">{parts.date}</div>
+                          <div className="text-slate-500 text-[11px] whitespace-nowrap">{parts.time}</div>
+                        </div>
+                      );
+                    })()}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1.5">

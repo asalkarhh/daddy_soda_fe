@@ -35,7 +35,7 @@ import { DeliverOrderModal } from '../../components/orders/DeliverOrderModal';
 import { useOrders, useOrderMutations } from '../../hooks/useOrderData';
 import { useActiveFranchises } from '../../hooks/useMasterData';
 import { SalesOrder, SalesOrderStatus } from '../../types/order.types';
-import { formatDate, formatDateTime, formatQuantity, formatCurrency, formatActor } from '../../utils/formatters';
+import { formatDate, formatDateTimeParts, formatQuantity, formatCurrency, formatActor } from '../../utils/formatters';
 
 export const OrdersListPage: React.FC = () => {
   const navigate = useNavigate();
@@ -298,7 +298,16 @@ export const OrdersListPage: React.FC = () => {
                     {formatActor(order.createdBy, 'System')}
                   </TableCell>
                   <TableCell className="text-xs text-slate-500">
-                    {formatDateTime(order.createdAt)}
+                    {(() => {
+                      const parts = formatDateTimeParts(order.createdAt);
+                      if (!parts) return '—';
+                      return (
+                        <div className="leading-tight">
+                          <div className="text-slate-800 font-medium whitespace-nowrap">{parts.date}</div>
+                          <div className="text-slate-500 text-[11px] whitespace-nowrap">{parts.time}</div>
+                        </div>
+                      );
+                    })()}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">

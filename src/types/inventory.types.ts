@@ -72,7 +72,8 @@ export interface InventoryStock {
   flavourName: string;
   bottleSizeLitre: number;
   availableQuantity: number;
-  productActive: boolean;
+  active?: boolean;
+  productActive?: boolean;
   lastMovementAt?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -113,6 +114,7 @@ export interface StockMovement {
   note?: string;
   createdBy?: string;
   createdAt: string;
+  movementAt?: string;
 }
 
 export interface StockMovementFilterParams {

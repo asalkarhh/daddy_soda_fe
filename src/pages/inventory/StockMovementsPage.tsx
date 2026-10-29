@@ -53,7 +53,7 @@ export const StockMovementsPage: React.FC = () => {
   // Query movements
   const { data, isLoading } = useStockMovements({
     productId: selectedProduct || undefined,
-    movementType,
+    movementType: movementType === 'ALL' ? undefined : movementType,
     fromDate: fromDate || undefined,
     toDate: toDate || undefined,
     page: page - 1,
@@ -127,6 +127,51 @@ export const StockMovementsPage: React.FC = () => {
       default:
         return <Badge variant="neutral" size="sm">{type}</Badge>;
     }
+  };
+
+  const renderMovementDateTime = (dt: string | null | undefined) => {
+    if (!dt) return '—';
+    const formatted = formatDateTime(dt);
+    if (formatted === '—') return '—';
+    const commaIdx = formatted.indexOf(',');
+    if (commaIdx !== -1) {
+      const datePart = formatted.substring(0, commaIdx + 1);
+      const timePart = formatted.substring(commaIdx + 1).trim();
+      return (
+        <div className="leading-tight">
+          <div className="text-slate-900 font-medium whitespace-nowrap">{datePart}</div>
+          <div className="text-slate-500 text-[11px] whitespace-nowrap">{timePart}</div>
+        </div>
+      );
+    }
+    return formatted;
+  };
+
+  const renderMovementNote = (note: string | null | undefined) => {
+    if (!note) return '—';
+    const deliveredMatch = note.match(/^(Delivered sales order:\s*[^\s]+)\s+(to\s+.+)$/i);
+    if (deliveredMatch) {
+      return (
+        <div className="leading-tight max-w-xs whitespace-normal break-words">
+          <div className="text-slate-800 font-medium">{deliveredMatch[1]}</div>
+          <div className="text-slate-500 text-[11px]">{deliveredMatch[2]}</div>
+        </div>
+      );
+    }
+    const purchaseMatch = note.match(/^(Stock inward via purchase bill:)\s*(.+)$/i);
+    if (purchaseMatch) {
+      return (
+        <div className="leading-tight max-w-xs whitespace-normal break-words">
+          <div className="text-slate-800">{purchaseMatch[1]}</div>
+          <div className="text-slate-500 text-[11px] font-mono">{purchaseMatch[2]}</div>
+        </div>
+      );
+    }
+    return (
+      <div className="leading-tight max-w-xs whitespace-normal break-words text-slate-600">
+        {note}
+      </div>
+    );
   };
 
   const productOptions = [
@@ -276,8 +321,8 @@ export const StockMovementsPage: React.FC = () => {
           ) : (
             movements.map((m) => (
               <TableRow key={m.id}>
-                <TableCell className="text-xs text-slate-600 whitespace-nowrap">
-                  {formatDateTime(m.createdAt)}
+                <TableCell className="text-xs text-slate-600">
+                  {renderMovementDateTime(m.movementAt || m.createdAt)}
                 </TableCell>
                 <TableCell>
                   <span className="font-semibold text-slate-900 block">
@@ -316,8 +361,8 @@ export const StockMovementsPage: React.FC = () => {
                     '—'
                   )}
                 </TableCell>
-                <TableCell className="text-xs text-slate-600 max-w-xs truncate" title={m.note}>
-                  {m.note || '—'}
+                <TableCell className="text-xs text-slate-600 max-w-xs" title={m.note}>
+                  {renderMovementNote(m.note)}
                 </TableCell>
                 <TableCell className="text-xs text-slate-500">{formatActor(m.createdBy, 'System')}</TableCell>
               </TableRow>

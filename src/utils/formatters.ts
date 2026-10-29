@@ -44,6 +44,27 @@ export function formatDateTime(dateString: string | null | undefined): string {
   }
 }
 
+/**
+ * Format ISO date string into date and time parts for stacked multiline display:
+ * date: "29 Oct 2026,"
+ * time: "04:35 pm"
+ */
+export function formatDateTimeParts(
+  dateString: string | null | undefined
+): { date: string; time: string } | null {
+  if (!dateString) return null;
+  const formatted = formatDateTime(dateString);
+  if (!formatted || formatted === '—') return null;
+  const commaIdx = formatted.indexOf(',');
+  if (commaIdx !== -1) {
+    return {
+      date: formatted.substring(0, commaIdx + 1),
+      time: formatted.substring(commaIdx + 1).trim(),
+    };
+  }
+  return { date: formatted, time: '' };
+}
+
 /** Convert UUID-only audit fields into a readable actor label. */
 export function formatActor(value: string | null | undefined, fallback = 'System Administrator'): string {
   if (!value) return fallback;
@@ -51,39 +72,46 @@ export function formatActor(value: string | null | undefined, fallback = 'System
 }
 
 /**
- * Format numeric value as Indian Rupee display (e.g., ₹500.00)
+ * Format numeric value as Indian Rupee display (e.g., ₹500 or ₹500.50)
+ * Formats whole rupee amounts as clean integers without decimal fractions.
  */
 export function formatCurrency(amount: number | null | undefined): string {
   if (amount === null || amount === undefined || isNaN(amount)) {
-    return '₹0.00';
+    return '₹0';
   }
+  const num = Number(amount);
+  const isInt = Number.isInteger(num);
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
+    minimumFractionDigits: isInt ? 0 : 2,
+    maximumFractionDigits: isInt ? 0 : 2,
+  }).format(num);
 }
 
 /**
- * Format bottle size in Litres (e.g., 5.00 L)
+ * Format bottle size in Litres (e.g., 5 L or 1.50 L)
  */
 export function formatBottleSize(litres: number | null | undefined): string {
   if (litres === null || litres === undefined || isNaN(litres)) {
-    return '0.00 L';
+    return '0 L';
   }
-  return `${Number(litres).toFixed(2)} L`;
+  const num = Number(litres);
+  return `${Number.isInteger(num) ? num : num.toFixed(2)} L`;
 }
 
 /**
- * Format inventory quantity cleanly with 2 decimal places and unit (e.g., 150.00 Bottles / Units)
+ * Format inventory / bottle quantity cleanly without unwanted decimal fractions on whole numbers.
+ * E.g. 150 -> "150", 150.5 -> "150.5", or with unit: (150, 'Bottles') -> "150 Bottles"
  */
-export function formatQuantity(qty: number | null | undefined, unit: string = 'Bottles / Units'): string {
+export function formatQuantity(qty: number | null | undefined, unit: string = ''): string {
   if (qty === null || qty === undefined || isNaN(qty)) {
-    return `0.00 ${unit}`;
+    return unit ? `0 ${unit}` : '0';
   }
-  return `${Number(qty).toLocaleString('en-IN', {
-    minimumFractionDigits: 2,
+  const num = Number(qty);
+  const formatted = num.toLocaleString('en-IN', {
+    minimumFractionDigits: 0,
     maximumFractionDigits: 2,
-  })} ${unit}`;
+  });
+  return unit ? `${formatted} ${unit}` : formatted;
 }

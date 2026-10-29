@@ -444,7 +444,7 @@ export const AdminDashboardPage: React.FC = () => {
                 <TableBody>
                   {overdueDues.map((due: DueInvoice) => (
                     <TableRow
-                      key={due.id}
+                      key={due.invoiceId || due.id || due.invoiceNumber}
                       className="bg-red-50/50 hover:bg-red-100/60 border-l-4 border-red-500 transition-colors"
                     >
                       <TableCell className="font-semibold text-slate-900 font-mono text-xs">
@@ -473,7 +473,7 @@ export const AdminDashboardPage: React.FC = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => navigate(`/invoices/${due.id}`)}
+                          onClick={() => navigate(`/invoices/${due.invoiceId || due.id}`)}
                           className="text-red-700 hover:text-red-900 hover:bg-red-200"
                         >
                           <Eye className="w-3.5 h-3.5 mr-1" />
@@ -533,7 +533,7 @@ export const AdminDashboardPage: React.FC = () => {
                 <TableBody>
                   {dueTodayDues.map((due: DueInvoice) => (
                     <TableRow
-                      key={due.id}
+                      key={due.invoiceId || due.id || due.invoiceNumber}
                       className="bg-amber-50/40 hover:bg-amber-100/50 border-l-4 border-amber-500 transition-colors"
                     >
                       <TableCell className="font-mono text-xs font-semibold text-slate-900">
@@ -549,7 +549,7 @@ export const AdminDashboardPage: React.FC = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => navigate(`/invoices/${due.id}`)}
+                          onClick={() => navigate(`/invoices/${due.invoiceId || due.id}`)}
                           className="text-amber-800 hover:text-amber-900 hover:bg-amber-100"
                         >
                           <Eye className="w-3.5 h-3.5 mr-1" />
@@ -606,7 +606,7 @@ export const AdminDashboardPage: React.FC = () => {
                 </TableHeader>
                 <TableBody>
                   {upcomingDues.map((due: DueInvoice) => (
-                    <TableRow key={due.id}>
+                    <TableRow key={due.invoiceId || due.id || due.invoiceNumber}>
                       <TableCell className="font-mono text-xs font-semibold text-slate-900">
                         {due.invoiceNumber}
                       </TableCell>
@@ -623,7 +623,7 @@ export const AdminDashboardPage: React.FC = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => navigate(`/invoices/${due.id}`)}
+                          onClick={() => navigate(`/invoices/${due.invoiceId || due.id}`)}
                           className="text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                         >
                           <Eye className="w-3.5 h-3.5 mr-1" />

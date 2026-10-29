@@ -285,7 +285,7 @@ export const WarehouseInventoryPage: React.FC = () => {
                     )}
                   </TableCell>
                   <TableCell>
-                    <StatusBadge status={item.productActive ? 'ACTIVE' : 'INACTIVE'} />
+                    <StatusBadge status={(item.active ?? item.productActive) ? 'ACTIVE' : 'INACTIVE'} />
                   </TableCell>
                   <TableCell className="text-xs text-slate-500">
                     {formatDateTime(item.lastMovementAt)}

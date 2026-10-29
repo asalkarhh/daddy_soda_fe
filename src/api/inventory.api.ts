@@ -47,7 +47,13 @@ export const inventoryApi = {
   getWarehouseInventory: async (params?: InventoryFilterParams): Promise<PaginatedData<InventoryStock>> => {
     const response = await apiClient.get<ApiResponse<PaginatedData<InventoryStock>>>(
       '/inventory/warehouse',
-      { params: cleanQueryParams(params) }
+      {
+        params: cleanQueryParams({
+          ...params,
+          active: params?.productActive === 'ACTIVE' ? true : params?.productActive === 'INACTIVE' ? false : undefined,
+          productActive: undefined,
+        }),
+      }
     );
     return response.data.data;
   },
@@ -56,21 +62,27 @@ export const inventoryApi = {
     productId: string
   ): Promise<{ stock: InventoryStock; movements?: StockMovement[] }> => {
     const response = await apiClient.get<
-      ApiResponse<InventoryStock | { stock: InventoryStock; movements?: StockMovement[] }>
+      ApiResponse<any>
     >(`/inventory/warehouse/${productId}`);
     const data = response.data.data;
-    if (data && 'stock' in data) {
-      return data as { stock: InventoryStock; movements?: StockMovement[] };
+    if (data) {
+      const movements = data.recentMovements || data.movements || [];
+      const stock = data.stock || data;
+      return { stock, movements };
     }
-    return { stock: data as InventoryStock };
+    return { stock: data as InventoryStock, movements: [] };
   },
 
   getStockMovements: async (
     params?: StockMovementFilterParams
   ): Promise<PaginatedData<StockMovement>> => {
+    const cleaned = cleanQueryParams(params);
+    if (cleaned.movementType === 'ALL') {
+      delete cleaned.movementType;
+    }
     const response = await apiClient.get<ApiResponse<PaginatedData<StockMovement>>>(
       '/inventory/movements',
-      { params: cleanQueryParams(params) }
+      { params: cleaned }
     );
     return response.data.data;
   },

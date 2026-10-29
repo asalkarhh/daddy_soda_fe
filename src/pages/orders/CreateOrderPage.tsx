@@ -29,6 +29,7 @@ const orderItemSchema = z.object({
   productId: z.string().min(1, 'Please select a flavour/product'),
   quantity: z
     .number({ invalid_type_error: 'Quantity must be a valid number' })
+    .int('Quantity must be a whole number')
     .positive('Quantity must be greater than zero'),
   unitPrice: z
     .number({ invalid_type_error: 'Price must be a valid number' })
@@ -94,6 +95,7 @@ export const CreateOrderPage: React.FC = () => {
   });
 
   const watchedItems = watch('items') || [];
+  const selectedInitialStatus = watch('initialStatus');
 
   // Summary calculations
   const totalUniqueFlavours = watchedItems.filter((i) => i && i.productId).length;
@@ -103,16 +105,18 @@ export const CreateOrderPage: React.FC = () => {
     0
   );
 
-  const onSubmit = async (values: FormValues) => {
+  const onSubmit = async (values: FormValues, forcedStatus?: FormValues['initialStatus']) => {
+    const finalStatus = forcedStatus || values.initialStatus;
     const result = await createOrderMutation.mutateAsync({
       franchiseId: values.franchiseId,
       orderDate: values.orderDate,
-      initialStatus: values.initialStatus,
+      status: finalStatus,
+      initialStatus: finalStatus,
       notes: values.notes || undefined,
       items: values.items.map((i) => ({
         productId: i.productId,
-        quantity: Number(i.quantity),
-        unitPrice: Number(i.unitPrice),
+        quantity: Math.round(Number(i.quantity)),
+        unitPrice: Math.round(Number(i.unitPrice)),
       })),
     });
     navigate(`/orders/${result.id}`);
@@ -122,7 +126,8 @@ export const CreateOrderPage: React.FC = () => {
     setValue(`items.${index}.productId`, newProductId, { shouldValidate: true });
     const product = productMap.get(newProductId);
     if (product) {
-      setValue(`items.${index}.unitPrice`, product.defaultSellingPrice || 0, {
+      const price = product.defaultSellingPrice != null ? Math.round(Number(product.defaultSellingPrice)) : 0;
+      setValue(`items.${index}.unitPrice`, price, {
         shouldValidate: true,
       });
     }
@@ -154,7 +159,7 @@ export const CreateOrderPage: React.FC = () => {
         }
       />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+      <form onSubmit={handleSubmit((values) => onSubmit(values))} className="space-y-6" noValidate>
         {/* Order Header Card */}
         <Card>
           <CardHeader>
@@ -304,15 +309,15 @@ export const CreateOrderPage: React.FC = () => {
                   <div className="w-full md:w-32">
                     <Input
                       type="number"
-                      step="0.01"
-                      min="0.01"
+                      step="1"
+                      min="1"
                       placeholder="Qty"
                       error={errors.items?.[index]?.quantity?.message}
                       {...register(`items.${index}.quantity`, { valueAsNumber: true })}
                     />
                     {selectedProductId && (
                       <p className={`text-[11px] mt-1 font-semibold ${stockMap.get(selectedProductId) !== undefined && stockMap.get(selectedProductId)! < qty ? 'text-red-600' : 'text-emerald-700'}`}>
-                        Current stock: {formatQuantity(stockMap.get(selectedProductId) ?? 0)}
+                        Current stock: {formatQuantity(stockMap.get(selectedProductId) ?? 0, 'Bottles')}
                       </p>
                     )}
                   </div>
@@ -321,7 +326,7 @@ export const CreateOrderPage: React.FC = () => {
                   <div className="w-full md:w-32">
                     <Input
                       type="number"
-                      step="0.01"
+                      step="1"
                       min="0"
                       placeholder="Price (₹)"
                       error={errors.items?.[index]?.unitPrice?.message}
@@ -383,27 +388,31 @@ export const CreateOrderPage: React.FC = () => {
               Cancel
             </Button>
 
-            <Button
-              type="submit"
-              variant="outline"
-              leftIcon={<FileCheck className="w-4 h-4" />}
-              className="flex-1 sm:flex-initial"
-              onClick={() => setValue('initialStatus', 'DRAFT')}
-              isLoading={createOrderMutation.isPending}
-            >
-              Save as Draft
-            </Button>
+            {selectedInitialStatus === 'DRAFT' && (
+              <Button
+                type="button"
+                variant="outline"
+                leftIcon={<FileCheck className="w-4 h-4" />}
+                className="flex-1 sm:flex-initial"
+                onClick={() => handleSubmit((values) => onSubmit(values, 'DRAFT'))()}
+                isLoading={createOrderMutation.isPending}
+              >
+                Save as Draft
+              </Button>
+            )}
 
-            <Button
-              type="submit"
-              variant="primary"
-              leftIcon={<Send className="w-4 h-4" />}
-              className="flex-1 sm:flex-initial"
-              onClick={() => setValue('initialStatus', 'PLACED')}
-              isLoading={createOrderMutation.isPending}
-            >
-              Save & Place Order
-            </Button>
+            {selectedInitialStatus === 'PLACED' && (
+              <Button
+                type="button"
+                variant="primary"
+                leftIcon={<Send className="w-4 h-4" />}
+                className="flex-1 sm:flex-initial"
+                onClick={() => handleSubmit((values) => onSubmit(values, 'PLACED'))()}
+                isLoading={createOrderMutation.isPending}
+              >
+                Place Immediately
+              </Button>
+            )}
           </div>
         </div>
       </form>

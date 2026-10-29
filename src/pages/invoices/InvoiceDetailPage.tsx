@@ -99,6 +99,45 @@ export const InvoiceDetailPage: React.FC = () => {
 
   const allPayments = creditPayment ? [creditPayment, ...payments] : payments;
 
+  const renderInvoiceNotes = (notes: string | null | undefined) => {
+    if (!notes || !notes.trim()) {
+      return <span className="text-slate-400 italic">No notes specified.</span>;
+    }
+
+    const bracketRegex = /\[(.*?)\]/g;
+    const matches = [...notes.matchAll(bracketRegex)];
+
+    if (matches.length > 0) {
+      const mainNote = notes.replace(bracketRegex, '').trim();
+      return (
+        <div className="space-y-1.5 text-xs">
+          {mainNote && (
+            <div className="text-slate-800 font-medium break-words leading-relaxed">
+              {mainNote}
+            </div>
+          )}
+          <div className="space-y-1 pt-0.5">
+            {matches.map((m, idx) => (
+              <div
+                key={idx}
+                className="text-[11px] text-slate-700 bg-white px-2 py-1 rounded border border-slate-200 font-mono break-words leading-relaxed flex items-start gap-1"
+              >
+                <span className="text-brand-600 font-bold select-none">•</span>
+                <span>{m[1]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <p className="text-slate-700 italic break-words whitespace-pre-wrap leading-relaxed">
+        {notes}
+      </p>
+    );
+  };
+
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12">
       <PageHeader
@@ -273,9 +312,11 @@ export const InvoiceDetailPage: React.FC = () => {
             </div>
             <div>
               <span className="text-slate-500 block mb-1">Invoice Notes:</span>
-              <p className="text-slate-700 italic bg-slate-50 p-2 rounded border border-slate-200/60 line-clamp-2">
-                {invoice.notes || 'No notes specified.'}
-              </p>
+              <div className="bg-slate-50 p-2.5 rounded border border-slate-200/70 max-h-40 overflow-y-auto">
+                {renderInvoiceNotes(invoice.notes)}
+              </div>
+
+
             </div>
           </CardContent>
         </Card>

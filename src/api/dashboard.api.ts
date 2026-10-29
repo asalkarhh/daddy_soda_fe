@@ -72,7 +72,15 @@ export const dashboardApi = {
       '/dashboard/dues',
       { params: cleanQueryParams(params) }
     );
-    return response.data.data;
+    const data = response.data.data;
+    if (data?.content) {
+      data.content = data.content.map((d) => ({
+        ...d,
+        id: d.id || d.invoiceId,
+        invoiceId: d.invoiceId || d.id,
+      }));
+    }
+    return data;
   },
 
   // --------------------------------------------------

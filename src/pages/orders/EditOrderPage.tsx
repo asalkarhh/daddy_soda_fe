@@ -199,7 +199,7 @@ export const EditOrderPage: React.FC = () => {
     setValue(`items.${index}.productId`, newProductId, { shouldValidate: true });
     const product = productMap.get(newProductId);
     if (product) {
-      setValue(`items.${index}.unitPrice`, product.defaultSellingPrice || 0, {
+      setValue(`items.${index}.unitPrice`, product.defaultSellingPrice != null ? Math.round(Number(product.defaultSellingPrice)) : 0, {
         shouldValidate: true,
       });
     }
@@ -423,7 +423,7 @@ export const EditOrderPage: React.FC = () => {
                     <div className="w-full md:w-32">
                       <Input
                         type="number"
-                        step="0.01"
+                        step="1"
                         min="0"
                         placeholder="Price (₹)"
                         error={errors.items?.[index]?.unitPrice?.message}

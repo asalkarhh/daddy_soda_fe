@@ -24,7 +24,8 @@ export interface SalesOrder {
   franchiseName?: string;
   franchiseCode?: string;
   status: SalesOrderStatus;
-  totalItems: number;
+  totalItems?: number;
+  itemCount?: number;
   totalQuantity: number;
   orderTotal: number;
   availableCredit?: number;

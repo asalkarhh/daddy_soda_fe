@@ -393,7 +393,7 @@ export const InvoicesListPage: React.FC = () => {
                       <TableHead>Bill Type</TableHead>
                       <TableHead className="text-right">Total</TableHead>
                       <TableHead className="text-right">Paid</TableHead>
-                      <TableHead className="text-right">Balance</TableHead>
+                      <TableHead className="text-right">Pending</TableHead>
                       <TableHead>Due Date</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
@@ -445,7 +445,7 @@ export const InvoicesListPage: React.FC = () => {
                             <InvoiceStatusBadge status={inv.paymentStatus} />
                           </TableCell>
                           <TableCell className="text-right">
-                            <div className="flex items-center justify-end gap-1">
+                            <div className="flex items-center justify-center gap-1">
                               {/* View Details */}
                               <Button
                                 variant="ghost"
@@ -540,7 +540,7 @@ export const InvoicesListPage: React.FC = () => {
                           </span>
                         </div>
                         <div>
-                          <span className="font-medium text-slate-500">Balance:</span>{' '}
+                          <span className="font-medium text-slate-500">Pending:</span>{' '}
                           <span
                             className={`font-bold ${
                               isOverdue ? 'text-red-700' : 'text-brand-700'

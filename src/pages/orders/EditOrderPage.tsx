@@ -128,7 +128,7 @@ export const EditOrderPage: React.FC = () => {
   const watchedItems = watch('items') || [];
 
   const totalUniqueFlavours = watchedItems.filter((i) => i && i.productId).length;
-  const totalQuantity = watchedItems.reduce((sum, i) => sum + (Number(i?.quantity) || 0), 0);
+  const totalQuantity = Math.round(watchedItems.reduce((sum, i) => sum + (Number(i?.quantity) || 0), 0));
   const orderTotal = watchedItems.reduce(
     (sum, i) => sum + (Number(i?.quantity) || 0) * (Number(i?.unitPrice) || 0),
     0
@@ -185,9 +185,9 @@ export const EditOrderPage: React.FC = () => {
         reason: values.reason || undefined,
         items: values.items.map((i) => ({
           productId: i.productId,
-          quantity: Number(i.quantity),
+          quantity: Math.round(Number(i.quantity)),
           unitPrice: Number(i.unitPrice),
-          originalQuantity: i.originalQuantity,
+          originalQuantity: i.originalQuantity != null ? Math.round(Number(i.originalQuantity)) : undefined,
           adminNote: i.adminNote || undefined,
         })),
       },

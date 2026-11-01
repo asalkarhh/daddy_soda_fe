@@ -60,7 +60,7 @@ export const FRANCHISE_TIERS: Record<'tier3' | 'tier1_2', CityTierModel> = {
 };
 
 export const SETUP_EQUIPMENT_INCLUDES = [
-  { name: 'Soda dispensing machines (×8 flavors)', icon: '🥤', desc: 'Commercial high-output draft system with 8 dedicated flavor taps' },
+  { name: 'Soda dispensing machines (24 flavors)', icon: '🥤', desc: 'Commercial high-output draft system for all 24 signature flavors' },
   { name: 'CCTV & remote monitoring', icon: '📹', desc: '24/7 security & live smartphone feed access for absentee owners' },
   { name: 'Branding & signature signage', icon: '✨', desc: 'Official backlit Daddy Soda House fascia, menu boards & 3D emblem' },
   { name: 'Interior & counter furniture', icon: '🪑', desc: 'Sleek wood-fluted counter facade, ambient warm LED bar & shelves' },

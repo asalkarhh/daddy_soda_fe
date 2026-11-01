@@ -10,6 +10,7 @@ import {
   Send,
   XCircle,
   X,
+  AlertTriangle,
 } from 'lucide-react';
 import { PageHeader } from '../../components/common/PageHeader';
 import { Button } from '../../components/ui/Button';
@@ -32,6 +33,7 @@ import { ConfirmationModal } from '../../components/common/ConfirmationModal';
 import { OrderStatusBadge } from '../../components/orders/OrderStatusBadge';
 import { CancelOrderModal } from '../../components/orders/CancelOrderModal';
 import { useMyOrders, useOrderMutations } from '../../hooks/useOrderData';
+import { useFranchiseSummary } from '../../hooks/useDashboardData';
 import { SalesOrder, SalesOrderStatus } from '../../types/order.types';
 import { formatDate, formatQuantity, formatCurrency } from '../../utils/formatters';
 
@@ -78,6 +80,8 @@ export const FranchiseOrdersPage: React.FC = () => {
   }, [status, fromDate, toDate, pageParam, sizeParam]);
 
   const { data: pageData, isLoading, isError, refetch } = useMyOrders(queryParams);
+  const { data: franchiseSummary } = useFranchiseSummary();
+  const hasOverdue = (franchiseSummary?.overdueInvoiceCount || 0) > 0 || (Number(franchiseSummary?.overdueAmount) > 0);
   const { placeOrderMutation, cancelOrderMutation, deleteOrderMutation } = useOrderMutations();
 
   const orders = pageData?.content || [];
@@ -154,6 +158,36 @@ export const FranchiseOrdersPage: React.FC = () => {
           </Button>
         }
       />
+
+      {/* Overdue Payment Warning Banner */}
+      {hasOverdue && (
+        <div className="p-4 rounded-xl bg-red-50 border-2 border-red-300 text-red-900 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="p-2 bg-red-100 rounded-lg text-red-700 shrink-0 mt-0.5">
+              <AlertTriangle className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-bold text-sm text-red-900">
+                Direct Order Placement Restricted: Overdue Payment Notice
+              </h3>
+              <p className="text-xs text-red-700 mt-1 leading-relaxed">
+                Your franchise currently has <strong>{franchiseSummary?.overdueInvoiceCount || 1} overdue invoice(s)</strong> totalling{' '}
+                <strong className="font-bold text-red-900">{formatCurrency(Number(franchiseSummary?.overdueAmount) || 0)}</strong>.
+                Direct orders cannot be placed until overdue payments are cleared.
+              </p>
+            </div>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="border-red-300 bg-white text-red-800 hover:bg-red-100 shrink-0 font-semibold"
+            onClick={() => navigate('/my-dues?dueType=OVERDUE')}
+          >
+            Review Overdue Dues
+          </Button>
+        </div>
+      )}
 
       {/* Filter Card */}
       <Card>
@@ -341,11 +375,13 @@ export const FranchiseOrdersPage: React.FC = () => {
                                   variant="outline"
                                   size="sm"
                                   leftIcon={<Send className="w-3.5 h-3.5" />}
+                                  disabled={hasOverdue}
                                   onClick={() => {
+                                    if (hasOverdue) return;
                                     setSelectedOrder(order);
                                     setIsPlaceModalOpen(true);
                                   }}
-                                  title="Place Order"
+                                  title={hasOverdue ? 'Direct order placement restricted due to overdue payment' : 'Place Order'}
                                 >
                                   Place
                                 </Button>
@@ -447,10 +483,13 @@ export const FranchiseOrdersPage: React.FC = () => {
                             variant="primary"
                             size="sm"
                             className="flex-1"
+                            disabled={hasOverdue}
                             onClick={() => {
+                              if (hasOverdue) return;
                               setSelectedOrder(order);
                               setIsPlaceModalOpen(true);
                             }}
+                            title={hasOverdue ? 'Direct order placement restricted due to overdue payment' : 'Place Order'}
                           >
                             Place
                           </Button>

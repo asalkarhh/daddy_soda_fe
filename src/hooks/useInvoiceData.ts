@@ -66,6 +66,8 @@ export function useInvoiceMutations() {
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
       queryClient.invalidateQueries({ queryKey: ['my-invoices'] });
       queryClient.invalidateQueries({ queryKey: ['invoice', data.id] });
+      queryClient.invalidateQueries({ queryKey: ['dues'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       success(`Due date for invoice "${data.invoiceNumber}" updated successfully!`);
     },
     onError: (err) => {

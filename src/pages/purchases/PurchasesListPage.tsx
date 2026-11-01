@@ -308,7 +308,7 @@ export const PurchasesListPage: React.FC = () => {
                     {purchase.supplierBillNumber || '—'}
                   </TableCell>
                   <TableCell className="text-center font-medium">
-                    {purchase.totalItems || (purchase.items ? purchase.items.length : 0)}
+                    {purchase.totalItems ?? purchase.itemCount ?? (purchase.items ? purchase.items.length : 0)}
                   </TableCell>
                   <TableCell className="text-right font-semibold text-slate-900">
                     {formatQuantity(purchase.totalQuantity)}
@@ -334,7 +334,7 @@ export const PurchasesListPage: React.FC = () => {
                     })()}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-1.5">
+                    <div className="flex items-center justify-center gap-1.5">
                       <Button
                         variant="ghost"
                         size="sm"

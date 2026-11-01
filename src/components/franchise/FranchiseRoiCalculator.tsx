@@ -216,7 +216,7 @@ export default function FranchiseRoiCalculator({ onApplyClick, className = '' }:
 
           <div className="flex items-center gap-2 text-[11px] text-[#A8987E]">
             <ShieldCheck className="w-4 h-4 text-[#F5A623]" />
-            <span>Includes 8-tap soda syrup yield &amp; ice-gola unit margins.</span>
+            <span>Includes 24-flavor soda syrup yield &amp; ice-gola unit margins.</span>
           </div>
 
         </div>

@@ -256,7 +256,7 @@ export const FranchiseInvoicesPage: React.FC = () => {
                       <TableHead>Bill Type</TableHead>
                       <TableHead className="text-right">Total</TableHead>
                       <TableHead className="text-right">Paid</TableHead>
-                      <TableHead className="text-right">Balance</TableHead>
+                      <TableHead className="text-right">Pending</TableHead>
                       <TableHead>Due Date</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
@@ -381,7 +381,7 @@ export const FranchiseInvoicesPage: React.FC = () => {
                         </span>
                       </div>
                       <div>
-                        <span className="text-slate-500 block">Balance</span>
+                        <span className="text-slate-500 block">Pending</span>
                         <span
                           className={`font-semibold ${
                             isOverdue

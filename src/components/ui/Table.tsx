@@ -6,7 +6,7 @@ export const Table = React.forwardRef<HTMLTableElement, HTMLAttributes<HTMLTable
     <div className="relative w-full overflow-auto rounded-lg border border-slate-200 bg-white shadow-sm">
       <table
         ref={ref}
-        className={cn('w-full caption-bottom text-sm text-left', className)}
+        className={cn('w-full caption-bottom text-sm text-center', className)}
         {...props}
       />
     </div>
@@ -43,26 +43,37 @@ export const TableRow = React.forwardRef<HTMLTableRowElement, HTMLAttributes<HTM
 TableRow.displayName = 'TableRow';
 
 export const TableHead = React.forwardRef<HTMLTableCellElement, ThHTMLAttributes<HTMLTableCellElement>>(
-  ({ className, ...props }, ref) => (
-    <th
-      ref={ref}
-      className={cn(
-        'h-11 px-4 text-xs font-semibold uppercase tracking-wider text-slate-600 align-middle',
-        className
-      )}
-      {...props}
-    />
-  )
+  ({ className, ...props }, ref) => {
+    const cleanClass = className ? className.replace(/\btext-(left|right)\b/g, '').trim() : '';
+    return (
+      <th
+        ref={ref}
+        className={cn(
+          'h-11 px-4 text-xs font-semibold uppercase tracking-wider text-slate-600 align-middle text-center',
+          cleanClass,
+          'text-center'
+        )}
+        {...props}
+      />
+    );
+  }
 );
 TableHead.displayName = 'TableHead';
 
 export const TableCell = React.forwardRef<HTMLTableCellElement, TdHTMLAttributes<HTMLTableCellElement>>(
-  ({ className, ...props }, ref) => (
-    <td
-      ref={ref}
-      className={cn('p-4 align-middle text-slate-700 text-sm font-normal', className)}
-      {...props}
-    />
-  )
+  ({ className, ...props }, ref) => {
+    const cleanClass = className ? className.replace(/\btext-(left|right)\b/g, '').trim() : '';
+    return (
+      <td
+        ref={ref}
+        className={cn(
+          'p-4 align-middle text-slate-700 text-sm font-normal text-center',
+          cleanClass,
+          'text-center'
+        )}
+        {...props}
+      />
+    );
+  }
 );
 TableCell.displayName = 'TableCell';

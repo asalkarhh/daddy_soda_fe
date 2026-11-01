@@ -3,7 +3,8 @@ import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Enquiry, EnquiryStatus } from '../../types/dashboard.types';
 import { useEnquiryMutations } from '../../hooks/useDashboardData';
-import { AlertCircle, Info } from 'lucide-react';
+import { AlertCircle, Info, CheckCircle } from 'lucide-react';
+import { enquiryStorage } from '../../utils/storage';
 
 interface UpdateEnquiryStatusModalProps {
   isOpen: boolean;
@@ -37,6 +38,39 @@ export const UpdateEnquiryStatusModal: React.FC<UpdateEnquiryStatusModalProps> =
 
   if (!enquiry) return null;
 
+  if (enquiry.status === 'CLOSED') {
+    return (
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        size="md"
+        title={`Enquiry #${enquiry.enquiryNumber} is Closed`}
+        description="This franchise enquiry has been completed/closed and its status can no longer be updated."
+      >
+        <div className="space-y-4 py-2">
+          <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-start gap-3">
+            <CheckCircle className="w-5 h-5 text-slate-500 mt-0.5 shrink-0" />
+            <div className="text-xs text-slate-600 leading-relaxed">
+              <strong className="text-slate-800 block mb-1">Status Locked: CLOSED</strong>
+              This enquiry is in its final terminal state. No further status changes are permitted.
+            </div>
+          </div>
+          {enquiry.adminNotes && (
+            <div className="text-xs bg-amber-50/60 border border-amber-200 rounded-xl p-3">
+              <span className="font-bold text-amber-900 block mb-1">Saved Admin Notes:</span>
+              <p className="text-amber-950 whitespace-pre-wrap">{enquiry.adminNotes}</p>
+            </div>
+          )}
+        </div>
+        <div className="flex justify-end pt-3 border-t border-slate-100">
+          <Button variant="outline" type="button" onClick={onClose}>
+            Close
+          </Button>
+        </div>
+      </Modal>
+    );
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setValidationError(null);
@@ -49,6 +83,7 @@ export const UpdateEnquiryStatusModal: React.FC<UpdateEnquiryStatusModalProps> =
           adminNotes: adminNotes.trim() || undefined,
         },
       });
+      enquiryStorage.markAsRead(enquiry.id);
       onClose();
     } catch (err: any) {
       if (err?.response?.data?.message) {

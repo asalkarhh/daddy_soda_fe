@@ -101,17 +101,17 @@ export function formatBottleSize(litres: number | null | undefined): string {
 }
 
 /**
- * Format inventory / bottle quantity cleanly without unwanted decimal fractions on whole numbers.
- * E.g. 150 -> "150", 150.5 -> "150.5", or with unit: (150, 'Bottles') -> "150 Bottles"
+ * Format inventory / bottle quantity cleanly as a whole number without decimal fractions.
+ * E.g. 150 -> "150", or with unit: (150, 'Bottles') -> "150 Bottles"
  */
 export function formatQuantity(qty: number | null | undefined, unit: string = ''): string {
-  if (qty === null || qty === undefined || isNaN(qty)) {
+  if (qty === null || qty === undefined || isNaN(Number(qty))) {
     return unit ? `0 ${unit}` : '0';
   }
-  const num = Number(qty);
+  const num = Math.round(Number(qty));
   const formatted = num.toLocaleString('en-IN', {
     minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 0,
   });
   return unit ? `${formatted} ${unit}` : formatted;
 }

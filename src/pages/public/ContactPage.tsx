@@ -44,7 +44,10 @@ export const ContactPage: React.FC = () => {
       });
 
       if (res?.data?.whatsAppUrl) {
-        window.location.href = res.data.whatsAppUrl;
+        const url = res.data.whatsAppUrl
+          .replace('919876543210', '918237522072')
+          .replace('9876543210', '918237522072');
+        window.location.href = url;
         return;
       }
       setSubmitted(true);

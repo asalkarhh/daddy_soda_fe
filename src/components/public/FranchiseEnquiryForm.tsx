@@ -111,7 +111,9 @@ export const FranchiseEnquiryForm: React.FC<FranchiseEnquiryFormProps> = ({
         onSuccess?.();
 
         // Redirect browser to backend provided WhatsApp URL
-        const redirectUrl = response.data.whatsAppUrl;
+        const redirectUrl = response.data.whatsAppUrl
+          .replace('919876543210', '918237522072')
+          .replace('9876543210', '918237522072');
         window.location.href = redirectUrl;
       } else {
         throw new Error('Missing WhatsApp redirect information from server response.');

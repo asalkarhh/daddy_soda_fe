@@ -23,6 +23,7 @@ import { Textarea } from '../../components/ui/Textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { useProducts } from '../../hooks/useMasterData';
 import { useOrderMutations } from '../../hooks/useOrderData';
+import { useFranchiseSummary } from '../../hooks/useDashboardData';
 import { formatBottleSize, formatQuantity, formatCurrency } from '../../utils/formatters';
 
 const todayStr = new Date().toISOString().split('T')[0];
@@ -66,6 +67,10 @@ export const FranchiseCreateOrderPage: React.FC = () => {
   const productMap = new Map(products.map((p) => [p.id, p]));
 
   const { createOrderMutation } = useOrderMutations();
+  const { data: franchiseSummary } = useFranchiseSummary();
+  const overdueCount = franchiseSummary?.overdueInvoiceCount || 0;
+  const overdueAmount = Number(franchiseSummary?.overdueAmount) || 0;
+  const hasOverdue = overdueCount > 0 || overdueAmount > 0;
 
   const {
     register,
@@ -100,7 +105,7 @@ export const FranchiseCreateOrderPage: React.FC = () => {
 
   // Summary calculations based on product master default selling prices
   const totalUniqueFlavours = watchedItems.filter((i) => i && i.productId).length;
-  const totalQuantity = watchedItems.reduce((sum, i) => sum + (Number(i?.quantity) || 0), 0);
+  const totalQuantity = Math.round(watchedItems.reduce((sum, i) => sum + (Number(i?.quantity) || 0), 0));
   const orderTotal = watchedItems.reduce((sum, i) => {
     const prod = i?.productId ? productMap.get(i.productId) : null;
     const price = prod?.defaultSellingPrice || 0;
@@ -108,19 +113,23 @@ export const FranchiseCreateOrderPage: React.FC = () => {
   }, 0);
 
   const onSubmit = async (values: FormValues, forcedStatus?: FormValues['initialStatus']) => {
+    const finalStatus = forcedStatus || values.initialStatus;
     if (hasUnpricedItems) {
+      return;
+    }
+    if (hasOverdue && finalStatus === 'PLACED') {
       return;
     }
 
     // Notice: NO franchiseId or unitPrice in payload sent by Franchise Owner
     const result = await createOrderMutation.mutateAsync({
       orderDate: values.orderDate,
-      status: forcedStatus || values.initialStatus,
+      status: finalStatus,
       reorderedFromOrderNumber: reorderState?.reorderFrom,
       notes: values.notes || undefined,
       items: values.items.map((i) => ({
         productId: i.productId,
-        quantity: Number(i.quantity),
+        quantity: Math.round(Number(i.quantity)),
       })),
     });
 
@@ -148,6 +157,37 @@ export const FranchiseCreateOrderPage: React.FC = () => {
         }
       />
 
+      {/* Overdue Payment Warning Banner (Rendered only once) */}
+      {hasOverdue && (
+        <div className="p-4 rounded-xl bg-red-50 border-2 border-red-300 text-red-900 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="p-2 bg-red-100 rounded-lg text-red-700 shrink-0 mt-0.5">
+              <AlertTriangle className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-bold text-sm text-red-900">
+                Direct Order Placement Restricted: Overdue Payment Notice
+              </h3>
+              <p className="text-xs text-red-700 mt-1 leading-relaxed">
+                Your franchise currently has <strong>{overdueCount} overdue invoice{overdueCount > 1 ? 's' : ''}</strong> totalling{' '}
+                <strong className="font-bold text-red-900">{formatCurrency(overdueAmount)}</strong>.
+                Direct orders cannot be placed until overdue payments are cleared.
+                You can still <strong className="underline font-bold">Save this order as a Draft</strong>.
+              </p>
+            </div>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="border-red-300 bg-white text-red-800 hover:bg-red-100 shrink-0 font-semibold"
+            onClick={() => navigate('/my-dues?dueType=OVERDUE')}
+          >
+            Review Overdue Dues
+          </Button>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit((values) => onSubmit(values))} className="space-y-6" noValidate>
         {/* Order Header Card - NO FRANCHISE SELECTOR */}
         <Card>
@@ -172,16 +212,22 @@ export const FranchiseCreateOrderPage: React.FC = () => {
               </div>
 
               {/* Initial Action choice */}
-              <div>
+              <div className={hasOverdue && selectedInitialStatus === 'PLACED' ? 'p-3 rounded-lg border-2 border-red-400 bg-red-50/60' : ''}>
                 <Select
                   label="Initial Order Status"
                   required
                   options={[
                     { label: 'Save as Draft', value: 'DRAFT' },
-                    { label: 'Place Order Directly', value: 'PLACED' },
+                    { label: hasOverdue ? 'Place Order Directly (Restricted - Overdue)' : 'Place Order Directly', value: 'PLACED' },
                   ]}
                   {...register('initialStatus')}
                 />
+                {hasOverdue && selectedInitialStatus === 'PLACED' && (
+                  <p className="text-xs font-semibold text-red-700 mt-1.5 flex items-center gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-red-600" />
+                    Direct order placement is blocked because of outstanding overdue payments. Please select &quot;Save as Draft&quot;.
+                  </p>
+                )}
               </div>
             </div>
 
@@ -220,103 +266,94 @@ export const FranchiseCreateOrderPage: React.FC = () => {
               Add Flavour
             </Button>
           </CardHeader>
-
-          <CardContent className="space-y-4">
-            {errors.items?.root?.message && (
-              <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                {errors.items.root.message}
-              </div>
-            )}
-
-            {hasUnpricedItems && (
-              <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-300 rounded-lg text-xs text-amber-800">
-                <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600" />
-                <span>
-                  One or more selected flavours cannot be ordered because prices are not yet configured.
-                  Please contact the manager.
-                </span>
-              </div>
-            )}
-
+          <CardContent className="space-y-3">
             {fields.map((field, index) => {
-              const selectedProductId = watchedItems[index]?.productId;
-              const product = productMap.get(selectedProductId);
-              const qty = Number(watchedItems[index]?.quantity) || 0;
-              const hasPrice =
-                product &&
-                product.defaultSellingPrice != null &&
-                product.defaultSellingPrice > 0;
-              const price = hasPrice ? product.defaultSellingPrice : 0;
-              const lineTotal = qty * (price || 0);
-
-              const isMissingPrice = selectedProductId && !hasPrice;
+              const currentProductId = watch(`items.${index}.productId`);
+              const currentQty = watch(`items.${index}.quantity`);
+              const selectedProduct = productMap.get(currentProductId);
+              const unitPrice = selectedProduct?.defaultSellingPrice ?? null;
+              const isMissingPrice = !!currentProductId && (unitPrice == null || unitPrice <= 0);
+              const lineTotal = unitPrice ? (Number(currentQty) || 0) * unitPrice : 0;
 
               return (
                 <div
                   key={field.id}
-                  className="space-y-2 p-3 bg-slate-50/70 border border-slate-200 rounded-xl"
+                  className="p-3 border border-slate-200 rounded-lg space-y-2 bg-slate-50/50"
                 >
-                  <div className="flex flex-col md:flex-row items-start md:items-center gap-3 relative">
-                    <span className="text-xs font-bold text-slate-400 w-6 text-center shrink-0 hidden md:block">
-                      #{index + 1}
-                    </span>
+                  <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
+                    {/* Index */}
+                    <span className="text-xs font-bold text-slate-400 w-6">#{index + 1}</span>
 
-                    {/* Flavour Selector */}
-                    <div className="flex-1 w-full md:w-auto">
+                    {/* Flavour Select */}
+                    <div className="flex-1 w-full">
                       <Controller
                         control={control}
                         name={`items.${index}.productId`}
-                        render={({ field: controllerField, fieldState }) => (
+                        render={({ field: selectField }) => (
                           <Select
-                            options={productOptions}
                             placeholder="Select flavour..."
-                            value={controllerField.value}
-                            onChange={(e) => controllerField.onChange(e.target.value)}
-                            error={fieldState.error?.message}
+                            options={productOptions}
+                            value={selectField.value}
+                            onChange={(e) => selectField.onChange(e.target.value)}
+                            error={errors.items?.[index]?.productId?.message}
                           />
                         )}
                       />
                     </div>
 
-                    {/* Item Code (Display Only) */}
+                    {/* Bottle Size (Display Only) */}
                     <div className="w-full md:w-28">
                       <Input
+                        value={
+                          selectedProduct
+                            ? formatBottleSize(selectedProduct.bottleSizeInMl)
+                            : '-'
+                        }
                         readOnly
-                        placeholder="Code"
-                        value={product?.itemCode || '—'}
-                        className="bg-slate-100 text-slate-600 font-mono text-xs cursor-default"
+                        disabled
+                        className="text-xs bg-slate-100 text-slate-600 cursor-default"
                       />
                     </div>
 
-                    {/* Bottle Size (Display Only) */}
-                    <div className="w-full md:w-24">
-                      <Input
-                        readOnly
-                        placeholder="Size"
-                        value={product ? formatBottleSize(product.bottleSizeLitre) : '—'}
-                        className="bg-slate-100 text-slate-600 text-xs cursor-default"
+                    {/* Quantity Input (Whole number only) */}
+                    <div className="w-full md:w-28">
+                      <Controller
+                        control={control}
+                        name={`items.${index}.quantity`}
+                        render={({ field: qtyField }) => (
+                          <Input
+                            type="number"
+                            min="1"
+                            step="1"
+                            placeholder="Qty"
+                            value={qtyField.value ?? ''}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              if (val === '') {
+                                qtyField.onChange('');
+                              } else {
+                                const intVal = parseInt(val, 10);
+                                qtyField.onChange(isNaN(intVal) ? '' : intVal);
+                              }
+                            }}
+                            error={errors.items?.[index]?.quantity?.message}
+                          />
+                        )}
                       />
                     </div>
 
-                    {/* Quantity Input */}
-                    <div className="w-full md:w-32">
+                    {/* Unit Price (Display Only from Product Master) */}
+                    <div className="w-full md:w-28">
                       <Input
-                        type="number"
-                        step="1"
-                        min="1"
-                        placeholder="Qty"
-                        error={errors.items?.[index]?.quantity?.message}
-                        {...register(`items.${index}.quantity`, { valueAsNumber: true })}
-                      />
-                    </div>
-
-                    {/* Unit Price (DISPLAY-ONLY for Franchise Owner) */}
-                    <div className="w-full md:w-32">
-                      <Input
+                        value={
+                          unitPrice != null && unitPrice > 0
+                            ? formatCurrency(unitPrice)
+                            : currentProductId
+                            ? 'Price Missing'
+                            : '-'
+                        }
                         readOnly
-                        placeholder="Price"
-                        value={hasPrice ? formatCurrency(price) : 'No price'}
+                        disabled
                         className={`text-xs font-medium cursor-default ${
                           isMissingPrice
                             ? 'bg-amber-100 text-amber-900 border-amber-300'
@@ -388,31 +425,40 @@ export const FranchiseCreateOrderPage: React.FC = () => {
             </Button>
 
             {selectedInitialStatus === 'DRAFT' && (
-            <Button
-              type="button"
-              variant="outline"
-              leftIcon={<FileCheck className="w-4 h-4" />}
-              className="flex-1 sm:flex-initial"
-              disabled={hasUnpricedItems}
-              onClick={() => handleSubmit((values) => onSubmit(values, 'DRAFT'))()}
-              isLoading={createOrderMutation.isPending}
+              <Button
+                type="button"
+                variant="outline"
+                leftIcon={<FileCheck className="w-4 h-4" />}
+                className="flex-1 sm:flex-initial"
+                disabled={hasUnpricedItems}
+                onClick={() => handleSubmit((values) => onSubmit(values, 'DRAFT'))()}
+                isLoading={createOrderMutation.isPending}
               >
                 Save as Draft
               </Button>
             )}
 
             {selectedInitialStatus === 'PLACED' && (
-              <Button
-              type="button"
-              variant="primary"
-              leftIcon={<Send className="w-4 h-4" />}
-              className="flex-1 sm:flex-initial"
-              disabled={hasUnpricedItems}
-              onClick={() => handleSubmit((values) => onSubmit(values, 'PLACED'))()}
-              isLoading={createOrderMutation.isPending}
-              >
-                Place Order
-              </Button>
+              <div className="flex flex-col sm:flex-row items-center gap-2">
+                {hasOverdue && (
+                  <span className="text-xs font-semibold text-red-600 flex items-center gap-1">
+                    <AlertTriangle className="w-3.5 h-3.5" />
+                    Blocked by overdue payment
+                  </span>
+                )}
+                <Button
+                  type="button"
+                  variant="primary"
+                  leftIcon={<Send className="w-4 h-4" />}
+                  className="flex-1 sm:flex-initial"
+                  disabled={hasUnpricedItems || hasOverdue}
+                  title={hasOverdue ? 'Direct order placement is restricted due to overdue payment' : undefined}
+                  onClick={() => handleSubmit((values) => onSubmit(values, 'PLACED'))()}
+                  isLoading={createOrderMutation.isPending}
+                >
+                  Place Order
+                </Button>
+              </div>
             )}
           </div>
         </div>

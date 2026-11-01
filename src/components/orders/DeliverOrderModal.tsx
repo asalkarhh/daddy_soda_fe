@@ -122,7 +122,7 @@ export const DeliverOrderModal: React.FC<DeliverOrderModalProps> = ({
               <div>
                 <span className="text-slate-500 block">Total Items / Qty:</span>
                 <span className="font-semibold text-slate-900">
-                  {order.totalItems || items.length} Flavours ({formatQuantity(order.totalQuantity)} Bottles)
+                  {order.totalItems ?? order.itemCount ?? items.length} Flavours ({formatQuantity(order.totalQuantity)} Bottles)
                 </span>
               </div>
               <div>
@@ -214,7 +214,7 @@ export const DeliverOrderModal: React.FC<DeliverOrderModalProps> = ({
             </div>
             <div>
               <span className="text-slate-500 block">Total Items:</span>
-              <span className="font-bold text-slate-900">{order.totalItems || items.length} Flavours</span>
+              <span className="font-bold text-slate-900">{order.totalItems ?? order.itemCount ?? items.length} Flavours</span>
             </div>
             <div>
               <span className="text-slate-500 block">Total Quantity:</span>

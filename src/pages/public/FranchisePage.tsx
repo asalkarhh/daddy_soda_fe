@@ -6,6 +6,7 @@ import {
   ChevronRight,
   Send,
   Zap,
+  MessageCircle,
 } from 'lucide-react';
 import DaddyLogo, { HimmatEmblem } from '@/components/common/DaddyLogo';
 import FranchiseRoiCalculator from '@/components/franchise/FranchiseRoiCalculator';
@@ -31,6 +32,7 @@ export const FranchisePage: React.FC = () => {
   });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [whatsAppUrl, setWhatsAppUrl] = useState<string>('');
   const [errors, setErrors] = useState<{ name?: string; phone?: string; email?: string }>({});
 
   const validate = () => {
@@ -56,24 +58,34 @@ export const FranchisePage: React.FC = () => {
 
     setLoading(true);
     try {
+      const cleanMobile = formData.phone.replace(/\D/g, '').slice(-10);
       const res = await publicApi.submitEnquiry({
-        fullName: formData.name,
-        mobile: formData.phone,
-        email: formData.email,
-        city: formData.city,
-        message: `Model: ${formData.tier === 'tier3' ? 'Tier 3 (12-15L)' : 'Metro (15-25L)'} | Investment: ${formData.investmentReady} | Details: ${formData.comments}`,
+        fullName: formData.name.trim(),
+        mobile: cleanMobile,
+        email: formData.email.trim() || undefined,
+        city: formData.city.trim() || undefined,
+        message: `Model: ${formData.tier === 'tier3' ? 'Tier 3 (12-15L)' : 'Metro (15-25L)'} | Investment: ${formData.investmentReady} | Details: ${formData.comments.trim()}`,
       });
 
+      let targetUrl = '';
       if (res?.data?.whatsAppUrl) {
-        window.location.href = res.data.whatsAppUrl;
-        return;
+        targetUrl = res.data.whatsAppUrl
+          .replace('919876543210', '918237522072')
+          .replace('9876543210', '918237522072');
+      } else {
+        const text = encodeURIComponent(
+          `Hi Daddy Soda House team! I am ${formData.name} from ${formData.city || 'India'}. I want to apply for a franchise (Tier: ${formData.tier}, Investment: ${formData.investmentReady}).`
+        );
+        targetUrl = `https://wa.me/918237522072?text=${text}`;
       }
+      setWhatsAppUrl(targetUrl);
       setSubmitted(true);
     } catch {
       const text = encodeURIComponent(
         `Hi Daddy Soda House team! I am ${formData.name} from ${formData.city || 'India'}. I want to apply for a franchise (Tier: ${formData.tier}, Investment: ${formData.investmentReady}).`
       );
-      window.location.href = `https://wa.me/918237522072?text=${text}`;
+      setWhatsAppUrl(`https://wa.me/918237522072?text=${text}`);
+      setSubmitted(true);
     } finally {
       setLoading(false);
     }
@@ -507,22 +519,53 @@ export const FranchisePage: React.FC = () => {
             <div className="lg:col-span-7 bg-[#24150D] rounded-2xl p-6 sm:p-8 border border-[#3E2618]">
               
               {submitted ? (
-                <div className="text-center py-12 space-y-4">
-                  <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+                <div className="text-center py-8 sm:py-10 space-y-5">
+                  <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/30 shadow-inner">
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
-                  <h4 className="font-display text-3xl font-bold text-white">
-                    APPLICATION RECEIVED!
-                  </h4>
-                  <p className="text-sm text-[#C4B79D] max-w-md mx-auto">
-                    Thank you {formData.name || 'Partner'}. Our franchise development team at Himmat Beverages Pvt. Ltd. will contact you shortly on {formData.phone || 'your phone'} to discuss the {formData.city || 'your'} location.
-                  </p>
-                  <button
-                    onClick={() => setSubmitted(false)}
-                    className="mt-4 px-6 py-2 rounded-xl bg-[#E6392F] hover:bg-[#171717] text-white font-display text-sm cursor-pointer transition-colors"
-                  >
-                    Submit Another Inquiry
-                  </button>
+                  <div>
+                    <span className="text-xs font-bold uppercase tracking-widest text-[#F5A623]">
+                      APPLICATION RECEIVED
+                    </span>
+                    <h4 className="font-display text-3xl sm:text-4xl font-bold text-white mt-1">
+                      THANK YOU, {formData.name ? formData.name.toUpperCase() : 'PARTNER'}!
+                    </h4>
+                    <p className="text-xs sm:text-sm text-[#C4B79D] max-w-md mx-auto mt-2 leading-relaxed">
+                      Thank you for expressing your interest in Daddy Soda House. Our franchise team at Himmat Beverages Pvt. Ltd. will contact you shortly on <strong className="text-white">{formData.phone}</strong> to discuss your target location in <strong className="text-white">{formData.city || 'your area'}</strong>.
+                    </p>
+                  </div>
+
+                  {/* Send on WhatsApp Button */}
+                  <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a
+                      href={whatsAppUrl || 'https://wa.me/918237522072'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-white font-display text-lg tracking-wider transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer hover:scale-105 duration-200"
+                    >
+                      <MessageCircle className="w-5 h-5 fill-current" />
+                      <span>SEND ON WHATSAPP</span>
+                    </a>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSubmitted(false);
+                        setFormData({
+                          name: '',
+                          phone: '',
+                          email: '',
+                          city: '',
+                          tier: 'tier3',
+                          investmentReady: '12-15 Lakhs',
+                          comments: '',
+                        });
+                      }}
+                      className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#170E08] hover:bg-[#2E1A11] text-[#C4B79D] hover:text-white border border-[#3E2618] font-display text-sm tracking-wide transition-all cursor-pointer"
+                    >
+                      Submit Another Application
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} noValidate className="space-y-4">

@@ -19,7 +19,9 @@ const stockAdjustmentSchema = z.object({
   }),
   quantity: z
     .number({ invalid_type_error: 'Quantity must be a valid number' })
-    .positive('Quantity must be greater than zero'),
+    .int('Quantity must be a whole number')
+    .positive('Quantity must be greater than zero')
+    .min(1, 'Quantity must be at least 1'),
   note: z
     .string()
     .min(1, 'Reason / Note is required for audit tracking')
@@ -100,7 +102,7 @@ export const StockAdjustmentModal: React.FC<StockAdjustmentModalProps> = ({
     await adjustmentMutation.mutateAsync({
       productId: values.productId,
       adjustmentType: values.adjustmentType,
-      quantity: Number(values.quantity),
+      quantity: Math.round(Number(values.quantity)),
       note: values.note,
     });
     onClose();
@@ -203,14 +205,19 @@ export const StockAdjustmentModal: React.FC<StockAdjustmentModalProps> = ({
         <Input
           label="Adjustment Quantity (Bottles / Units)"
           type="number"
-          step="0.01"
-          min="0.01"
-          placeholder="0.00"
+          step="1"
+          min="1"
+          placeholder="0"
           required
           leftIcon={<Boxes className="w-4 h-4" />}
-          helperText="Enter the quantity in bottle units to add or deduct."
+          helperText="Enter the quantity in whole bottle units to add or deduct."
           error={errors.quantity?.message}
           {...register('quantity', { valueAsNumber: true })}
+          onKeyDown={(e) => {
+            if (['.', 'e', 'E', '+', '-'].includes(e.key)) {
+              e.preventDefault();
+            }
+          }}
         />
 
         {/* Contextual Warning for Reduce Stock */}

@@ -174,6 +174,7 @@ export const AppRoutes: React.FC = () => {
           <Route path="/my-invoices" element={<FranchiseInvoicesPage />} />
           <Route path="/my-invoices/:id" element={<FranchiseInvoiceDetailPage />} />
           <Route path="/my-dues" element={<DuePaymentsPage />} />
+          <Route path="/my-due-payments" element={<DuePaymentsPage />} />
           <Route path="/my-reports" element={<FranchiseReportsPage />} />
           <Route path="/my-reports/consumption" element={<ConsumptionReportPage />} />
           <Route path="/my-manual-sales" element={<ManualDailySalesListPage />} />

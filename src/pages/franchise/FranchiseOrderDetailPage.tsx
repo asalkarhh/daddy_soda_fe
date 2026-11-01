@@ -30,6 +30,7 @@ import {
 import { OrderStatusBadge } from '../../components/orders/OrderStatusBadge';
 import { CancelOrderModal } from '../../components/orders/CancelOrderModal';
 import { useOrderDetail, useOrderMutations } from '../../hooks/useOrderData';
+import { useFranchiseSummary } from '../../hooks/useDashboardData';
 import {
   formatDate,
   formatDateTime,
@@ -50,6 +51,8 @@ export const FranchiseOrderDetailPage: React.FC = () => {
   const { data: order, isLoading, isError, refetch } = useOrderDetail(id);
 
   const { placeOrderMutation, cancelOrderMutation, deleteOrderMutation } = useOrderMutations();
+  const { data: franchiseSummary } = useFranchiseSummary();
+  const hasOverdue = (franchiseSummary?.overdueInvoiceCount || 0) > 0 || (Number(franchiseSummary?.overdueAmount) > 0);
 
   if (isLoading) {
     return <LoadingScreen message="Loading order details..." />;
@@ -140,7 +143,12 @@ export const FranchiseOrderDetailPage: React.FC = () => {
               <Button
                 variant="primary"
                 leftIcon={<Send className="w-4 h-4" />}
-                onClick={() => setIsPlaceOpen(true)}
+                disabled={hasOverdue}
+                title={hasOverdue ? 'Direct order placement restricted due to overdue payment' : 'Place Order'}
+                onClick={() => {
+                  if (hasOverdue) return;
+                  setIsPlaceOpen(true);
+                }}
               >
                 Place Order
               </Button>
@@ -172,6 +180,36 @@ export const FranchiseOrderDetailPage: React.FC = () => {
           </div>
         }
       />
+
+      {/* Overdue Payment Warning Banner for Draft Order */}
+      {hasOverdue && isDraft && (
+        <div className="p-4 rounded-xl bg-red-50 border-2 border-red-300 text-red-900 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="p-2 bg-red-100 rounded-lg text-red-700 shrink-0 mt-0.5">
+              <AlertTriangle className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-bold text-sm text-red-900">
+                Direct Order Placement Restricted: Overdue Payment Notice
+              </h3>
+              <p className="text-xs text-red-700 mt-1 leading-relaxed">
+                Your franchise currently has <strong>{franchiseSummary?.overdueInvoiceCount || 1} overdue invoice(s)</strong> totalling{' '}
+                <strong className="font-bold text-red-900">{formatCurrency(Number(franchiseSummary?.overdueAmount) || 0)}</strong>.
+                You can edit or delete this draft, but direct order placement is restricted until overdue payments are cleared.
+              </p>
+            </div>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="border-red-300 bg-white text-red-800 hover:bg-red-100 shrink-0 font-semibold"
+            onClick={() => navigate('/my-dues?dueType=OVERDUE')}
+          >
+            Review Overdue Dues
+          </Button>
+        </div>
+      )}
 
       {/* Admin Update Banner */}
       {order.updateReason && (
@@ -265,7 +303,7 @@ export const FranchiseOrderDetailPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <span className="text-slate-500">Total Items / Quantity</span>
               <span className="font-semibold text-slate-900">
-                {order.totalItems} flavours ({formatQuantity(order.totalQuantity)} bottles)
+                {order.totalItems ?? order.itemCount ?? (order.items ? order.items.length : 0)} flavours ({formatQuantity(order.totalQuantity)} bottles)
               </span>
             </div>
           </CardContent>
@@ -371,7 +409,7 @@ export const FranchiseOrderDetailPage: React.FC = () => {
           {/* Table Footer with Summary */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-slate-50 border-t border-slate-200">
             <div className="text-xs text-slate-500">
-              Total of <strong className="text-slate-700">{order.totalItems}</strong> flavours (
+              Total of <strong className="text-slate-700">{order.totalItems ?? order.itemCount ?? (order.items ? order.items.length : 0)}</strong> flavours (
               <strong className="text-slate-700">{formatQuantity(order.totalQuantity)}</strong>{' '}
               bottles)
             </div>

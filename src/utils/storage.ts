@@ -63,3 +63,41 @@ export const storage = {
     }
   },
 };
+
+const READ_ENQUIRIES_KEY = 'daddy_soda_read_enquiry_ids';
+
+export const enquiryStorage = {
+  getReadIds: (): Set<string> => {
+    try {
+      const raw = localStorage.getItem(READ_ENQUIRIES_KEY);
+      return new Set(raw ? JSON.parse(raw) : []);
+    } catch {
+      return new Set();
+    }
+  },
+
+  markAsRead: (id: string): void => {
+    try {
+      if (!id) return;
+      const raw = localStorage.getItem(READ_ENQUIRIES_KEY);
+      const set = new Set<string>(raw ? JSON.parse(raw) : []);
+      if (!set.has(id)) {
+        set.add(id);
+        localStorage.setItem(READ_ENQUIRIES_KEY, JSON.stringify([...set]));
+        window.dispatchEvent(new CustomEvent('daddy-soda:enquiry-read', { detail: { id } }));
+      }
+    } catch (e) {
+      console.error('Failed to mark enquiry as read in localStorage', e);
+    }
+  },
+
+  isRead: (id: string): boolean => {
+    try {
+      const raw = localStorage.getItem(READ_ENQUIRIES_KEY);
+      const set = new Set<string>(raw ? JSON.parse(raw) : []);
+      return set.has(id);
+    } catch {
+      return false;
+    }
+  },
+};

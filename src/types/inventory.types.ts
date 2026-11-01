@@ -22,7 +22,8 @@ export interface PurchaseEntry {
   supplierBillNumber?: string;
   description?: string;
   status: PurchaseStatus;
-  totalItems: number;
+  totalItems?: number;
+  itemCount?: number;
   totalQuantity: number;
   items?: PurchaseItem[];
   createdBy?: string;

@@ -45,8 +45,8 @@ const manualSalesSchema = z.object({
     .string()
     .min(1, 'Quantity is required.')
     .refine(
-      (val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0,
-      'Quantity must be a positive number greater than 0.'
+      (val) => !isNaN(Number(val)) && Number(val) > 0 && Number.isInteger(Number(val)),
+      'Quantity must be a positive whole number.'
     ),
   quantityUnit: z.enum(['GLASSES', 'ML'], {
     required_error: 'Quantity unit is required.',
@@ -210,7 +210,7 @@ export const ManualDailySalesFormPage: React.FC = () => {
       machineId: data.machineId,
       productId: data.productId,
       salesDate: data.salesDate,
-      quantity: Number(data.quantity),
+      quantity: Math.round(Number(data.quantity)),
       quantityUnit: data.quantityUnit,
       retailUnitPrice: data.retailUnitPrice === '' ? undefined : Number(data.retailUnitPrice),
       notes: data.notes?.trim() || undefined,
@@ -389,11 +389,16 @@ export const ManualDailySalesFormPage: React.FC = () => {
                   label="Quantity"
                   required
                   type="number"
-                  step="any"
-                  min="0.01"
+                  step="1"
+                  min="1"
                   placeholder="e.g. 150"
                   {...register('quantity')}
                   error={errors.quantity?.message}
+                  onKeyDown={(e) => {
+                    if (['.', 'e', 'E', '+', '-'].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
               </div>
 

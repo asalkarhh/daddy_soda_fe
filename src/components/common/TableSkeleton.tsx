@@ -14,7 +14,7 @@ export const TableSkeleton: React.FC<TableSkeletonProps> = ({ columns, rows = 5 
           {Array.from({ length: columns }).map((_, cIdx) => (
             <TableCell key={`skeleton-cell-${rIdx}-${cIdx}`}>
               <div
-                className={`h-4 bg-slate-200 rounded ${
+                className={`h-4 bg-slate-200 rounded mx-auto ${
                   cIdx === 0 ? 'w-20' : cIdx === 1 ? 'w-36' : 'w-24'
                 }`}
               />

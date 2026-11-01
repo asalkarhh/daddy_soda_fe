@@ -273,20 +273,20 @@ export const OrdersListPage: React.FC = () => {
                   </TableCell>
                   <TableCell>{formatDate(order.orderDate)}</TableCell>
                   <TableCell>
-                    <span className="font-medium text-slate-900 block">
+                    <span className="font-medium text-slate-900 block text-center">
                       {order.franchiseName || 'Franchise'}
                     </span>
                     {order.franchiseCode && (
-                      <span className="text-xs text-slate-400 font-mono">
+                      <span className="text-xs text-slate-400 font-mono block text-center">
                         {order.franchiseCode}
                       </span>
                     )}
                   </TableCell>
                   <TableCell>
-                    <OrderStatusBadge status={order.status} />
+                    <div className="flex justify-center"><OrderStatusBadge status={order.status} /></div>
                   </TableCell>
                   <TableCell className="text-center font-medium">
-                    {order.totalItems || (order.items ? order.items.length : 0)}
+                    {order.totalItems ?? order.itemCount ?? (order.items ? order.items.length : 0)}
                   </TableCell>
                   <TableCell className="text-right font-semibold text-slate-900">
                     {formatQuantity(order.totalQuantity)}
@@ -302,7 +302,7 @@ export const OrdersListPage: React.FC = () => {
                       const parts = formatDateTimeParts(order.createdAt);
                       if (!parts) return '—';
                       return (
-                        <div className="leading-tight">
+                        <div className="leading-tight text-center">
                           <div className="text-slate-800 font-medium whitespace-nowrap">{parts.date}</div>
                           <div className="text-slate-500 text-[11px] whitespace-nowrap">{parts.time}</div>
                         </div>
@@ -310,7 +310,7 @@ export const OrdersListPage: React.FC = () => {
                     })()}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-1">
+                    <div className="flex items-center justify-center gap-1">
                       {/* View Action */}
                       <Button
                         variant="ghost"

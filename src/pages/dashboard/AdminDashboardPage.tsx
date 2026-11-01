@@ -340,9 +340,10 @@ export const AdminDashboardPage: React.FC = () => {
 
           {/* Overdue Amount (Prominent Red) */}
           <Card
-            className={`transition-colors ${
+            onClick={() => navigate('/dues?dueType=OVERDUE')}
+            className={`transition-colors cursor-pointer ${
               summary.overdueAmount > 0
-                ? 'bg-red-50 border-red-300 ring-1 ring-red-200'
+                ? 'bg-red-50 border-red-300 ring-1 ring-red-200 hover:bg-red-100/60'
                 : 'hover:border-slate-300'
             }`}
           >
@@ -436,7 +437,7 @@ export const AdminDashboardPage: React.FC = () => {
                     <TableHead>Invoice #</TableHead>
                     <TableHead>Franchise</TableHead>
                     <TableHead>Due Date</TableHead>
-                    <TableHead className="text-right">Balance Amount</TableHead>
+                    <TableHead className="text-right">Pending Amount</TableHead>
                     <TableHead>Days Overdue</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
@@ -526,7 +527,7 @@ export const AdminDashboardPage: React.FC = () => {
                   <TableRow>
                     <TableHead>Invoice #</TableHead>
                     <TableHead>Franchise</TableHead>
-                    <TableHead className="text-right">Balance</TableHead>
+                    <TableHead className="text-right">Pending Amount</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -600,7 +601,7 @@ export const AdminDashboardPage: React.FC = () => {
                     <TableHead>Invoice #</TableHead>
                     <TableHead>Franchise</TableHead>
                     <TableHead>Due Date</TableHead>
-                    <TableHead className="text-right">Balance</TableHead>
+                    <TableHead className="text-right">Pending Amount</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>

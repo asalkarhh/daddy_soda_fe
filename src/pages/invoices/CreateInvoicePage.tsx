@@ -243,7 +243,7 @@ export const CreateInvoicePage: React.FC = () => {
                 <div>
                   <span className="text-slate-500 block">Delivered Quantities:</span>
                   <span className="font-semibold text-slate-900">
-                    {selectedOrder.totalItems} flavours ({formatQuantity(selectedOrder.totalQuantity)} bottles)
+                    {selectedOrder.totalItems ?? selectedOrder.itemCount ?? (selectedOrder.items ? selectedOrder.items.length : 0)} flavours ({formatQuantity(selectedOrder.totalQuantity)} bottles)
                   </span>
                   <span className="font-bold text-brand-700 block mt-0.5">
                     Order Base Value: {formatCurrency(selectedOrder.orderTotal)}

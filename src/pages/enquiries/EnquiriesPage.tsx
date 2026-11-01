@@ -23,6 +23,7 @@ import { useEnquiries } from '../../hooks/useDashboardData';
 import { Enquiry, EnquiryStatus } from '../../types/dashboard.types';
 import { formatDateTime } from '../../utils/formatters';
 import { EnquiryDetailModal } from '../../components/enquiries/EnquiryDetailModal';
+import { enquiryStorage } from '../../utils/storage';
 import { UpdateEnquiryStatusModal } from '../../components/enquiries/UpdateEnquiryStatusModal';
 
 export const EnquiriesPage: React.FC = () => {
@@ -112,21 +113,21 @@ export const EnquiriesPage: React.FC = () => {
     switch (status) {
       case 'NEW':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
+          <span className="inline-flex items-center justify-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
             NEW
           </span>
         );
       case 'CONTACTED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
+          <span className="inline-flex items-center justify-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
             <Clock className="w-3 h-3 text-amber-700" />
             CONTACTED
           </span>
         );
       case 'CLOSED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
+          <span className="inline-flex items-center justify-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
             <CheckCircle className="w-3 h-3 text-slate-500" />
             CLOSED
           </span>
@@ -146,7 +147,7 @@ export const EnquiriesPage: React.FC = () => {
     fromDate !== '' ||
     toDate !== '';
 
-  const enquiries = data?.items || [];
+  const enquiries = data?.content || data?.items || [];
   const totalPages = data?.totalPages || 0;
   const totalElements = data?.totalElements || 0;
 
@@ -204,7 +205,7 @@ export const EnquiriesPage: React.FC = () => {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-2 border-t border-slate-100 text-xs">
           {/* Status selector tabs */}
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-semibold text-slate-500 mr-1 flex items-center gap-1">
+            <span className="text-xs font-semibold text-slate-500 mr-1 flex items-center justify-center gap-1">
               <Filter className="w-3.5 h-3.5" />
               Status:
             </span>
@@ -226,7 +227,7 @@ export const EnquiriesPage: React.FC = () => {
 
           {/* Date range filters */}
           <div className="flex flex-wrap items-center gap-2 text-xs">
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center justify-center gap-1.5">
               <span className="text-slate-500 font-medium">From:</span>
               <input
                 type="date"
@@ -236,7 +237,7 @@ export const EnquiriesPage: React.FC = () => {
                 className="px-2.5 py-1 text-xs border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-500 bg-white"
               />
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center justify-center gap-1.5">
               <span className="text-slate-500 font-medium">To:</span>
               <input
                 type="date"
@@ -289,28 +290,28 @@ export const EnquiriesPage: React.FC = () => {
       ) : (
         <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-600">
+            <table className="w-full text-center text-sm text-slate-600">
               <thead className="bg-slate-50 border-b border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-500">
                 <tr>
-                  <th scope="col" className="px-5 py-3.5">
+                  <th scope="col" className="px-5 py-3.5 text-center">
                     Enquiry #
                   </th>
-                  <th scope="col" className="px-5 py-3.5">
+                  <th scope="col" className="px-5 py-3.5 text-center">
                     Applicant Name
                   </th>
-                  <th scope="col" className="px-5 py-3.5">
+                  <th scope="col" className="px-5 py-3.5 text-center">
                     Mobile
                   </th>
-                  <th scope="col" className="px-5 py-3.5">
+                  <th scope="col" className="px-5 py-3.5 text-center">
                     City / Target Location
                   </th>
-                  <th scope="col" className="px-5 py-3.5">
+                  <th scope="col" className="px-5 py-3.5 text-center">
                     Submitted At
                   </th>
-                  <th scope="col" className="px-5 py-3.5">
+                  <th scope="col" className="px-5 py-3.5 text-center">
                     Status
                   </th>
-                  <th scope="col" className="px-5 py-3.5 text-right">
+                  <th scope="col" className="px-5 py-3.5 text-center">
                     Actions
                   </th>
                 </tr>
@@ -321,10 +322,10 @@ export const EnquiriesPage: React.FC = () => {
                     key={enquiry.id}
                     className="hover:bg-slate-50/80 transition-colors"
                   >
-                    <td className="px-5 py-4 font-mono font-semibold text-brand-700 text-xs whitespace-nowrap">
+                    <td className="px-5 py-4 font-mono font-semibold text-brand-700 text-xs whitespace-nowrap text-center">
                       #{enquiry.enquiryNumber}
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-5 py-4 text-center">
                       <span className="font-bold text-slate-900 block">
                         {enquiry.fullName}
                       </span>
@@ -334,15 +335,15 @@ export const EnquiriesPage: React.FC = () => {
                         </span>
                       )}
                     </td>
-                    <td className="px-5 py-4 whitespace-nowrap">
-                      <span className="font-semibold text-slate-800 flex items-center gap-1.5">
+                    <td className="px-5 py-4 whitespace-nowrap text-center">
+                      <span className="font-semibold text-slate-800 flex items-center justify-center gap-1.5">
                         <Phone className="w-3.5 h-3.5 text-slate-400" />
                         {enquiry.mobile}
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-slate-700 whitespace-nowrap">
+                    <td className="px-5 py-4 text-slate-700 whitespace-nowrap text-center">
                       {enquiry.city ? (
-                        <span className="flex items-center gap-1">
+                        <span className="flex items-center justify-center gap-1">
                           <MapPin className="w-3.5 h-3.5 text-slate-400" />
                           {enquiry.city}
                         </span>
@@ -350,33 +351,46 @@ export const EnquiriesPage: React.FC = () => {
                         <span className="text-slate-400 italic">—</span>
                       )}
                     </td>
-                    <td className="px-5 py-4 text-xs text-slate-500 whitespace-nowrap">
-                      {formatDateTime(enquiry.submittedAt)}
+                    <td className="px-5 py-4 text-xs text-slate-500 whitespace-nowrap text-center">
+                      {formatDateTime(enquiry.submittedAt || enquiry.createdAt)}
                     </td>
-                    <td className="px-5 py-4 whitespace-nowrap">
+                    <td className="px-5 py-4 whitespace-nowrap text-center">
                       {renderStatusBadge(enquiry.status)}
                     </td>
-                    <td className="px-5 py-4 text-right whitespace-nowrap">
-                      <div className="inline-flex items-center gap-1.5">
+                    <td className="px-5 py-4 text-center whitespace-nowrap">
+                      <div className="inline-flex items-center justify-center gap-1.5">
                         <button
                           type="button"
-                          onClick={() => setSelectedEnquiryForDetail(enquiry)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 hover:text-brand-600 transition-colors cursor-pointer"
+                          onClick={() => {
+                            enquiryStorage.markAsRead(enquiry.id);
+                            setSelectedEnquiryForDetail(enquiry);
+                          }}
+                          className="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 hover:text-brand-600 transition-colors cursor-pointer"
                           title="View Full Application"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           <span>View</span>
                         </button>
 
-                        <button
-                          type="button"
-                          onClick={() => setSelectedEnquiryForUpdate(enquiry)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-200 rounded-lg hover:bg-brand-100 transition-colors cursor-pointer"
-                          title="Update Status & Add Notes"
-                        >
-                          <Edit className="w-3.5 h-3.5" />
-                          <span>Update Status</span>
-                        </button>
+                        {enquiry.status === 'CLOSED' ? (
+                          <span
+                            className="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-slate-400 bg-slate-50 border border-slate-200 rounded-lg cursor-not-allowed select-none"
+                            title="Status locked: Closed enquiries cannot be modified"
+                          >
+                            <CheckCircle className="w-3.5 h-3.5 text-slate-400" />
+                            <span>Closed</span>
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedEnquiryForUpdate(enquiry)}
+                            className="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-200 rounded-lg hover:bg-brand-100 transition-colors cursor-pointer"
+                            title="Update Status & Add Notes"
+                          >
+                            <Edit className="w-3.5 h-3.5" />
+                            <span>Update Status</span>
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

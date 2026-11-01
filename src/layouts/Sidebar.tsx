@@ -6,6 +6,7 @@ import { navigationConfig } from '../config/navigation';
 import { cn } from '../utils/cn';
 import { orderApi } from '../api/order.api';
 import { dashboardApi } from '../api/dashboard.api';
+import { enquiryStorage } from '../utils/storage';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -31,12 +32,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       ]);
       const unreadSince = (module: 'orders' | 'enquiries') => Number(localStorage.getItem(readKey(module)) || 0);
       const readOrderIds = new Set<string>(JSON.parse(localStorage.getItem(orderReadKey()) || '[]'));
+      const readEnquiryIds = enquiryStorage.getReadIds();
       setCounts((current) => ({
         orders: ordersResult.status === 'fulfilled'
           ? ordersResult.value.content.filter((item) => item.status === 'PLACED' && !readOrderIds.has(item.id)).length
           : current.orders,
         enquiries: enquiriesResult.status === 'fulfilled'
-          ? enquiriesResult.value.content.filter((item) => new Date(item.submittedAt).getTime() > unreadSince('enquiries')).length
+          ? (enquiriesResult.value?.content || enquiriesResult.value?.items || []).filter((item) => item.status !== 'CLOSED' && !readEnquiryIds.has(item.id)).length
           : current.enquiries,
         dues: duesResult.status === 'fulfilled'
           ? duesResult.value.content.filter((item) => item.balanceAmount > 0).length
@@ -51,8 +53,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     const onOrderRead = () => { void refreshCounts(); };
+    const onEnquiryRead = () => { void refreshCounts(); };
     window.addEventListener('daddy-soda:order-read', onOrderRead);
-    return () => window.removeEventListener('daddy-soda:order-read', onOrderRead);
+    window.addEventListener('daddy-soda:enquiry-read', onEnquiryRead);
+    return () => {
+      window.removeEventListener('daddy-soda:order-read', onOrderRead);
+      window.removeEventListener('daddy-soda:enquiry-read', onEnquiryRead);
+    };
   }, [userRole, user?.id, accessToken]);
 
   // Filter groups according to user role

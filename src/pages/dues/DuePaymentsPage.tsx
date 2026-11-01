@@ -34,6 +34,8 @@ import { useToast } from '../../hooks/useToast';
 import { invoiceApi } from '../../api/invoice.api';
 import { getApiErrorMessage } from '../../api/apiHelpers';
 import { useActiveFranchises } from '../../hooks/useMasterData';
+import { useInvoiceMutations } from '../../hooks/useInvoiceData';
+import { UpdateDueDateModal } from '../../components/invoices/UpdateDueDateModal';
 import { DueType, DueFilters, DueInvoice } from '../../types/dashboard.types';
 import { Franchise } from '../../types/master.types';
 import { formatCurrency, formatDate } from '../../utils/formatters';
@@ -59,6 +61,8 @@ export const DuePaymentsPage: React.FC = () => {
   const [creditAmountToApply, setCreditAmountToApply] = useState<string>('');
   const [isApplyingCredit, setIsApplyingCredit] = useState(false);
   const [creditApplyError, setCreditApplyError] = useState('');
+  const [dueDateTarget, setDueDateTarget] = useState<any | null>(null);
+  const { updateDueDateMutation } = useInvoiceMutations();
 
   const openCreditModal = (due: DueInvoice) => {
     setSelectedDueForCredit(due);
@@ -344,8 +348,8 @@ export const DuePaymentsPage: React.FC = () => {
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-            {isFiltered && (
+          {isFiltered && (
+            <div className="flex items-center justify-center gap-2 pt-2 border-t border-slate-100">
               <Button
                 variant="ghost"
                 size="sm"
@@ -355,12 +359,8 @@ export const DuePaymentsPage: React.FC = () => {
                 <X className="w-4 h-4 mr-1" />
                 Clear Filters
               </Button>
-            )}
-            <Button size="sm" onClick={handleApplyFilters}>
-              <Filter className="w-4 h-4 mr-1" />
-              Apply Filters
-            </Button>
-          </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -411,7 +411,7 @@ export const DuePaymentsPage: React.FC = () => {
                       <TableHead>Due Date</TableHead>
                       <TableHead className="text-right">Total Amount</TableHead>
                       <TableHead className="text-right">Paid Amount</TableHead>
-                      <TableHead className="text-right">Balance Amount</TableHead>
+                      <TableHead className="text-right">Pending Amount</TableHead>
                       <TableHead>Payment Status</TableHead>
                       <TableHead>Due Schedule</TableHead>
                       <TableHead>Days Overdue</TableHead>
@@ -497,17 +497,17 @@ export const DuePaymentsPage: React.FC = () => {
 
                           <TableCell>
                             {isOverdue ? (
-                              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-red-100 text-red-800 flex items-center gap-1 w-fit">
+                              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-red-100 text-red-800 flex items-center gap-1 w-fit mx-auto justify-center">
                                 <AlertTriangle className="w-3 h-3" />
                                 Overdue
                               </span>
                             ) : isDueToday ? (
-                              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800 flex items-center gap-1 w-fit">
+                              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800 flex items-center gap-1 w-fit mx-auto justify-center">
                                 <Calendar className="w-3 h-3" />
                                 Due Today
                               </span>
                             ) : (
-                              <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-blue-50 text-blue-700 flex items-center gap-1 w-fit">
+                              <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-blue-50 text-blue-700 flex items-center gap-1 w-fit mx-auto justify-center">
                                 <Clock className="w-3 h-3" />
                                 Upcoming
                               </span>
@@ -525,7 +525,7 @@ export const DuePaymentsPage: React.FC = () => {
                           </TableCell>
 
                           <TableCell className="text-right">
-                            <div className="flex items-center justify-end gap-1.5">
+                            <div className="flex items-center justify-center gap-1.5">
                               {isFranchiseOwner && availableCredit > 0 && due.balanceAmount > 0 && (
                                 <Button
                                   variant="outline"
@@ -551,6 +551,24 @@ export const DuePaymentsPage: React.FC = () => {
                                 <Eye className="w-3.5 h-3.5 mr-1 text-slate-500" />
                                 View
                               </Button>
+                              {!isFranchiseOwner && due.balanceAmount > 0 && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  leftIcon={<Calendar className="w-3.5 h-3.5" />}
+                                  onClick={() =>
+                                    setDueDateTarget({
+                                      id: due.invoiceId || due.id,
+                                      invoiceNumber: due.invoiceNumber,
+                                      invoiceDate: due.invoiceDate,
+                                      dueDate: due.dueDate,
+                                    })
+                                  }
+                                  title="Update Due Date"
+                                >
+                                  Due Date
+                                </Button>
+                              )}
                             </div>
                           </TableCell>
                         </TableRow>
@@ -624,7 +642,7 @@ export const DuePaymentsPage: React.FC = () => {
                         </span>
                       </div>
                       <div>
-                        <span className="text-slate-500 block">Balance</span>
+                        <span className="text-slate-500 block">Pending Amount</span>
                         <span
                           className={`font-bold ${
                             isOverdue
@@ -639,7 +657,43 @@ export const DuePaymentsPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="pt-2 border-t border-slate-100 flex justify-end">
+                    <div className="pt-2 border-t border-slate-100 flex justify-end gap-2 flex-wrap">
+
+                      {!isFranchiseOwner && due.balanceAmount > 0 && (
+
+                        <Button
+
+                          variant="outline"
+
+                          size="sm"
+
+                          className="w-full sm:w-auto"
+
+                          leftIcon={<Calendar className="w-3.5 h-3.5" />}
+
+                          onClick={() =>
+
+                            setDueDateTarget({
+
+                              id: due.invoiceId || due.id,
+
+                              invoiceNumber: due.invoiceNumber,
+
+                              invoiceDate: due.invoiceDate,
+
+                              dueDate: due.dueDate,
+
+                            })
+
+                          }
+
+                        >
+
+                          Due Date
+
+                        </Button>
+
+                      )}
                       {isFranchiseOwner && availableCredit > 0 && due.balanceAmount > 0 && (
                         <Button
                           variant="outline"
@@ -778,7 +832,7 @@ export const DuePaymentsPage: React.FC = () => {
               <p className="text-xs text-red-600 font-medium">{creditApplyError}</p>
             )}
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
+            <div className="flex items-center justify-center gap-2 pt-3 border-t border-slate-200">
               <Button
                 variant="outline"
                 onClick={() => setSelectedDueForCredit(null)}
@@ -796,6 +850,22 @@ export const DuePaymentsPage: React.FC = () => {
             </div>
           </div>
         </Modal>
+      )}
+      {/* Update Due Date Modal */}
+      {dueDateTarget && (
+        <UpdateDueDateModal
+          isOpen={Boolean(dueDateTarget)}
+          onClose={() => setDueDateTarget(null)}
+          invoice={dueDateTarget}
+          onConfirm={async (payload) => {
+            await updateDueDateMutation.mutateAsync({
+              id: dueDateTarget.id,
+              data: payload,
+            });
+            setDueDateTarget(null);
+          }}
+          isLoading={updateDueDateMutation.isPending}
+        />
       )}
     </div>
   );

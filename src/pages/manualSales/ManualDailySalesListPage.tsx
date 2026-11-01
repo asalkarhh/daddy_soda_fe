@@ -34,7 +34,7 @@ import { useManualDailySales, useManualDailySalesMutations } from '../../hooks/u
 import { useActiveFranchises, useMachines, useProducts } from '../../hooks/useMasterData';
 import { ManualDailySales, ManualDailySalesFilters, ManualSalesQuantityUnit } from '../../types/iot.types';
 import { Franchise, Machine, Product } from '../../types/master.types';
-import { formatDate, formatDateTime } from '../../utils/formatters';
+import { formatDate, formatDateTime, formatQuantity } from '../../utils/formatters';
 
 const UNIT_FILTER_OPTIONS = [
   { label: 'All Units', value: 'ALL' },
@@ -400,7 +400,7 @@ export const ManualDailySalesListPage: React.FC = () => {
                       </TableCell>
 
                       <TableCell className="text-right text-xs font-extrabold text-slate-900">
-                        {entry.quantity}
+                        {formatQuantity(entry.quantity)}
                       </TableCell>
 
                       <TableCell>
@@ -428,7 +428,7 @@ export const ManualDailySalesListPage: React.FC = () => {
                       </TableCell>
 
                       <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1">
+                        <div className="flex items-center justify-center gap-1">
                           <Button
                             variant="ghost"
                             size="sm"

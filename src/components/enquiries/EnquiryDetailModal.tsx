@@ -15,6 +15,9 @@ import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Enquiry } from '../../types/dashboard.types';
 import { formatDateTime } from '../../utils/formatters';
+import { useEnquiryDetail } from '../../hooks/useDashboardData';
+import { enquiryStorage } from '../../utils/storage';
+import { useEffect } from 'react';
 
 interface EnquiryDetailModalProps {
   isOpen: boolean;
@@ -26,9 +29,20 @@ interface EnquiryDetailModalProps {
 export const EnquiryDetailModal: React.FC<EnquiryDetailModalProps> = ({
   isOpen,
   onClose,
-  enquiry,
+  enquiry: initialEnquiry,
   onOpenUpdateStatus,
 }) => {
+  const { data: detailData } = useEnquiryDetail(
+    isOpen && initialEnquiry?.id ? initialEnquiry.id : ''
+  );
+  const enquiry = detailData || initialEnquiry;
+
+  useEffect(() => {
+    if (isOpen && initialEnquiry?.id) {
+      enquiryStorage.markAsRead(initialEnquiry.id);
+    }
+  }, [isOpen, initialEnquiry?.id]);
+
   if (!enquiry) return null;
 
   const getStatusBadge = (status: string) => {
@@ -75,7 +89,7 @@ export const EnquiryDetailModal: React.FC<EnquiryDetailModalProps> = ({
           <Button variant="outline" onClick={onClose}>
             Close
           </Button>
-          {onOpenUpdateStatus && (
+          {onOpenUpdateStatus && enquiry.status !== 'CLOSED' && (
             <Button
               variant="primary"
               leftIcon={<Edit className="w-4 h-4" />}
@@ -176,7 +190,7 @@ export const EnquiryDetailModal: React.FC<EnquiryDetailModalProps> = ({
             <Calendar className="w-4 h-4 text-slate-400" />
             <span>
               Submitted:{' '}
-              <strong className="text-slate-700">{formatDateTime(enquiry.submittedAt)}</strong>
+              <strong className="text-slate-700">{formatDateTime(enquiry.submittedAt || enquiry.createdAt)}</strong>
             </span>
           </div>
           {enquiry.contactedAt && (

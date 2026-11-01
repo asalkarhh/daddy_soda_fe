@@ -114,7 +114,7 @@ export const FranchiseEditOrderPage: React.FC = () => {
 
   // Summary calculations based on master default selling prices
   const totalUniqueFlavours = watchedItems.filter((i) => i && i.productId).length;
-  const totalQuantity = watchedItems.reduce((sum, i) => sum + (Number(i?.quantity) || 0), 0);
+  const totalQuantity = Math.round(watchedItems.reduce((sum, i) => sum + (Number(i?.quantity) || 0), 0));
   const orderTotal = watchedItems.reduce((sum, i) => {
     const prod = i?.productId ? productMap.get(i.productId) : null;
     const price = prod?.defaultSellingPrice || 0;
@@ -173,7 +173,7 @@ export const FranchiseEditOrderPage: React.FC = () => {
         notes: values.notes || undefined,
         items: values.items.map((i) => ({
           productId: i.productId,
-          quantity: Number(i.quantity),
+          quantity: Math.round(Number(i.quantity)),
         })),
       },
     });

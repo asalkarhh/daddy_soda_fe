@@ -62,7 +62,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link to="/menu" className="hover:text-[#E6392F] transition-colors">
-                  8-Tap Product Range
+                  24-Flavor Product Range
                 </Link>
               </li>
             </ul>

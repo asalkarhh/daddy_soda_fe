@@ -314,7 +314,7 @@ export const OrderDetailPage: React.FC = () => {
             <div className="flex justify-between text-xs">
               <span className="text-slate-500">Unique Flavours:</span>
               <span className="font-semibold text-slate-900">
-                {order.totalItems || items.length}
+                {order.totalItems ?? order.itemCount ?? items.length}
               </span>
             </div>
             <div className="flex justify-between text-xs">

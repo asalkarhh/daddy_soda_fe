@@ -34,7 +34,7 @@ import { useMyFranchiseDetails } from '../../hooks/useMasterData';
 import { useFranchiseSummary } from '../../hooks/useDashboardData';
 import { useManualDailySales } from '../../hooks/useIotData';
 import { useMyOrders } from '../../hooks/useOrderData';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import { formatCurrency, formatDate, formatQuantity } from '../../utils/formatters';
 
 export const FranchiseDashboardPage: React.FC = () => {
   const navigate = useNavigate();
@@ -98,35 +98,6 @@ export const FranchiseDashboardPage: React.FC = () => {
           </Button>
         }
       />
-
-      {/* Top Warning Banner if Franchise has overdue payments */}
-      {summary && summary.overdueAmount > 0 && (
-        <div className="p-4 bg-red-50 border-l-4 border-red-500 rounded-r-xl flex items-start justify-between gap-4">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-            <div>
-              <h4 className="text-sm font-bold text-red-900">Overdue Payments Notice</h4>
-              <p className="text-xs text-red-700 mt-0.5 leading-relaxed">
-                You have{' '}
-                <span className="font-bold">
-                  {summary.overdueInvoiceCount} overdue invoice
-                  {summary.overdueInvoiceCount > 1 ? 's' : ''}
-                </span>{' '}
-                totalling <span className="font-extrabold">{formatCurrency(summary.overdueAmount)}</span>.
-                Please contact central administration to reconcile these payments.
-              </p>
-            </div>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate('/my-dues')}
-            className="text-red-700 border-red-300 hover:bg-red-100 shrink-0"
-          >
-            Review Dues
-          </Button>
-        </div>
-      )}
 
       {/* Next Payment Due Highlight Card (if present) */}
       {nextDue && (
@@ -477,7 +448,7 @@ export const FranchiseDashboardPage: React.FC = () => {
                   <TableRow>
                     <TableHead>Invoice #</TableHead>
                     <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Balance</TableHead>
+                    <TableHead className="text-right">Pending</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
@@ -531,7 +502,7 @@ export const FranchiseDashboardPage: React.FC = () => {
           <p className="text-xs text-slate-500 mt-0.5">Manual daily sales recorded for each machine.</p>
         </CardHeader>
         <CardContent className="p-0">
-          {Object.keys(salesByMachine).length === 0 ? <div className="p-8 text-center text-xs text-slate-500">No daily sales recorded for your machines.</div> : <Table><TableHeader><TableRow><TableHead>Machine</TableHead><TableHead className="text-right">Total Daily Sales</TableHead><TableHead>Unit</TableHead></TableRow></TableHeader><TableBody>{Object.values(salesByMachine).map((sale) => <TableRow key={sale.machine}><TableCell className="font-medium">{sale.machine}</TableCell><TableCell className="text-right font-bold text-brand-700">{sale.quantity}</TableCell><TableCell>{sale.unit}</TableCell></TableRow>)}</TableBody></Table>}
+          {Object.keys(salesByMachine).length === 0 ? <div className="p-8 text-center text-xs text-slate-500">No daily sales recorded for your machines.</div> : <Table><TableHeader><TableRow><TableHead>Machine</TableHead><TableHead className="text-right">Total Daily Sales</TableHead><TableHead>Unit</TableHead></TableRow></TableHeader><TableBody>{Object.values(salesByMachine).map((sale) => <TableRow key={sale.machine}><TableCell className="font-medium">{sale.machine}</TableCell><TableCell className="text-right font-bold text-brand-700">{formatQuantity(sale.quantity)}</TableCell><TableCell>{sale.unit}</TableCell></TableRow>)}</TableBody></Table>}
         </CardContent>
       </Card>
 

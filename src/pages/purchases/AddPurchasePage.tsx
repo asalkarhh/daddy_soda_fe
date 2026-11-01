@@ -28,7 +28,9 @@ const purchaseItemSchema = z.object({
   productId: z.string().min(1, 'Please select a flavour/product'),
   quantity: z
     .number({ invalid_type_error: 'Quantity must be a valid number' })
-    .positive('Quantity must be greater than zero'),
+    .int('Quantity must be a whole number')
+    .positive('Quantity must be greater than zero')
+    .min(1, 'Quantity must be at least 1'),
 });
 
 const todayStr = new Date().toISOString().split('T')[0];
@@ -97,9 +99,11 @@ export const AddPurchasePage: React.FC = () => {
 
   // Summary calculations
   const totalUniqueFlavours = watchedItems.filter((i) => i && i.productId).length;
-  const totalQuantity = watchedItems.reduce(
-    (sum, item) => sum + (Number(item?.quantity) || 0),
-    0
+  const totalQuantity = Math.round(
+    watchedItems.reduce(
+      (sum, item) => sum + (Number(item?.quantity) || 0),
+      0
+    )
   );
 
   const onPreSubmit = (values: FormValues) => {
@@ -117,7 +121,7 @@ export const AddPurchasePage: React.FC = () => {
         description: pendingValues.description || undefined,
         items: pendingValues.items.map((i) => ({
           productId: i.productId,
-          quantity: Number(i.quantity),
+          quantity: Math.round(Number(i.quantity)),
         })),
       });
       setIsConfirmOpen(false);
@@ -300,11 +304,16 @@ export const AddPurchasePage: React.FC = () => {
                   <div className="w-full md:w-40">
                     <Input
                       type="number"
-                      step="0.01"
-                      min="0.01"
+                      step="1"
+                      min="1"
                       placeholder="Quantity"
                       error={errors.items?.[index]?.quantity?.message}
                       {...register(`items.${index}.quantity`, { valueAsNumber: true })}
+                      onKeyDown={(e) => {
+                        if (['.', 'e', 'E', '+', '-'].includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </div>
 

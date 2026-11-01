@@ -99,7 +99,7 @@ export const CreateOrderPage: React.FC = () => {
 
   // Summary calculations
   const totalUniqueFlavours = watchedItems.filter((i) => i && i.productId).length;
-  const totalQuantity = watchedItems.reduce((sum, i) => sum + (Number(i?.quantity) || 0), 0);
+  const totalQuantity = Math.round(watchedItems.reduce((sum, i) => sum + (Number(i?.quantity) || 0), 0));
   const orderTotal = watchedItems.reduce(
     (sum, i) => sum + (Number(i?.quantity) || 0) * (Number(i?.unitPrice) || 0),
     0
@@ -314,6 +314,11 @@ export const CreateOrderPage: React.FC = () => {
                       placeholder="Qty"
                       error={errors.items?.[index]?.quantity?.message}
                       {...register(`items.${index}.quantity`, { valueAsNumber: true })}
+                      onKeyDown={(e) => {
+                        if (['.', 'e', 'E', '+', '-'].includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                     {selectedProductId && (
                       <p className={`text-[11px] mt-1 font-semibold ${stockMap.get(selectedProductId) !== undefined && stockMap.get(selectedProductId)! < qty ? 'text-red-600' : 'text-emerald-700'}`}>

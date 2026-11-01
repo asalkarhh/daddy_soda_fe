@@ -99,7 +99,8 @@ export interface Enquiry {
   source?: string;
   status: EnquiryStatus;
   adminNotes?: string;
-  submittedAt: string;
+  submittedAt?: string;
+  createdAt?: string;
   contactedAt?: string;
   closedAt?: string;
   updatedAt?: string;

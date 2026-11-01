@@ -51,10 +51,10 @@ export default function DaddyLogo({
               Daddy SODA HOUSE
             </span>
           </div>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#E6392F] mt-0.5">
+          <span className={`text-[10px] font-bold uppercase tracking-wider mt-0.5 ${dark ? 'text-[#F8E71C]' : 'text-[#E6392F]'}`}>
             HIMMAT BEVERAGES PVT. LTD.
           </span>
-          <span className={`text-[9px] font-medium ${dark ? 'text-[#C4B79D]' : 'text-[#7A6B56]'}`}>
+          <span className={`text-[9px] font-medium ${dark ? 'text-[#FAF2E2]/90' : 'text-[#7A6B56]'}`}>
             A Venture of Himmat Group • Est. 1973
           </span>
         </div>

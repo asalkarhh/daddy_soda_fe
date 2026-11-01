@@ -8,6 +8,20 @@ export default function Navbar() {
   const pathname = location.pathname;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const handleNavClick = (href: string, e?: React.MouseEvent) => {
+    setMobileMenuOpen(false);
+
+    const isCurrentPage =
+      pathname === href ||
+      (href === '/' && (pathname === '' || pathname === '/')) ||
+      (href === '/menu' && (pathname === '/menu' || pathname === '/products'));
+
+    if (isCurrentPage) {
+      if (e) e.preventDefault();
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+  };
+
   const navLinks = [
     { label: 'HOME', href: '/' },
     { label: 'ABOUT US', href: '/story' },
@@ -32,7 +46,7 @@ export default function Navbar() {
               <Phone className="w-3.5 h-3.5 text-[#FFB000]" />
               <span>+91 8237522072</span>
             </a>
-            <Link to="/login" className="hover:text-white flex items-center gap-1 font-semibold text-white bg-[#E6392F] hover:bg-[#C92A20] px-2.5 py-1 rounded-md text-[11px] transition-colors shadow-xs">
+            <Link to="/login" onClick={(e) => handleNavClick('/login', e)} className="hover:text-white flex items-center gap-1 font-semibold text-white bg-[#E6392F] hover:bg-[#C92A20] px-2.5 py-1 rounded-md text-[11px] transition-colors shadow-xs">
               <UserCircle className="w-3.5 h-3.5" />
               <span>Partner Login</span>
             </Link>
@@ -45,7 +59,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-22 sm:h-24 md:h-28 flex items-center justify-between gap-4">
           
           {/* Brand Logo Only at Left Corner */}
-          <Link to="/" className="group flex items-center shrink-0 py-2" aria-label="Daddy Soda House Home">
+          <Link to="/" onClick={(e) => handleNavClick('/', e)} className="group flex items-center shrink-0 py-2" aria-label="Daddy Soda House Home">
             <DaddyLogo size="lg" variant="logo-only" />
           </Link>
 
@@ -57,6 +71,7 @@ export default function Navbar() {
                 <Link
                   key={link.label}
                   to={link.href}
+                  onClick={(e) => handleNavClick(link.href, e)}
                   className={`font-display text-lg tracking-wider transition-all relative py-1 flex items-center gap-1.5 whitespace-nowrap ${
                     isActive
                       ? 'text-[#E6392F] font-bold'
@@ -89,6 +104,7 @@ export default function Navbar() {
             {/* Primary CTA: Apply for Franchise */}
             <Link
               to="/franchise"
+              onClick={(e) => handleNavClick('/franchise', e)}
               className="hidden md:inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl bg-[#E6392F] text-white font-display text-lg tracking-wider hover:bg-[#171717] transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 gap-1.5 whitespace-nowrap"
             >
               <span>APPLY FOR FRANCHISE</span>
@@ -113,7 +129,7 @@ export default function Navbar() {
               <Link
                 key={link.label}
                 to={link.href}
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={(e) => handleNavClick(link.href, e)}
                 className={`flex items-center justify-between font-display text-lg tracking-wider py-2.5 px-3 rounded-lg ${
                   pathname === link.href
                     ? 'bg-[#E6392F] text-white'
@@ -132,7 +148,7 @@ export default function Navbar() {
             <div className="pt-3 flex flex-col gap-2 border-t border-[#E8D9BD]">
               <Link
                 to="/login"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={(e) => handleNavClick('/login', e)}
                 className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-[#FAF2E2] text-xs font-bold text-[#171717] border border-[#E8D9BD] hover:text-[#E6392F]"
               >
                 <UserCircle className="w-4 h-4 text-[#E6392F]" />
@@ -149,7 +165,7 @@ export default function Navbar() {
               
               <Link
                 to="/franchise"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={(e) => handleNavClick('/franchise', e)}
                 className="w-full py-3 bg-[#E6392F] hover:bg-[#171717] text-white font-display text-center rounded-xl text-lg tracking-wider transition-colors"
               >
                 APPLY FOR FRANCHISE

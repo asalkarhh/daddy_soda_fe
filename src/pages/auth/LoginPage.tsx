@@ -98,20 +98,6 @@ export const LoginPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-md">
-        {/* Back to Home Button */}
-        <div className="mb-4">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => navigate('/')}
-            leftIcon={<ArrowLeft className="w-4 h-4" />}
-            className="bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 border-slate-200 shadow-sm"
-          >
-            Back to Home
-          </Button>
-        </div>
-
         {/* Brand Banner */}
         <div className="flex flex-col items-center mb-8 text-center">
           <div className="w-14 h-14 rounded-2xl bg-brand-700 text-white flex items-center justify-center mb-3 shadow-md shadow-brand-700/20">

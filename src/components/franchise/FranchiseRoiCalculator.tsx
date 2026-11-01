@@ -118,7 +118,7 @@ export default function FranchiseRoiCalculator({ onApplyClick, className = '' }:
                 {activePreset === 'metro' && <Check className="w-4 h-4 text-[#F5A623]" />}
               </div>
               <p className="font-display text-base font-bold text-white mt-0.5">
-                Metro Tier 1 &amp; 2 (350 @ ₹30)
+                Metro Tier 1 &amp; 2 (350 Glasses @ ₹30)
               </p>
             </button>
           </div>
@@ -148,8 +148,8 @@ export default function FranchiseRoiCalculator({ onApplyClick, className = '' }:
               />
               <div className="flex justify-between text-[10px] text-[#7A6B56] font-semibold">
                 <span>50 min</span>
-                <span>250 standard</span>
-                <span>500 peak</span>
+                <span>300 standard</span>
+                <span>550 peak</span>
                 <span>800 max</span>
               </div>
             </div>
@@ -170,14 +170,16 @@ export default function FranchiseRoiCalculator({ onApplyClick, className = '' }:
                 value={sodaPrice}
                 onChange={(e) => {
                   setActivePreset('custom');
-                  setSodaPrice(Number(e.target.value));
+                  const newPrice = Number(e.target.value);
+                  setSodaPrice(newPrice);
+                  setGolaPrice(newPrice >= 30 ? 50 : 30);
                 }}
                 className="w-full h-2.5 bg-[#2E1A11] rounded-lg appearance-none cursor-pointer accent-[#F5A623]"
               />
               <div className="flex justify-between text-[10px] text-[#7A6B56] font-semibold">
                 <span>₹15 basic</span>
-                <span>₹20 Tier 3</span>
-                <span>₹30 Metro</span>
+                <span>₹25 Tier 3</span>
+                <span>₹35 Metro</span>
                 <span>₹50 Large/Special</span>
               </div>
             </div>
@@ -204,8 +206,8 @@ export default function FranchiseRoiCalculator({ onApplyClick, className = '' }:
               />
               <div className="flex justify-between text-[10px] text-[#7A6B56] font-semibold">
                 <span>0 pcs</span>
-                <span>30 pcs standard</span>
-                <span>75 pcs metro</span>
+                <span>50 pcs standard</span>
+                <span>100 pcs</span>
                 <span>150 peak</span>
               </div>
             </div>

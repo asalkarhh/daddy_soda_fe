@@ -12,13 +12,22 @@ export const PublicFooter: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12 pb-12 border-b border-slate-800">
           {/* Col 1 & 2: Brand Info */}
           <div className="lg:col-span-2 space-y-4">
-            <Link to="/" className="inline-flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-md">
-                <Sparkles className="w-5 h-5 text-amber-300" />
+            <Link
+              to="/"
+              className="inline-flex items-center gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 rounded-lg group"
+              aria-label="Daddy Soda House Home"
+            >
+              <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-teal-800 to-teal-600 flex items-center justify-center text-white shadow-md shadow-teal-900/10 group-hover:scale-105 transition-transform">
+                <Sparkles className="w-6 h-6 text-amber-300" />
               </div>
-              <span className="text-xl font-black text-white tracking-tight">
-                Daddy Soda <span className="text-teal-400">House</span>
-              </span>
+              <div>
+                <span className="text-xl font-black text-white tracking-tight flex items-center gap-1">
+                  Daddy Soda <span className="text-teal-400">House</span>
+                </span>
+                <span className="block text-[11px] font-semibold text-slate-400 uppercase tracking-widest -mt-1">
+                  Indian Soda & Franchise
+                </span>
+              </div>
             </Link>
 
             <p className="text-sm text-slate-400 leading-relaxed max-w-sm">

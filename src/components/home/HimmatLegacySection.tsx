@@ -113,7 +113,7 @@ export default function HimmatLegacySection() {
                 5 Verticals: Enterprise • Petroleum • Finance • Liquors • Beverages
               </span>
               <Link
-                to="/franchise"
+                to="/franchise#inquiry-form"
                 className="font-display text-base text-[#E6392F] hover:underline font-bold"
               >
                 Franchise Partnership Inquiries →

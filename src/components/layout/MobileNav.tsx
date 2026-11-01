@@ -5,6 +5,18 @@ export default function MobileNav() {
   const location = useLocation();
   const pathname = location.pathname;
 
+  const handleMobileClick = (href: string, e: React.MouseEvent) => {
+    const isCurrentPage =
+      pathname === href ||
+      (href === '/' && (pathname === '' || pathname === '/')) ||
+      (href === '/menu' && (pathname === '/menu' || pathname === '/products'));
+
+    if (isCurrentPage) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#FFF8ED]/95 backdrop-blur-lg border-t border-[#E8D9BD] py-2 px-4 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
       <div className="flex items-center justify-around max-w-md mx-auto relative">
@@ -12,6 +24,7 @@ export default function MobileNav() {
         {/* Home */}
         <Link
           to="/"
+          onClick={(e) => handleMobileClick('/', e)}
           className={`flex flex-col items-center gap-1 text-[11px] font-bold ${
             pathname === '/' ? 'text-[#E6392F]' : 'text-[#7A6B56] hover:text-[#E6392F]'
           }`}
@@ -23,6 +36,7 @@ export default function MobileNav() {
         {/* Menu / Flavors */}
         <Link
           to="/menu"
+          onClick={(e) => handleMobileClick('/menu', e)}
           className={`flex flex-col items-center gap-1 text-[11px] font-bold ${
             pathname.startsWith('/menu') || pathname.startsWith('/products') ? 'text-[#E6392F]' : 'text-[#7A6B56] hover:text-[#E6392F]'
           }`}
@@ -34,6 +48,7 @@ export default function MobileNav() {
         {/* Prominent Center Franchise CTA Button */}
         <Link
           to="/franchise"
+          onClick={(e) => handleMobileClick('/franchise', e)}
           className="relative -top-5 flex flex-col items-center group"
           aria-label="Franchise Opportunity"
         >
@@ -48,6 +63,7 @@ export default function MobileNav() {
         {/* About Us */}
         <Link
           to="/story"
+          onClick={(e) => handleMobileClick('/story', e)}
           className={`flex flex-col items-center gap-1 text-[11px] font-bold ${
             pathname === '/story' || pathname === '/about' ? 'text-[#E6392F]' : 'text-[#7A6B56] hover:text-[#E6392F]'
           }`}

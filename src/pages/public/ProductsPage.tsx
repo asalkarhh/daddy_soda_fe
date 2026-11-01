@@ -149,6 +149,7 @@ export const ProductsPage: React.FC = () => {
                       src={product.image}
                       alt={product.name}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-108 group-hover:-translate-y-1"
+                      style={{ objectPosition: 'center 15%' }}
                     />
 
                     {/* Carbonation bubbles on hover */}
@@ -172,24 +173,19 @@ export const ProductsPage: React.FC = () => {
                       </p>
                     </div>
 
-                    {/* Price and Action */}
-                    <div className="pt-3 border-t border-[#E8D9BD] space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="text-[10px] uppercase font-bold text-[#A8987E] block">Target Retail</span>
-                          <span className="font-display text-xl sm:text-2xl font-black text-[#171717]">
-                            ₹{product.price}
-                          </span>
-                        </div>
+                    {/* Action */}
+                    <div className="pt-3 border-t border-[#E8D9BD] flex items-center justify-between">
+                      <span className="text-[11px] uppercase font-bold tracking-wider text-[#A8987E]">
+                        Dedicated Soda Tap
+                      </span>
 
-                        <Link
-                          to={`/menu/${product.slug}`}
-                          className="px-3.5 py-1.5 rounded-xl font-display text-sm tracking-wider bg-[#E6392F] hover:bg-[#171717] text-white transition-all shadow-xs flex items-center gap-1"
-                        >
-                          <span>DETAILS</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </Link>
-                      </div>
+                      <Link
+                        to={`/menu/${product.slug}`}
+                        className="px-3.5 py-1.5 rounded-xl font-display text-sm tracking-wider bg-[#E6392F] hover:bg-[#171717] text-white transition-all shadow-xs flex items-center gap-1"
+                      >
+                        <span>DETAILS</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
                     </div>
 
                   </div>

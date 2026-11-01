@@ -61,7 +61,7 @@ export default function WhyDaddySodaSection() {
             </p>
           </div>
           <Link
-            to="/franchise"
+            to="/franchise#roi-breakdown"
             className="px-6 py-3 rounded-xl bg-[#E6392F] hover:bg-[#171717] text-white font-display text-lg tracking-wider transition-all shadow-md shrink-0 flex items-center gap-2"
           >
             <span>CALCULATE ROI</span>

@@ -91,7 +91,7 @@ export const AboutPage: React.FC = () => {
                 ABOUT HIMMAT GROUP
               </h2>
               <p className="text-base sm:text-lg text-[#7A6B56] leading-relaxed">
-                From a single restaurant to a diversified business conglomerate — <strong>Himmat Group</strong> has built <strong>50+ years of trust, credibility, and entrepreneurial success across Maharashtra.</strong>
+                From a single business to a diversified business conglomerate — <strong>Himmat Group</strong> has built <strong>50+ years of trust, credibility, and entrepreneurial success across Maharashtra.</strong>
               </p>
             </div>
 

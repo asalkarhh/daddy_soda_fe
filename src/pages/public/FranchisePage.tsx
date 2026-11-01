@@ -123,14 +123,14 @@ export const FranchisePage: React.FC = () => {
             <div className="pt-2 flex flex-wrap items-center justify-center gap-4">
               <a
                 href="#roi-breakdown"
-                className="px-8 py-4 rounded-xl bg-[#E6392F] text-white font-display text-xl tracking-wider hover:bg-white hover:text-[#171717] transition-all shadow-xl hover:-translate-y-0.5 flex items-center gap-2"
+                className="px-8 py-4 rounded-xl bg-white hover:bg-[#171717] text-[#E6392F] hover:text-white font-display text-xl font-bold tracking-wider transition-all shadow-xl hover:shadow-2xl hover:-translate-y-0.5 flex items-center gap-2 cursor-pointer"
               >
                 <span>CALCULATE REVENUE &amp; ROI</span>
                 <ChevronRight className="w-5 h-5" />
               </a>
               <a
                 href="#inquiry-form"
-                className="px-8 py-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-display text-xl tracking-wider transition-all border border-white/20"
+                className="px-8 py-4 rounded-xl bg-white/10 hover:bg-white text-white hover:text-[#E6392F] font-display text-xl font-bold tracking-wider transition-all border-2 border-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 cursor-pointer backdrop-blur-xs"
               >
                 APPLY FOR FRANCHISE
               </a>
@@ -192,63 +192,89 @@ export const FranchisePage: React.FC = () => {
           
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-[#E6392F]">
-                COMPLETE OUTLET MENU SUITE
-              </span>
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="px-3 py-1 rounded-xl bg-gradient-to-r from-emerald-600 to-green-500 text-white font-display text-xs sm:text-sm font-bold shadow-xs">
+                  Product Range
+                </span>
+                <span className="px-3 py-1 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-[#171717] font-display text-xs sm:text-sm font-black uppercase tracking-wide shadow-xs">
+                  8 Dedicated Soda Machines + Ice-Gola Counter
+                </span>
+              </div>
               <h2 className="font-display text-3xl sm:text-5xl font-black text-[#171717] tracking-tight leading-none">
-                8 DEDICATED SODA TAPS + ICE-GOLA COUNTER
+                COMPLETE OUTLET MENU SUITE
               </h2>
             </div>
             <div className="px-4 py-2 bg-white rounded-xl border border-[#E8D9BD] text-xs font-bold text-[#171717] shadow-xs shrink-0">
-              🍧 Ice-Gola priced at <strong className="text-[#E6392F]">₹30/piece</strong> — averaging 50 sales/day
+              🍧 Ice-Gola Counter — averaging 50+ sales/day
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {BROCHURE_SODA_FLAVORS.map((fl) => (
               <div
                 key={fl.id}
-                className="bg-white rounded-2xl p-5 border border-[#E8D9BD] shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+                className="bg-white rounded-2xl p-4 sm:p-5 border border-[#E8D9BD] shadow-xs hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between group overflow-hidden"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-3xl">{fl.icon}</span>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-[#171717] text-[#FFF8ED]">
-                      {fl.badge}
-                    </span>
-                  </div>
-                  <h3 className="font-display text-2xl font-bold text-[#171717]">
+                  {fl.image && (
+                    <div className="relative w-full h-40 sm:h-48 rounded-xl overflow-hidden bg-[#FAF2E2] mb-3 border border-[#E8D9BD]/50">
+                      <img
+                        src={fl.image}
+                        alt={fl.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        style={{ objectPosition: 'center 15%' }}
+                        loading="lazy"
+                      />
+                      <div className="absolute top-2 left-2 z-10 w-8 h-8 rounded-lg bg-white/90 backdrop-blur-xs flex items-center justify-center text-base border border-white/60 shadow-xs">
+                        {fl.icon}
+                      </div>
+                      {fl.badge && (
+                        <span className="absolute top-2 right-2 px-2 py-0.5 rounded-md text-[9px] font-black uppercase bg-[#171717]/90 text-[#FFF8ED] backdrop-blur-xs">
+                          {fl.badge}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  <h3 className="font-display text-xl sm:text-2xl font-bold text-[#171717] group-hover:text-[#E6392F] transition-colors">
                     {fl.name}
                   </h3>
-                  <p className="text-xs text-[#7A6B56] mt-1 mb-4">
+                  <p className="text-xs text-[#7A6B56] mt-1 mb-3 line-clamp-2 leading-relaxed">
                     {fl.tagline}
                   </p>
                 </div>
 
                 <div className="pt-3 border-t border-[#E8D9BD] flex items-center justify-between text-xs">
-                  <span className="text-[#7A6B56] font-semibold">Tier 3 / Metro Price:</span>
-                  <span className="font-display text-lg font-black text-[#E6392F]">
-                    ₹{fl.price} / ₹{fl.priceTier1}
+                  <span className="text-[11px] uppercase font-bold tracking-wider text-[#A8987E]">
+                    Dedicated Soda Tap
+                  </span>
+                  <span className="font-semibold text-emerald-600 flex items-center gap-1">
+                    ✓ High Margin
                   </span>
                 </div>
               </div>
             ))}
+          </div>
 
-            {/* Health and No added sugar Banner Card */}
-            <div className="bg-gradient-to-br from-[#171717] to-[#333333] text-white rounded-2xl p-5 flex flex-col justify-between shadow-xs">
-              <div>
-                <span className="text-3xl mb-3 block">🥗</span>
-                <h3 className="font-display text-2xl font-bold text-white">
-                  HEALTH &amp; PREBIOTICS
-                </h3>
-                <p className="text-xs text-[#C4B79D] mt-1">
-                  No added sugar craft options + Prebiotic gut-health drinks available across all franchise outlets.
-                </p>
+          {/* Highlights & Footnote from brochure */}
+          <div className="mt-12 pt-8 border-t border-[#E8D9BD] flex flex-col items-center gap-4">
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#E8833A] text-white font-display text-xs sm:text-sm font-bold shadow-sm">
+                <span>🍃</span>
+                <span>Zero Sugar Options</span>
               </div>
-              <div className="pt-3 border-t border-white/20 text-xs text-[#FFB000] font-bold">
-                ✓ High Margins • Pure Taste
+              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#10B981] text-white font-display text-xs sm:text-sm font-bold shadow-sm">
+                <span>💚</span>
+                <span>Prebiotic Gut-Health Drinks</span>
+              </div>
+              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0284C7] text-white font-display text-xs sm:text-sm font-bold shadow-sm">
+                <span>🍧</span>
+                <span>NEW: Ice - Gola</span>
               </div>
             </div>
+            <p className="text-xs sm:text-sm font-semibold italic text-[#7A6B56] text-center">
+              * Sugar based variants also Drink Ice-Gola available
+            </p>
           </div>
 
         </div>
@@ -257,7 +283,7 @@ export const FranchisePage: React.FC = () => {
       {/* ─────────────────────────────────────────────────────────────
           4. INTERACTIVE FINANCIAL MODEL / ROI CALCULATOR
           ───────────────────────────────────────────────────────────── */}
-      <section id="roi-breakdown" className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="roi-breakdown" className="scroll-mt-24 sm:scroll-mt-28 py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <FranchiseRoiCalculator />
       </section>
 
@@ -424,7 +450,7 @@ export const FranchisePage: React.FC = () => {
           8. CONTACT & INQUIRY FORM (BROCHURE PAGE 15)
           ───────────────────────────────────────────────────────────── */}
       <section className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div id="inquiry-form" className="bg-[#1C120C] text-white rounded-3xl p-8 sm:p-14 border-4 border-[#E6392F] shadow-2xl">
+        <div id="inquiry-form" className="scroll-mt-24 sm:scroll-mt-28 bg-[#1C120C] text-white rounded-3xl p-8 sm:p-14 border-4 border-[#E6392F] shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             {/* Left Contact & Leadership Details */}

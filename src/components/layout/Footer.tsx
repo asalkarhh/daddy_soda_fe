@@ -12,7 +12,9 @@ export default function Footer() {
           
           {/* Brand & Himmat Group Parentage */}
           <div className="md:col-span-4 space-y-4">
-            <DaddyLogo size="xl" variant="logo-only" />
+            <Link to="/" className="inline-block group" aria-label="Daddy Soda House Home">
+              <DaddyLogo size="lg" variant="logo-only" />
+            </Link>
             
             <p className="text-sm text-[#C4B79D] leading-relaxed max-w-sm">
               Daddy Soda House is a proud venture of <strong>Himmat Beverages Pvt. Ltd.</strong>, backed by the 50+ year legacy of <strong>Himmat Group of Business (Est. 1973)</strong>.
@@ -74,7 +76,7 @@ export default function Footer() {
               <li><Link to="/menu?cat=citrus" className="hover:text-[#E6392F] transition-colors">Orange & Lemon Fizz</Link></li>
               <li><Link to="/menu?cat=citrus" className="hover:text-[#E6392F] transition-colors">Craft Mojito Soda</Link></li>
               <li><Link to="/menu?cat=limited" className="hover:text-[#E6392F] transition-colors">Rainbow Ice-Gola</Link></li>
-              <li><Link to="/menu" className="hover:text-[#E6392F] transition-colors">All 8 Flavors Range</Link></li>
+              <li><Link to="/menu" className="hover:text-[#E6392F] transition-colors">All 24 Flavors Range</Link></li>
             </ul>
           </div>
 

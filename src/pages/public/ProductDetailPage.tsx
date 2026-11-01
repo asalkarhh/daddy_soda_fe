@@ -47,11 +47,12 @@ export const ProductDetailPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center p-6 sm:p-10 lg:p-12">
             
             {/* Left: Big Product Image */}
-            <div className="md:col-span-6 relative aspect-square rounded-3xl overflow-hidden bg-[#FAF2E2] border border-[#E8D9BD] shadow-inner flex items-center justify-center">
+            <div className="md:col-span-6 relative aspect-[4/5] rounded-3xl overflow-hidden bg-[#FAF2E2] border border-[#E8D9BD] shadow-inner flex items-center justify-center">
               <img
                 src={product.image}
                 alt={product.name}
                 className="w-full h-full object-cover"
+                style={{ objectPosition: 'center 8%' }}
               />
               
               {/* Product Badge */}
@@ -119,12 +120,12 @@ export const ProductDetailPage: React.FC = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-3 pt-1">
                   <div className="p-2.5 rounded-xl bg-white border border-[#E8D9BD] text-center">
-                    <span className="text-[10px] uppercase font-bold text-[#A8987E] block">Tier 3 City Price</span>
-                    <span className="font-display text-2xl font-black text-[#171717]">₹20 / glass</span>
+                    <span className="text-[10px] uppercase font-bold text-[#A8987E] block">Profit Margin</span>
+                    <span className="font-display text-xl font-black text-emerald-600">HIGH MARGIN</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-white border border-[#E8D9BD] text-center">
-                    <span className="text-[10px] uppercase font-bold text-[#A8987E] block">Metro City Price</span>
-                    <span className="font-display text-2xl font-black text-[#E6392F]">₹30 / glass</span>
+                    <span className="text-[10px] uppercase font-bold text-[#A8987E] block">Formulation</span>
+                    <span className="font-display text-xl font-black text-[#171717]">Himmat Proprietary</span>
                   </div>
                 </div>
               </div>

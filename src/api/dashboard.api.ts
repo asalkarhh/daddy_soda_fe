@@ -46,6 +46,33 @@ async function triggerCsvDownload(
   window.URL.revokeObjectURL(downloadUrl);
 }
 
+// Helper for fetching report CSV text content for in-browser PDF generation
+async function fetchReportCsvText(
+  url: string,
+  params: Record<string, string | number | boolean | undefined>
+): Promise<string> {
+  try {
+    const response = await apiClient.get(url, {
+      params: cleanQueryParams(params),
+      responseType: 'blob',
+    });
+    return await (response.data as Blob).text();
+  } catch (err: any) {
+    if (err?.response?.data instanceof Blob) {
+      try {
+        const errorText = await err.response.data.text();
+        const json = JSON.parse(errorText);
+        if (json?.message) {
+          err.message = json.message;
+        }
+      } catch {
+        // Not a JSON error payload
+      }
+    }
+    throw err;
+  }
+}
+
 export const dashboardApi = {
   // --------------------------------------------------
   // Summary Endpoints
@@ -134,6 +161,43 @@ export const dashboardApi = {
       cleanParams,
       `monthly-dues-${params.month}.csv`
     );
+  },
+
+  // --------------------------------------------------
+  // Monthly PDF Report Content Fetchers
+  // --------------------------------------------------
+  fetchPurchasesReportCsv: async (params: MonthlyPurchasesReportFilters): Promise<string> => {
+    const cleanParams: Record<string, string | undefined> = {
+      month: params.month,
+      supplierId: params.supplierId || undefined,
+    };
+    return await fetchReportCsvText('/reports/monthly/purchases/download', cleanParams);
+  },
+
+  fetchOrdersReportCsv: async (params: MonthlyOrdersReportFilters): Promise<string> => {
+    const cleanParams: Record<string, string | undefined> = {
+      month: params.month,
+      franchiseId: params.franchiseId || undefined,
+      orderStatus: params.orderStatus || undefined,
+    };
+    return await fetchReportCsvText('/reports/monthly/orders/download', cleanParams);
+  },
+
+  fetchInvoicesReportCsv: async (params: MonthlyInvoicesReportFilters): Promise<string> => {
+    const cleanParams: Record<string, string | undefined> = {
+      month: params.month,
+      franchiseId: params.franchiseId || undefined,
+      invoiceType: params.invoiceType || undefined,
+      paymentStatus: params.paymentStatus || undefined,
+    };
+    return await fetchReportCsvText('/reports/monthly/invoices/download', cleanParams);
+  },
+
+  fetchDuesReportCsv: async (params: MonthlyDuesReportFilters): Promise<string> => {
+    const cleanParams: Record<string, string | undefined> = {
+      month: params.month,
+    };
+    return await fetchReportCsvText('/reports/monthly/dues/download', cleanParams);
   },
 
   // --------------------------------------------------

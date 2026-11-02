@@ -12,6 +12,12 @@ import {
 } from '../types/dashboard.types';
 import { useToast } from './useToast';
 import { getApiErrorMessage } from '../api/apiHelpers';
+import {
+  generatePurchasesReportPdf,
+  generateOrdersReportPdf,
+  generateInvoicesReportPdf,
+  generateDuesReportPdf,
+} from '../utils/reportPdfGenerator';
 
 export function useOperationalSummary() {
   return useQuery({
@@ -85,9 +91,10 @@ export function useReportDownloads() {
   const { success, error: toastError } = useToast();
   const [downloadingType, setDownloadingType] = useState<string | null>(null);
 
+  // --- Purchases Reports ---
   const downloadPurchases = async (params: MonthlyPurchasesReportFilters) => {
     try {
-      setDownloadingType('purchases');
+      setDownloadingType('purchases-csv');
       await dashboardApi.downloadPurchasesReport(params);
       success(`Monthly purchases CSV for ${params.month} has been saved.`, 'Report Downloaded');
     } catch (err) {
@@ -97,9 +104,30 @@ export function useReportDownloads() {
     }
   };
 
+  const downloadPurchasesPdf = async (
+    params: MonthlyPurchasesReportFilters,
+    extraMeta?: { supplierName?: string }
+  ) => {
+    try {
+      setDownloadingType('purchases-pdf');
+      const csvText = await dashboardApi.fetchPurchasesReportCsv(params);
+      const opened = generatePurchasesReportPdf(csvText, params, extraMeta);
+      if (opened) {
+        success(`Monthly purchases PDF statement generated for ${params.month}.`, 'PDF Ready');
+      } else {
+        toastError('Pop-up window was blocked. Please allow pop-ups for this site to view the PDF report.', 'Window Blocked');
+      }
+    } catch (err) {
+      toastError(getApiErrorMessage(err, 'Could not generate purchases PDF report. Please try again.'), 'PDF Generation Failed');
+    } finally {
+      setDownloadingType(null);
+    }
+  };
+
+  // --- Orders Reports ---
   const downloadOrders = async (params: MonthlyOrdersReportFilters) => {
     try {
-      setDownloadingType('orders');
+      setDownloadingType('orders-csv');
       await dashboardApi.downloadOrdersReport(params);
       success(`Monthly orders CSV for ${params.month} has been saved.`, 'Report Downloaded');
     } catch (err) {
@@ -109,9 +137,30 @@ export function useReportDownloads() {
     }
   };
 
+  const downloadOrdersPdf = async (
+    params: MonthlyOrdersReportFilters,
+    extraMeta?: { franchiseName?: string }
+  ) => {
+    try {
+      setDownloadingType('orders-pdf');
+      const csvText = await dashboardApi.fetchOrdersReportCsv(params);
+      const opened = generateOrdersReportPdf(csvText, params, extraMeta);
+      if (opened) {
+        success(`Monthly sales orders PDF statement generated for ${params.month}.`, 'PDF Ready');
+      } else {
+        toastError('Pop-up window was blocked. Please allow pop-ups for this site to view the PDF report.', 'Window Blocked');
+      }
+    } catch (err) {
+      toastError(getApiErrorMessage(err, 'Could not generate orders PDF report. Please try again.'), 'PDF Generation Failed');
+    } finally {
+      setDownloadingType(null);
+    }
+  };
+
+  // --- Invoices Reports ---
   const downloadInvoices = async (params: MonthlyInvoicesReportFilters) => {
     try {
-      setDownloadingType('invoices');
+      setDownloadingType('invoices-csv');
       await dashboardApi.downloadInvoicesReport(params);
       success(`Monthly invoices CSV for ${params.month} has been saved.`, 'Report Downloaded');
     } catch (err) {
@@ -121,9 +170,30 @@ export function useReportDownloads() {
     }
   };
 
+  const downloadInvoicesPdf = async (
+    params: MonthlyInvoicesReportFilters,
+    extraMeta?: { franchiseName?: string; availableCredit?: number }
+  ) => {
+    try {
+      setDownloadingType('invoices-pdf');
+      const csvText = await dashboardApi.fetchInvoicesReportCsv(params);
+      const opened = generateInvoicesReportPdf(csvText, params, extraMeta);
+      if (opened) {
+        success(`Monthly invoices PDF statement generated for ${params.month}.`, 'PDF Ready');
+      } else {
+        toastError('Pop-up window was blocked. Please allow pop-ups for this site to view the PDF report.', 'Window Blocked');
+      }
+    } catch (err) {
+      toastError(getApiErrorMessage(err, 'Could not generate invoices PDF report. Please try again.'), 'PDF Generation Failed');
+    } finally {
+      setDownloadingType(null);
+    }
+  };
+
+  // --- Dues Reports ---
   const downloadDues = async (params: MonthlyDuesReportFilters) => {
     try {
-      setDownloadingType('dues');
+      setDownloadingType('dues-csv');
       await dashboardApi.downloadDuesReport(params);
       success(`Monthly due payments CSV for ${params.month} has been saved.`, 'Report Downloaded');
     } catch (err) {
@@ -133,11 +203,35 @@ export function useReportDownloads() {
     }
   };
 
+  const downloadDuesPdf = async (
+    params: MonthlyDuesReportFilters,
+    extraMeta?: { franchiseName?: string }
+  ) => {
+    try {
+      setDownloadingType('dues-pdf');
+      const csvText = await dashboardApi.fetchDuesReportCsv(params);
+      const opened = generateDuesReportPdf(csvText, params, extraMeta);
+      if (opened) {
+        success(`Monthly due payments PDF statement generated for ${params.month}.`, 'PDF Ready');
+      } else {
+        toastError('Pop-up window was blocked. Please allow pop-ups for this site to view the PDF report.', 'Window Blocked');
+      }
+    } catch (err) {
+      toastError(getApiErrorMessage(err, 'Could not generate dues PDF report. Please try again.'), 'PDF Generation Failed');
+    } finally {
+      setDownloadingType(null);
+    }
+  };
+
   return {
     downloadingType,
     downloadPurchases,
+    downloadPurchasesPdf,
     downloadOrders,
+    downloadOrdersPdf,
     downloadInvoices,
+    downloadInvoicesPdf,
     downloadDues,
+    downloadDuesPdf,
   };
 }

@@ -9,21 +9,26 @@ import {
   Calendar,
   Info,
   BarChart2,
+  Printer,
 } from 'lucide-react';
 import { PageHeader } from '../../components/common/PageHeader';
 import { Button } from '../../components/ui/Button';
-import { useReportDownloads } from '../../hooks/useDashboardData';
+import { useReportDownloads, useFranchiseSummary } from '../../hooks/useDashboardData';
 
 export const FranchiseReportsPage: React.FC = () => {
   const navigate = useNavigate();
   const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+  const { data: franchiseSummary } = useFranchiseSummary();
 
   // Reports download hook
   const {
     downloadingType,
     downloadOrders,
+    downloadOrdersPdf,
     downloadInvoices,
+    downloadInvoicesPdf,
     downloadDues,
+    downloadDuesPdf,
   } = useReportDownloads();
 
   // Card 1: My Monthly Orders State
@@ -35,27 +40,56 @@ export const FranchiseReportsPage: React.FC = () => {
   // Card 3: My Monthly Dues State
   const [duesMonth, setDuesMonth] = useState(currentMonth);
 
-  // Handlers
-  const handleDownloadOrders = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Handlers for Orders
+  const handleDownloadOrdersCsv = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!ordersMonth) return;
     await downloadOrders({
       month: ordersMonth,
     });
   };
 
-  const handleDownloadInvoices = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleDownloadOrdersPdf = async () => {
+    if (!ordersMonth) return;
+    await downloadOrdersPdf({
+      month: ordersMonth,
+    });
+  };
+
+  // Handlers for Invoices
+  const handleDownloadInvoicesCsv = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!invoicesMonth) return;
     await downloadInvoices({
       month: invoicesMonth,
     });
   };
 
-  const handleDownloadDues = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleDownloadInvoicesPdf = async () => {
+    if (!invoicesMonth) return;
+    await downloadInvoicesPdf(
+      {
+        month: invoicesMonth,
+      },
+      {
+        franchiseName: franchiseSummary?.franchiseName,
+        availableCredit: franchiseSummary?.availableCredit,
+      }
+    );
+  };
+
+  // Handlers for Dues
+  const handleDownloadDuesCsv = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!duesMonth) return;
     await downloadDues({
+      month: duesMonth,
+    });
+  };
+
+  const handleDownloadDuesPdf = async () => {
+    if (!duesMonth) return;
+    await downloadDuesPdf({
       month: duesMonth,
     });
   };
@@ -65,7 +99,7 @@ export const FranchiseReportsPage: React.FC = () => {
       {/* Header */}
       <PageHeader
         title="My Monthly Reports"
-        subtitle="Download statement CSV files for your franchise orders, billing invoices, and payment credit records."
+        subtitle="Download statement CSV files and official printable PDF records for your franchise orders, billing invoices, and payment credit records."
         actions={
           <Button
             variant="outline"
@@ -81,9 +115,9 @@ export const FranchiseReportsPage: React.FC = () => {
       <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 flex items-start gap-3">
         <Info className="w-5 h-5 text-sky-600 mt-0.5 shrink-0" />
         <div className="text-sm text-sky-900">
-          <p className="font-semibold">Franchise Account Statements (CSV)</p>
+          <p className="font-semibold">Franchise Account Statements (CSV & PDF)</p>
           <p className="text-sky-700 mt-0.5">
-            Download your monthly statements in standard CSV format. These files are scoped strictly to your franchise account and can be opened in Microsoft Excel or Google Sheets for bookkeeping.
+            Download your monthly statements in standard CSV format for Excel/bookkeeping, or click <strong>Download PDF</strong> to generate and print your official account ledger statement with detailed breakdown.
           </p>
         </div>
       </div>
@@ -109,7 +143,7 @@ export const FranchiseReportsPage: React.FC = () => {
               Full list of orders placed by your franchise in the selected month, with item details, quantities, delivery timestamps, and order totals.
             </p>
 
-            <form onSubmit={handleDownloadOrders} className="space-y-3.5 pt-2">
+            <form onSubmit={handleDownloadOrdersCsv} className="space-y-3.5 pt-2">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                   Billing Month <span className="text-red-500">*</span>
@@ -127,21 +161,40 @@ export const FranchiseReportsPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="pt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-4">
                 <button
                   type="submit"
-                  disabled={downloadingType === 'orders' || !ordersMonth}
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 transition-colors shadow-sm cursor-pointer"
+                  disabled={Boolean(downloadingType) || !ordersMonth}
+                  className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-50 transition-colors shadow-sm cursor-pointer"
                 >
-                  {downloadingType === 'orders' ? (
+                  {downloadingType === 'orders-csv' ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Preparing Download…</span>
+                      <Loader2 className="w-4 h-4 animate-spin text-brand-600" />
+                      <span>Preparing CSV…</span>
                     </>
                   ) : (
                     <>
-                      <Download className="w-4 h-4" />
-                      <span>Download Orders CSV</span>
+                      <Download className="w-4 h-4 text-slate-500" />
+                      <span>Download CSV</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleDownloadOrdersPdf}
+                  disabled={Boolean(downloadingType) || !ordersMonth}
+                  className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 transition-colors shadow-sm cursor-pointer"
+                >
+                  {downloadingType === 'orders-pdf' ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Preparing PDF…</span>
+                    </>
+                  ) : (
+                    <>
+                      <Printer className="w-4 h-4" />
+                      <span>Download PDF</span>
                     </>
                   )}
                 </button>
@@ -169,7 +222,7 @@ export const FranchiseReportsPage: React.FC = () => {
               Itemized statement of all GST and normal bills issued to your franchise during the selected month, showing payments made and outstanding balances.
             </p>
 
-            <form onSubmit={handleDownloadInvoices} className="space-y-3.5 pt-2">
+            <form onSubmit={handleDownloadInvoicesCsv} className="space-y-3.5 pt-2">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                   Billing Month <span className="text-red-500">*</span>
@@ -187,21 +240,40 @@ export const FranchiseReportsPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="pt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-4">
                 <button
                   type="submit"
-                  disabled={downloadingType === 'invoices' || !invoicesMonth}
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 transition-colors shadow-sm cursor-pointer"
+                  disabled={Boolean(downloadingType) || !invoicesMonth}
+                  className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-50 transition-colors shadow-sm cursor-pointer"
                 >
-                  {downloadingType === 'invoices' ? (
+                  {downloadingType === 'invoices-csv' ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Preparing Download…</span>
+                      <Loader2 className="w-4 h-4 animate-spin text-brand-600" />
+                      <span>Preparing CSV…</span>
                     </>
                   ) : (
                     <>
-                      <Download className="w-4 h-4" />
-                      <span>Download Invoices CSV</span>
+                      <Download className="w-4 h-4 text-slate-500" />
+                      <span>Download CSV</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleDownloadInvoicesPdf}
+                  disabled={Boolean(downloadingType) || !invoicesMonth}
+                  className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 transition-colors shadow-sm cursor-pointer"
+                >
+                  {downloadingType === 'invoices-pdf' ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Preparing PDF…</span>
+                    </>
+                  ) : (
+                    <>
+                      <Printer className="w-4 h-4" />
+                      <span>Download PDF</span>
                     </>
                   )}
                 </button>
@@ -229,7 +301,7 @@ export const FranchiseReportsPage: React.FC = () => {
               Detailed statement of your credit dues whose due dates fell within the selected month, including overdue days and remaining balance amounts.
             </p>
 
-            <form onSubmit={handleDownloadDues} className="space-y-3.5 pt-2">
+            <form onSubmit={handleDownloadDuesCsv} className="space-y-3.5 pt-2">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                   Billing Month <span className="text-red-500">*</span>
@@ -247,21 +319,40 @@ export const FranchiseReportsPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="pt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-4">
                 <button
                   type="submit"
-                  disabled={downloadingType === 'dues' || !duesMonth}
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-50 transition-colors shadow-sm cursor-pointer"
+                  disabled={Boolean(downloadingType) || !duesMonth}
+                  className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-50 transition-colors shadow-sm cursor-pointer"
                 >
-                  {downloadingType === 'dues' ? (
+                  {downloadingType === 'dues-csv' ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Preparing Download…</span>
+                      <Loader2 className="w-4 h-4 animate-spin text-rose-600" />
+                      <span>Preparing CSV…</span>
                     </>
                   ) : (
                     <>
-                      <Download className="w-4 h-4" />
-                      <span>Download Dues CSV</span>
+                      <Download className="w-4 h-4 text-slate-500" />
+                      <span>Download CSV</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleDownloadDuesPdf}
+                  disabled={Boolean(downloadingType) || !duesMonth}
+                  className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-50 transition-colors shadow-sm cursor-pointer"
+                >
+                  {downloadingType === 'dues-pdf' ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Preparing PDF…</span>
+                    </>
+                  ) : (
+                    <>
+                      <Printer className="w-4 h-4" />
+                      <span>Download PDF</span>
                     </>
                   )}
                 </button>

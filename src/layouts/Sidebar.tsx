@@ -30,7 +30,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         dashboardApi.getEnquiries({ page: 0, size: 100 }),
         dashboardApi.getDues({ page: 0, size: 100 }),
       ]);
-      const unreadSince = (module: 'orders' | 'enquiries') => Number(localStorage.getItem(readKey(module)) || 0);
       const readOrderIds = new Set<string>(JSON.parse(localStorage.getItem(orderReadKey()) || '[]'));
       const readEnquiryIds = enquiryStorage.getReadIds();
       setCounts((current) => ({

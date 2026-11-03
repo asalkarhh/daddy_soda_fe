@@ -48,7 +48,6 @@ export const FranchiseOverviewPage: React.FC = () => {
   const pendingOrders = orderRows.filter((item) => ['PLACED', 'PREPARED'].includes(item.status));
   const today = new Date().toISOString().slice(0, 10);
   const salesIncome = (rows: typeof salesRows) => rows.reduce((sum, sale) => sum + sale.quantity * (sale.retailUnitPrice || 0), 0);
-  const todaySalesIncome = salesIncome(salesRows.filter((sale) => sale.salesDate === today));
   const monthSalesIncome = salesIncome(salesRows.filter((sale) => sale.salesDate.startsWith(today.slice(0, 7))));
 
   const downloadLedger = () => {

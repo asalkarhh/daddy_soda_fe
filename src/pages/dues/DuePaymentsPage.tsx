@@ -4,7 +4,6 @@ import {
   AlertCircle,
   AlertTriangle,
   Calendar,
-  Filter,
   Eye,
   X,
   Clock,
@@ -171,16 +170,6 @@ export const DuePaymentsPage: React.FC = () => {
       }
     });
     setSearchParams(next);
-  };
-
-  const handleApplyFilters = () => {
-    updateUrlParams({
-      dueType,
-      fromDate,
-      toDate,
-      franchiseId: !isFranchiseOwner ? franchiseId : null,
-      page: '0',
-    });
   };
 
   const handleClearFilters = () => {

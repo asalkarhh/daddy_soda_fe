@@ -9,7 +9,6 @@ import {
   Trash2,
   Calendar,
   ArrowLeft,
-  AlertCircle,
   Package,
   Send,
   FileCheck,
@@ -306,7 +305,7 @@ export const FranchiseCreateOrderPage: React.FC = () => {
                       <Input
                         value={
                           selectedProduct
-                            ? formatBottleSize(selectedProduct.bottleSizeInMl)
+                            ? formatBottleSize(selectedProduct.bottleSizeLitre)
                             : '-'
                         }
                         readOnly

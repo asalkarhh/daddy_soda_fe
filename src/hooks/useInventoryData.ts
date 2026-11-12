@@ -5,6 +5,7 @@ import { getApiErrorMessage } from '../api/apiHelpers';
 import {
   PurchaseFilterParams,
   CreatePurchaseRequest,
+  RecordPurchasePaymentRequest,
   InventoryFilterParams,
   StockMovementFilterParams,
   StockAdjustmentRequest,
@@ -64,7 +65,20 @@ export function usePurchaseMutations() {
     },
   });
 
-  return { createPurchaseMutation, cancelPurchaseMutation };
+  const recordPaymentMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: RecordPurchasePaymentRequest }) =>
+      inventoryApi.recordPurchasePayment(id, payload),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['purchases'] });
+      queryClient.invalidateQueries({ queryKey: ['purchase', variables.id] });
+      success('Payment recorded successfully in supplier purchase ledger.');
+    },
+    onError: (err) => {
+      toastError(getApiErrorMessage(err, 'Failed to record supplier payment.'));
+    },
+  });
+
+  return { createPurchaseMutation, cancelPurchaseMutation, recordPaymentMutation };
 }
 
 // ====================================================

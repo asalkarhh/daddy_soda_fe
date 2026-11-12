@@ -209,7 +209,7 @@ export const FranchisePage: React.FC = () => {
                   Product Range
                 </span>
                 <span className="px-3 py-1 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-[#171717] font-display text-xs sm:text-sm font-black uppercase tracking-wide shadow-xs">
-                  8 Dedicated Soda Machines + Ice-Gola Counter
+                  24 Dedicated Soda Machines + Ice-Gola Counter
                 </span>
               </div>
               <h2 className="font-display text-3xl sm:text-5xl font-black text-[#171717] tracking-tight leading-none">
@@ -248,12 +248,9 @@ export const FranchisePage: React.FC = () => {
                     </div>
                   )}
 
-                  <h3 className="font-display text-xl sm:text-2xl font-bold text-[#171717] group-hover:text-[#E6392F] transition-colors">
+                  <h3 className="font-display text-xl sm:text-2xl font-bold text-[#171717] group-hover:text-[#E6392F] transition-colors mb-4">
                     {fl.name}
                   </h3>
-                  <p className="text-xs text-[#7A6B56] mt-1 mb-3 line-clamp-2 leading-relaxed">
-                    {fl.tagline}
-                  </p>
                 </div>
 
                 <div className="pt-3 border-t border-[#E8D9BD] flex items-center justify-between text-xs">

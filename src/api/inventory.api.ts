@@ -5,6 +5,7 @@ import { PaginatedData } from '../types/master.types';
 import {
   PurchaseEntry,
   CreatePurchaseRequest,
+  RecordPurchasePaymentRequest,
   CancelPurchaseRequest,
   PurchaseFilterParams,
   InventoryStock,
@@ -38,6 +39,17 @@ export const inventoryApi = {
 
   cancelPurchase: async (id: string, payload: CancelPurchaseRequest): Promise<PurchaseEntry> => {
     const response = await apiClient.post<ApiResponse<PurchaseEntry>>(`/purchases/${id}/cancel`, payload);
+    return response.data.data;
+  },
+
+  recordPurchasePayment: async (
+    id: string,
+    payload: RecordPurchasePaymentRequest
+  ): Promise<PurchaseEntry> => {
+    const response = await apiClient.post<ApiResponse<PurchaseEntry>>(
+      `/purchases/${id}/payments`,
+      payload
+    );
     return response.data.data;
   },
 

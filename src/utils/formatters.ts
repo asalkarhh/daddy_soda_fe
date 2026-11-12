@@ -72,32 +72,31 @@ export function formatActor(value: string | null | undefined, fallback = 'System
 }
 
 /**
- * Format numeric value as Indian Rupee display (e.g., ₹500 or ₹500.50)
- * Formats whole rupee amounts as clean integers without decimal fractions.
+ * Format numeric value as Indian Rupee display (e.g., ₹500, ₹540)
+ * Formats rupee amounts cleanly as whole numbers without decimal fractions.
  */
 export function formatCurrency(amount: number | null | undefined): string {
   if (amount === null || amount === undefined || isNaN(amount)) {
     return '₹0';
   }
-  const num = Number(amount);
-  const isInt = Number.isInteger(num);
+  const num = Math.round(Number(amount));
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
-    minimumFractionDigits: isInt ? 0 : 2,
-    maximumFractionDigits: isInt ? 0 : 2,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(num);
 }
 
 /**
- * Format bottle size in Litres (e.g., 5 L or 1.50 L)
+ * Format bottle size in Litres cleanly as whole number (e.g., 5 L)
  */
 export function formatBottleSize(litres: number | null | undefined): string {
   if (litres === null || litres === undefined || isNaN(litres)) {
     return '0 L';
   }
-  const num = Number(litres);
-  return `${Number.isInteger(num) ? num : num.toFixed(2)} L`;
+  const num = Math.round(Number(litres));
+  return `${num} L`;
 }
 
 /**

@@ -1,4 +1,5 @@
 export type PurchaseStatus = 'CONFIRMED' | 'CANCELLED';
+export type PurchasePaymentStatus = 'UNPAID' | 'PARTIALLY_PAID' | 'PAID';
 
 export interface PurchaseItem {
   id?: string;
@@ -9,7 +10,21 @@ export interface PurchaseItem {
   itemCode?: string;
   bottleSizeLitre?: number;
   quantity: number;
+  unitPrice?: number;
+  lineTotal?: number;
   currentStock?: number;
+}
+
+export interface PurchasePayment {
+  id: string;
+  purchaseEntryId: string;
+  paymentDate: string;
+  amount: number;
+  paymentMode: 'CASH' | 'UPI' | 'BANK_TRANSFER' | 'CHEQUE' | 'OTHER';
+  referenceNumber?: string;
+  remarks?: string;
+  createdAt: string;
+  createdBy?: string;
 }
 
 export interface PurchaseEntry {
@@ -22,10 +37,18 @@ export interface PurchaseEntry {
   supplierBillNumber?: string;
   description?: string;
   status: PurchaseStatus;
+  subtotalAmount?: number;
+  gstRatePercent?: number;
+  gstAmount?: number;
+  totalAmount?: number;
+  paidAmount?: number;
+  balanceAmount?: number;
+  paymentStatus?: PurchasePaymentStatus;
   totalItems?: number;
   itemCount?: number;
   totalQuantity: number;
   items?: PurchaseItem[];
+  payments?: PurchasePayment[];
   createdBy?: string;
   createdAt?: string;
   cancellationReason?: string;
@@ -36,6 +59,7 @@ export interface PurchaseEntry {
 export interface CreatePurchaseItemRequest {
   productId: string;
   quantity: number;
+  unitPrice: number;
 }
 
 export interface CreatePurchaseRequest {
@@ -43,7 +67,20 @@ export interface CreatePurchaseRequest {
   supplierBillNumber?: string;
   billDate: string;
   description?: string;
+  gstRatePercent?: number;
+  paidAmount?: number;
+  paymentMode?: 'CASH' | 'UPI' | 'BANK_TRANSFER' | 'CHEQUE' | 'OTHER';
+  paymentReference?: string;
+  paymentRemarks?: string;
   items: CreatePurchaseItemRequest[];
+}
+
+export interface RecordPurchasePaymentRequest {
+  paymentDate: string;
+  amount: number;
+  paymentMode: 'CASH' | 'UPI' | 'BANK_TRANSFER' | 'CHEQUE' | 'OTHER';
+  referenceNumber?: string;
+  remarks?: string;
 }
 
 export interface CancelPurchaseRequest {
@@ -56,6 +93,7 @@ export interface PurchaseFilterParams {
   supplierId?: string;
   supplierBillNumber?: string;
   status?: 'ALL' | 'CONFIRMED' | 'CANCELLED';
+  paymentStatus?: 'ALL' | PurchasePaymentStatus;
   fromDate?: string;
   toDate?: string;
   page?: number;

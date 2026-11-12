@@ -13,7 +13,7 @@ export const HomePage: React.FC = () => {
       {/* 1. Landing Page Video Hero */}
       <Hero />
       
-      {/* 2. 8 Dedicated Soda Machines + Ice-Gola Counter from Brochure */}
+      {/* 2. 24 Dedicated Soda Machines + Ice-Gola Counter from Brochure */}
       <ProductRangeShowcase />
       
       {/* 3. Why Daddy Soda House - The Easiest Business to Run (6 USPs) */}

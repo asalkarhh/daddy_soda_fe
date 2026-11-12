@@ -76,13 +76,10 @@ export default function Favorites() {
                 <div className="flex-1 flex flex-col justify-between">
                   <div>
                     <Link to={`/menu/${product.slug}`}>
-                      <h3 className="font-display text-2xl font-black text-[#171717] tracking-tight hover:text-[#E6392F] transition-colors leading-tight">
+                      <h3 className="font-display text-2xl font-black text-[#171717] tracking-tight hover:text-[#E6392F] transition-colors leading-tight mb-4">
                         {product.name}
                       </h3>
                     </Link>
-                    <p className="text-xs text-[#7A6B56] font-medium mt-1 mb-4 line-clamp-2">
-                      {product.ingredients.join(' • ')}
-                    </p>
                   </div>
 
                   {/* Price & View Details Action */}

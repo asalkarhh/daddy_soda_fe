@@ -30,11 +30,11 @@ export default function ProductRangeShowcase() {
                 Product Range
               </span>
               <span className="px-3 py-1 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-[#171717] font-display text-xs sm:text-sm font-black uppercase tracking-wide shadow-xs">
-                8 Dedicated Soda Machines + Ice-Gola Counter
+                24 Dedicated Soda Machines + Ice-Gola Counter
               </span>
             </div>
             <h2 className="font-display text-3xl sm:text-5xl lg:text-6xl font-black text-[#171717] tracking-tight leading-none">
-              8 DEDICATED SODA TAPS + ICE-GOLA
+              24 DEDICATED SODA TAPS + ICE-GOLA
             </h2>
             <p className="font-display text-base sm:text-xl text-[#7A6B56] uppercase tracking-wide mt-2">
               Refreshing Taste. Consistent Quality. Proprietary Concentrates.
@@ -83,13 +83,9 @@ export default function ProductRangeShowcase() {
                   </div>
                 )}
 
-                <h3 className="font-display text-xl sm:text-2xl font-black text-[#171717] group-hover:text-[#E6392F] transition-colors">
+                <h3 className="font-display text-xl sm:text-2xl font-black text-[#171717] group-hover:text-[#E6392F] transition-colors mb-4">
                   {item.name}
                 </h3>
-                
-                <p className="text-xs text-[#7A6B56] mt-1 mb-4 line-clamp-2 leading-relaxed">
-                  {item.tagline}
-                </p>
               </div>
 
               <div className="pt-3.5 border-t border-[#E8D9BD] flex items-center justify-between">
@@ -107,67 +103,67 @@ export default function ProductRangeShowcase() {
             </div>
           ))}
 
-          {/* 8th Position: Exciting "SHOW ALL FLAVOURS" Grid CTA Card */}
+          {/* 8th Position: Exciting "SHOW ALL FLAVOURS" Card */}
           <Link
             to="/menu"
-            className="group relative rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-[#E6392F] via-[#D12B22] to-[#171717] text-white shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between overflow-hidden border-2 border-[#E6392F] cursor-pointer"
+            className="group relative rounded-3xl p-4 sm:p-5 bg-gradient-to-br from-[#E6392F] via-[#D12B22] to-[#171717] text-white shadow-lg hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between overflow-hidden border-2 border-[#E6392F] cursor-pointer"
           >
             {/* Ambient Background Glows */}
             <div className="absolute -top-10 -right-10 w-36 h-36 bg-[#F8E71C]/25 rounded-full blur-2xl pointer-events-none group-hover:scale-150 transition-transform duration-700" />
             <div className="absolute -bottom-8 -left-8 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none" />
 
             <div className="relative z-10">
-              {/* Badge & Pill Header */}
-              <div className="flex items-center justify-between mb-3">
-                <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#F8E71C] text-[#171717] shadow-sm flex items-center gap-1 group-hover:scale-105 transition-transform">
-                  <Sparkles className="w-3 h-3 fill-[#171717]" />
-                  <span>+17 MORE FLAVOURS</span>
-                </span>
-                <span className="text-[11px] font-bold text-white/80 uppercase tracking-widest">
-                  FULL SUITE
-                </span>
+              {/* Graphic Centerpiece - Matches identical h-40 sm:h-48 of product image */}
+              <div className="relative w-full h-40 sm:h-48 rounded-2xl bg-black/25 backdrop-blur-xs border border-white/15 p-3 flex flex-col items-center justify-center text-center mb-3.5 overflow-hidden group-hover:border-[#F8E71C]/40 transition-colors">
+                {/* Header Tag */}
+                <div className="absolute top-2 left-2 z-10">
+                  <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-[#F8E71C] text-[#171717] flex items-center gap-1 shadow-xs">
+                    <Sparkles className="w-2.5 h-2.5 fill-[#171717]" />
+                    <span>+17 FLAVORS</span>
+                  </span>
+                </div>
+
+                <div className="absolute top-2 right-2 z-10">
+                  <span className="text-[9px] font-bold text-white/80 uppercase tracking-widest">
+                    FULL SUITE
+                  </span>
+                </div>
+
+                {/* Big 24 counter */}
+                <div className="flex flex-col items-center justify-center my-auto">
+                  <span className="font-display text-5xl sm:text-6xl font-black text-[#F8E71C] leading-none group-hover:scale-105 transition-transform">
+                    24
+                  </span>
+                  <span className="font-display text-[11px] sm:text-xs font-black uppercase tracking-widest text-white/90 mt-1">
+                    TOTAL PRODUCTS
+                  </span>
+                </div>
+
+                {/* Mini Emoji Ticker */}
+                <div className="flex items-center gap-1.5 text-base sm:text-lg opacity-90">
+                  <span>🍉</span>
+                  <span>🥥</span>
+                  <span>🍏</span>
+                  <span>🫐</span>
+                  <span>🍍</span>
+                </div>
               </div>
 
-              {/* Excitement Mini Grid Preview */}
-              <div className="grid grid-cols-3 gap-1.5 p-2 rounded-2xl bg-black/30 backdrop-blur-xs border border-white/15 mb-3.5">
-                {[
-                  { name: 'Watermelon', icon: '🍉' },
-                  { name: 'Pina Colada', icon: '🥥' },
-                  { name: 'Guava Green', icon: '🍏' },
-                  { name: 'Jamun', icon: '🫐' },
-                  { name: 'Rooh Afja', icon: '🌺' },
-                  { name: 'Pineapple', icon: '🍍' },
-                ].map((mini, idx) => (
-                  <div
-                    key={idx}
-                    className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-white/10 border border-white/10 group-hover:bg-white/20 transition-all"
-                  >
-                    <span className="text-xl sm:text-2xl drop-shadow-sm group-hover:scale-110 transition-transform">
-                      {mini.icon}
-                    </span>
-                    <span className="text-[9px] font-bold text-white/95 truncate max-w-full mt-0.5">
-                      {mini.name}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <h3 className="font-display text-2xl sm:text-3xl font-black text-white leading-tight group-hover:text-[#F8E71C] transition-colors">
-                SHOW ALL 24 FLAVOURS
+              {/* Title - Matches identical typography and mb-4 of other cards */}
+              <h3 className="font-display text-xl sm:text-2xl font-black text-white group-hover:text-[#F8E71C] transition-colors mb-4 leading-tight">
+                VIEW ALL 24 FLAVORS
               </h3>
-
-              <p className="text-xs text-[#FAF2E2]/90 mt-1 line-clamp-2 leading-relaxed">
-                Click to explore our full 24 draft flavors, prebiotic drinks, and ice-gola treats.
-              </p>
             </div>
 
-            {/* Bottom Action Bar */}
-            <div className="relative z-10 pt-4 mt-3 border-t border-white/20 flex items-center justify-between">
-              <span className="font-display text-sm font-bold uppercase tracking-wider text-[#F8E71C] group-hover:underline">
-                Explore Full Menu
+            {/* Bottom Action Bar - Matches identical pt-3.5 border-t of other cards */}
+            <div className="relative z-10 pt-3.5 border-t border-white/20 flex items-center justify-between">
+              <span className="text-[11px] uppercase font-bold tracking-wider text-[#F8E71C]">
+                Dedicated Soda Suite
               </span>
-              <div className="w-9 h-9 rounded-xl bg-white text-[#E6392F] group-hover:bg-[#F8E71C] group-hover:text-[#171717] flex items-center justify-center shadow-md group-hover:translate-x-1.5 transition-all">
-                <ArrowRight className="w-5 h-5" />
+
+              <div className="px-3 sm:px-4 py-1.5 rounded-xl bg-white group-hover:bg-[#F8E71C] text-[#E6392F] group-hover:text-[#171717] font-display text-xs sm:text-sm tracking-wider transition-all flex items-center gap-1 shadow-xs">
+                <span>EXPLORE</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </div>
             </div>
           </Link>

@@ -123,11 +123,11 @@ export default function Hero() {
             </div>
 
             <h2 className="font-display text-4xl sm:text-6xl lg:text-7xl font-black text-[#171717] tracking-tight leading-none">
-              SIP THE <span className="text-[#E6392F]">REBELLION</span>
+              TASTE THE <span className="text-[#E6392F]">REVOLUTION</span>
             </h2>
 
             <p className="font-display text-xl sm:text-2xl text-[#7A6B56] uppercase tracking-wide">
-              HANDCRAFTED DIRTY SODA WITH VELVETY COLD FOAM & FRESH BOTANICALS
+              HYGIENIC PROCESS • SIGNATURE HYGIENE ICE GOLA • AUTHENTIC FRUIT SYRUPS
             </p>
           </div>
 
@@ -141,15 +141,15 @@ export default function Hero() {
                 transform: `translate3d(${mousePos.x}px, ${mousePos.y}px, 0)`,
               }}
             >
-              {/* Central Soda Cup */}
+              {/* Central Ice Gola Visual */}
               <div className="animate-float-subtle relative z-10 mx-auto w-72 sm:w-92 h-96 sm:h-[480px] rounded-3xl overflow-hidden shadow-2xl border-4 border-white/95 bg-white">
                 <img
-                  src="/images/products/hero-soda.jpg"
-                  alt="Daddy Soda Signature Custom Mix"
+                  src="/images/products/ice-gola-hero.jpg"
+                  alt="India's First Hygiene Ice Gola"
                   className="w-full h-full object-cover"
                 />
 
-                {/* Inner Carbonation Bubbles */}
+                {/* Inner Sparkle Bubbles */}
                 <div className="bubble" style={{ left: '20%', bottom: '15%', animationDelay: '0.2s', width: '12px', height: '12px' }} />
                 <div className="bubble" style={{ left: '45%', bottom: '25%', animationDelay: '1.1s', width: '8px', height: '8px' }} />
                 <div className="bubble" style={{ left: '70%', bottom: '20%', animationDelay: '0.7s', width: '10px', height: '10px' }} />
@@ -157,53 +157,79 @@ export default function Hero() {
                 <div className="bubble" style={{ left: '60%', bottom: '40%', animationDelay: '2.3s', width: '9px', height: '9px' }} />
               </div>
 
+              {/* 3D Graphic Design Ribbon Banner Break: INDIA'S FIRST HYGIENE ICE GOLA */}
+              <div className="absolute -bottom-5 sm:-bottom-7 left-1/2 -translate-x-1/2 z-30 w-[106%] sm:w-[114%]">
+                <div className="relative">
+                  {/* Left 3D Ribbon Shadow/Fold */}
+                  <div className="absolute -left-2 sm:-left-3 top-3 sm:top-3.5 w-4 sm:w-5 h-4 sm:h-5 bg-[#8C1610] -rotate-45 -z-10 rounded-xs" />
+                  
+                  {/* Right 3D Ribbon Shadow/Fold */}
+                  <div className="absolute -right-2 sm:-right-3 top-3 sm:top-3.5 w-4 sm:w-5 h-4 sm:h-5 bg-[#8C1610] rotate-45 -z-10 rounded-xs" />
+
+                  {/* Ribbon Banner Body */}
+                  <div className="relative py-2.5 sm:py-3.5 px-3 sm:px-6 rounded-2xl bg-gradient-to-r from-[#D12B22] via-[#E6392F] to-[#D12B22] text-white shadow-2xl border-2 border-[#F8E71C] flex items-center justify-center gap-2 transform -rotate-1 hover:rotate-0 transition-transform">
+                    <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#F8E71C] text-[#171717] flex items-center justify-center text-xs font-black shadow-xs shrink-0">
+                      ★
+                    </span>
+
+                    <span className="font-display text-xs sm:text-base md:text-lg lg:text-xl font-black uppercase tracking-wider text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] text-center whitespace-nowrap">
+                      INDIA'S FIRST HYGIENE ICE GOLA
+                    </span>
+
+                    <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#F8E71C] text-[#171717] flex items-center justify-center text-xs font-black shadow-xs shrink-0">
+                      ★
+                    </span>
+                  </div>
+                </div>
+              </div>
+
               {/* 4 Floating Ingredient Cards */}
 
-              {/* TOP LEFT: STRAWBERRY */}
+              {/* TOP LEFT: HYGIENE ICE GOLA */}
               <div
                 className="absolute -top-6 -left-4 sm:-left-14 z-20 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-xl border border-[#E8D9BD] flex items-center gap-2.5 animate-bobbing"
                 style={{ animationDelay: '0.3s' }}
               >
-                <span className="text-3xl">🍓</span>
+                <span className="text-3xl">🍧</span>
                 <div className="text-left">
-                  <p className="text-[10px] uppercase font-bold text-[#A8987E]">Wild Puree</p>
-                  <p className="font-display text-sm font-bold text-[#171717]">STRAWBERRY</p>
+                  <p className="text-[10px] uppercase font-bold text-[#A8987E]">Hygienic Process</p>
+                  <p className="font-display text-sm font-bold text-[#171717]">HYGIENE ICE GOLA</p>
                 </div>
               </div>
 
-              {/* TOP RIGHT: PERSIAN LIME */}
+              {/* TOP RIGHT: KALA KHATTA */}
               <div
                 className="absolute top-1/4 -right-4 sm:-right-14 z-20 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-xl border border-[#E8D9BD] flex items-center gap-2.5 animate-bobbing"
                 style={{ animationDelay: '1.1s' }}
               >
-                <span className="text-3xl">🍋</span>
+                <span className="text-3xl">🍇</span>
                 <div className="text-left">
-                  <p className="text-[10px] uppercase font-bold text-[#A8987E]">Fresh Squeeze</p>
-                  <p className="font-display text-sm font-bold text-[#171717]">PERSIAN LIME</p>
+                  <p className="text-[10px] uppercase font-bold text-[#A8987E]">Royal Syrup</p>
+                  <p className="font-display text-sm font-bold text-[#171717]">KALA KHATTA</p>
                 </div>
               </div>
 
-              {/* BOTTOM LEFT: VANILLA FOAM */}
+              {/* BOTTOM LEFT: GOURMET ROSE */}
               <div
-                className="absolute bottom-12 -left-6 sm:-left-16 z-20 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-xl border border-[#E8D9BD] flex items-center gap-2.5 animate-bobbing"
+                className="absolute bottom-16 -left-6 sm:-left-16 z-20 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-xl border border-[#E8D9BD] flex items-center gap-2.5 animate-bobbing"
                 style={{ animationDelay: '1.8s' }}
               >
-                <span className="text-3xl">🍦</span>
+                <span className="text-3xl">🌹</span>
                 <div className="text-left">
-                  <p className="text-[10px] uppercase font-bold text-[#A8987E]">Velvety Float</p>
-                  <p className="font-display text-sm font-bold text-[#171717]">VANILLA FOAM</p>
+                  <p className="text-[10px] uppercase font-bold text-[#A8987E]">Aromatic Bloom</p>
+                  <p className="font-display text-sm font-bold text-[#171717]">GOURMET ROSE</p>
                 </div>
               </div>
 
-              {/* BOTTOM RIGHT: CRUSHED ICE */}
+              {/* BOTTOM RIGHT: GOLDEN PINEAPPLE */}
               <div
-                className="absolute bottom-4 -right-4 sm:-right-12 z-20 bg-[#171717] text-white px-4 py-2.5 rounded-2xl shadow-xl border border-[#333333] flex items-center gap-2.5 animate-bobbing"
+                className="absolute bottom-12 -right-4 sm:-right-12 z-20 bg-[#171717] text-white px-4 py-2.5 rounded-2xl shadow-xl border border-[#333333] flex items-center gap-2.5 animate-bobbing"
                 style={{ animationDelay: '1.4s' }}
               >
-                <span className="text-3xl">🧊</span>
+                <span className="text-3xl">🍍</span>
                 <div className="text-left">
-                  <p className="text-[10px] uppercase font-bold text-[#FFB000]">Extra Chill</p>
-                  <p className="font-display text-sm font-bold text-[#FFF8ED]">CRUSHED ICE</p>
+                  <p className="text-[10px] uppercase font-bold text-[#FFB000]">Tropical Crush</p>
+                  <p className="font-display text-sm font-bold text-[#FFF8ED]">GOLDEN PINEAPPLE</p>
                 </div>
               </div>
 
@@ -211,25 +237,25 @@ export default function Hero() {
           </div>
 
           {/* Flavor Ingredients Ticker */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm font-bold text-[#7A6B56]">
-            <span className="px-3.5 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD]">
-              🍓 STRAWBERRY
+          <div className="mt-14 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm font-bold text-[#7A6B56]">
+            <span className="px-3.5 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD] text-[#E6392F]">
+              ✨ HYGIENIC PROCESS
             </span>
             <span className="text-[#A8987E]">•</span>
             <span className="px-3.5 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD]">
-              🍒 WILD CHERRY
+              🍇 KALA KHATTA
             </span>
             <span className="text-[#A8987E]">•</span>
             <span className="px-3.5 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD]">
-              🍋 TART LIME
+              🌹 GOURMET ROSE
             </span>
             <span className="text-[#A8987E]">•</span>
             <span className="px-3.5 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD]">
-              🍦 SWEET VANILLA COLD FOAM
+              🍍 GOLDEN PINEAPPLE
             </span>
             <span className="text-[#A8987E]">•</span>
             <span className="px-3.5 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD]">
-              💥 POPPING BOBA
+              🥭 ALPHONSO MANGO
             </span>
           </div>
 
@@ -239,7 +265,7 @@ export default function Hero() {
               to="/menu"
               className="px-8 py-3.5 rounded-2xl bg-[#E6392F] hover:bg-[#171717] text-white font-display text-xl tracking-wider transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2"
             >
-              <span>EXPLORE ALL SIGNATURE FLAVORS</span>
+              <span>EXPLORE ALL 24 FLAVORS &amp; GOLA</span>
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link

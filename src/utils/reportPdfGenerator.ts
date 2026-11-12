@@ -140,6 +140,7 @@ export function openPrintWindow(html: string): boolean {
 
 /**
  * 1. Generate Monthly Purchases Report PDF View
+ * Supplier procurement ledger statement with 18% GST, Debit (Total Bill), Credit (Paid Amount), and Pending Balance.
  */
 export function generatePurchasesReportPdf(
   csvText: string,
@@ -150,41 +151,44 @@ export function generatePurchasesReportPdf(
   const dataRows = parsed.slice(1);
   const monthName = formatMonthName(params.month);
 
-  const uniqueBills = new Set(dataRows.map((r) => r[0]).filter(Boolean));
-  const uniqueSuppliers = new Set(dataRows.map((r) => r[2]).filter(Boolean));
-  const totalQuantity = dataRows.reduce((sum, r) => sum + parseNumber(r[7]), 0);
+  const isFinancialCsv = dataRows.some((r) => r.length > 12);
 
   const filterSubtitleParts = [monthName];
   if (extraMeta?.supplierName) {
     filterSubtitleParts.push(extraMeta.supplierName);
   }
 
-  const tableRowsHtml = dataRows.length
-    ? dataRows
-        .map((r) => {
-          const purchaseNo = r[0] || '—';
-          const billDate = formatDate(r[1]);
-          const supplier = r[2] || '—';
-          const supplierBill = r[3] ? `Ref: ${r[3]}` : '—';
-          const flavour = r[5] || r[4] || '—';
-          const bottleSize = r[6] ? `${r[6]} L` : '—';
-          const quantity = formatQuantity(parseNumber(r[7]));
-          const status = r[8] || 'RECEIVED';
+  if (!isFinancialCsv) {
+    // Fallback for legacy quantity-only CSV format
+    const uniqueBills = new Set(dataRows.map((r) => r[0]).filter(Boolean));
+    const totalQuantity = dataRows.reduce((sum, r) => sum + parseNumber(r[7]), 0);
 
-          return `<tr>
-            <td class="text-center">${billDate}</td>
-            <td class="font-mono"><b>${purchaseNo}</b></td>
-            <td><b>${supplier}</b><br><small style="color:#64748b">${supplierBill}</small></td>
-            <td>${flavour}</td>
-            <td class="text-center">${bottleSize}</td>
-            <td class="text-right"><b>${quantity}</b></td>
-            <td class="text-center"><span class="badge badge-info">${status}</span></td>
-          </tr>`;
-        })
-        .join('')
-    : '<tr><td colspan="7" class="text-center" style="padding:28px;color:#64748b;">No purchases recorded for this billing cycle.</td></tr>';
+    const tableRowsHtml = dataRows.length
+      ? dataRows
+          .map((r) => {
+            const purchaseNo = r[0] || '—';
+            const billDate = formatDate(r[1]);
+            const supplier = r[2] || '—';
+            const supplierBill = r[3] ? `Ref: ${r[3]}` : '—';
+            const flavour = r[5] || r[4] || '—';
+            const bottleSize = r[6] ? `${r[6]} L` : '—';
+            const quantity = formatQuantity(parseNumber(r[7]));
+            const status = r[8] || 'RECEIVED';
 
-  const html = `<!DOCTYPE html>
+            return `<tr>
+              <td class="text-center">${billDate}</td>
+              <td class="font-mono"><b>${purchaseNo}</b></td>
+              <td><b>${supplier}</b><br><small style="color:#64748b">${supplierBill}</small></td>
+              <td>${flavour}</td>
+              <td class="text-center">${bottleSize}</td>
+              <td class="text-right"><b>${quantity}</b></td>
+              <td class="text-center"><span class="badge badge-info">${status}</span></td>
+            </tr>`;
+          })
+          .join('')
+      : '<tr><td colspan="7" class="text-center" style="padding:28px;color:#64748b;">No purchases recorded for this billing cycle.</td></tr>';
+
+    const legacyHtml = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -200,7 +204,6 @@ export function generatePurchasesReportPdf(
     <div class="box">Total Purchase Bills<br><b>${uniqueBills.size}</b></div>
     <div class="box">Total Line Items<br><b>${dataRows.length}</b></div>
     <div class="box">Total Quantity Inward<br><b>${formatQuantity(totalQuantity, 'Units')}</b></div>
-    <div class="box">Suppliers Involved<br><b>${uniqueSuppliers.size}</b></div>
   </div>
 
   <div class="toolbar">
@@ -222,13 +225,154 @@ export function generatePurchasesReportPdf(
     <tbody>
       ${tableRowsHtml}
     </tbody>
+  </table>
+</body>
+</html>`;
+    return openPrintWindow(legacyHtml);
+  }
+
+  // Modern Financial Purchase Ledger parsing
+  const purchaseMap = new Map<
+    string,
+    {
+      purchaseNumber: string;
+      billDate: string;
+      supplierName: string;
+      supplierBillNo: string;
+      subtotal: number;
+      gstRate: number;
+      gstAmount: number;
+      totalAmount: number;
+      paidAmount: number;
+      balanceAmount: number;
+      paymentStatus: string;
+      status: string;
+      items: Array<{ flavour: string; qty: number; unitPrice: number; lineTotal: number }>;
+    }
+  >();
+
+  dataRows.forEach((r) => {
+    const pNo = r[0];
+    if (!pNo) return;
+
+    if (!purchaseMap.has(pNo)) {
+      purchaseMap.set(pNo, {
+        purchaseNumber: pNo,
+        billDate: r[1],
+        supplierName: r[2],
+        supplierBillNo: r[3],
+        subtotal: parseNumber(r[4]),
+        gstRate: parseNumber(r[5]) || 18,
+        gstAmount: parseNumber(r[6]),
+        totalAmount: parseNumber(r[7]),
+        paidAmount: parseNumber(r[8]),
+        balanceAmount: parseNumber(r[9]),
+        paymentStatus: r[10] || 'UNPAID',
+        status: r[17] || 'CONFIRMED',
+        items: [],
+      });
+    }
+
+    const entry = purchaseMap.get(pNo)!;
+    if (r[12]) {
+      entry.items.push({
+        flavour: r[12],
+        qty: parseNumber(r[14]),
+        unitPrice: parseNumber(r[15]),
+        lineTotal: parseNumber(r[16]),
+      });
+    }
+  });
+
+  const uniquePurchases = Array.from(purchaseMap.values());
+  const totalDebit = uniquePurchases.reduce((sum, p) => sum + p.totalAmount, 0);
+  const totalCredit = uniquePurchases.reduce((sum, p) => sum + p.paidAmount, 0);
+  const totalPending = uniquePurchases.reduce((sum, p) => sum + p.balanceAmount, 0);
+  const totalSubtotal = uniquePurchases.reduce((sum, p) => sum + p.subtotal, 0);
+  const totalGst = uniquePurchases.reduce((sum, p) => sum + p.gstAmount, 0);
+  const totalQuantity = dataRows.reduce((sum, r) => sum + parseNumber(r[14]), 0);
+
+  const tableRowsHtml = uniquePurchases.length
+    ? uniquePurchases
+        .map((p) => {
+          const billDate = formatDate(p.billDate);
+          const supplierBill = p.supplierBillNo ? `Ref: ${p.supplierBillNo}` : '—';
+          const itemsSummary = p.items.length
+            ? p.items.map((i) => `${i.flavour} (${i.qty})`).join(', ')
+            : 'Standard Shipment';
+
+          const badgeClass =
+            p.paymentStatus === 'PAID'
+              ? 'badge-paid'
+              : p.paymentStatus === 'PARTIALLY_PAID'
+              ? 'badge-partial'
+              : 'badge-pending';
+
+          return `<tr>
+            <td class="text-center">${billDate}</td>
+            <td class="font-mono"><b>${p.purchaseNumber}</b></td>
+            <td><b>${p.supplierName || '—'}</b><br><small style="color:#64748b">${supplierBill}</small></td>
+            <td><small>${itemsSummary}</small></td>
+            <td class="text-right"><b>${formatCurrency(p.totalAmount)}</b></td>
+            <td class="text-right" style="color:#047857;">${formatCurrency(p.paidAmount)}</td>
+            <td class="text-right" style="color:${p.balanceAmount > 0 ? '#b91c1c' : '#047857'};"><b>${formatCurrency(p.balanceAmount)}</b></td>
+            <td class="text-center"><span class="badge ${badgeClass}">${p.paymentStatus}</span></td>
+            <td class="text-center"><span class="badge badge-info">${p.status}</span></td>
+          </tr>`;
+        })
+        .join('')
+    : '<tr><td colspan="9" class="text-center" style="padding:28px;color:#64748b;">No purchases recorded for this billing cycle.</td></tr>';
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Monthly Purchases Report - ${monthName} - ${COMPANY_NAME}</title>
+  <style>${getBaseStyles()}</style>
+</head>
+<body>
+  <h1>${COMPANY_NAME}</h1>
+  <h2>Monthly Purchases Report · ${filterSubtitleParts.join(' · ')}</h2>
+  <p>${COMPANY_LEGAL} · ${COMPANY_ADDRESS}<br>Official Procurement, 18% GST & Supplier Accounts Payable Ledger Statement</p>
+
+  <div class="summary">
+    <div class="box">Total Purchase Bills<br><b>${uniquePurchases.length}</b></div>
+    <div class="box">Total Quantity Inward<br><b>${formatQuantity(totalQuantity, 'Bottles')}</b></div>
+    <div class="box">Total Billed (Debit)<br><b>${formatCurrency(totalDebit)}</b></div>
+    <div class="box">Amount Paid (Credit)<br><b style="color:#047857;">${formatCurrency(totalCredit)}</b></div>
+    <div class="box">Total Amount Pending<br><b style="color:${totalPending > 0 ? '#b91c1c' : '#047857'};">${formatCurrency(totalPending)}</b></div>
+  </div>
+
+  <div class="toolbar">
+    <button onclick="window.print()">Download PDF / Print</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="text-center">Bill Date</th>
+        <th>Purchase Number</th>
+        <th>Supplier & Bill Ref</th>
+        <th>Flavour Particulars & Qty</th>
+        <th class="text-right">Total Bill (Debit)</th>
+        <th class="text-right">Paid (Credit)</th>
+        <th class="text-right">Pending Balance</th>
+        <th class="text-center">Payment</th>
+        <th class="text-center">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${tableRowsHtml}
+    </tbody>
     ${
-      dataRows.length
+      uniquePurchases.length
         ? `<tfoot>
             <tr>
-              <td colspan="5" class="text-right"><b>Total Quantity:</b></td>
-              <td class="text-right"><b>${formatQuantity(totalQuantity, 'Units')}</b></td>
-              <td></td>
+              <td colspan="4" class="text-right"><b>Total Procurement Spend & Dues:</b></td>
+              <td class="text-right"><b>${formatCurrency(totalDebit)}</b></td>
+              <td class="text-right" style="color:#047857;"><b>${formatCurrency(totalCredit)}</b></td>
+              <td class="text-right" style="color:${totalPending > 0 ? '#b91c1c' : '#047857'};"><b>${formatCurrency(totalPending)}</b></td>
+              <td colspan="2"></td>
             </tr>
           </tfoot>`
         : ''
@@ -237,25 +381,35 @@ export function generatePurchasesReportPdf(
 
   <div class="financial-summary-wrapper">
     <div class="financial-summary-card">
-      <div class="financial-summary-header">Procurement Summary Calculation</div>
+      <div class="financial-summary-header">Procurement & Accounts Payable Ledger Summary</div>
       <div class="financial-summary-body">
         <div class="calc-row">
-          <span>Total Purchase Bills:</span>
-          <b>${uniqueBills.size}</b>
+          <span>Base Subtotal Amount:</span>
+          <b>${formatCurrency(totalSubtotal)}</b>
         </div>
         <div class="calc-row">
-          <span>Total Product Line Items:</span>
-          <b>${dataRows.length}</b>
+          <span>Total 18% GST Amount:</span>
+          <b>${formatCurrency(totalGst)}</b>
         </div>
         <div class="calc-row calc-total">
-          <span>Total Inward Quantity:</span>
-          <b style="color:#0f766e; font-size:14px;">${formatQuantity(totalQuantity, 'Units')}</b>
+          <span>Total Billed to Suppliers (Debit):</span>
+          <b style="color:#0f766e; font-size:14px;">${formatCurrency(totalDebit)}</b>
+        </div>
+        <div class="calc-row">
+          <span>Total Paid to Suppliers (Credit):</span>
+          <b style="color:#047857;">${formatCurrency(totalCredit)}</b>
+        </div>
+        <div class="calc-row calc-total">
+          <span>Net Supplier Balance Pending:</span>
+          <b style="color:${totalPending > 0 ? '#b91c1c' : '#047857'}; font-size:15px;">${formatCurrency(totalPending)}</b>
         </div>
       </div>
     </div>
   </div>
 </body>
 </html>`;
+
+  return openPrintWindow(html);
 
   return openPrintWindow(html);
 }

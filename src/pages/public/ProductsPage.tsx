@@ -44,7 +44,7 @@ export const ProductsPage: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD] text-xs font-bold text-[#E6392F] mb-3 shadow-xs">
             <Sparkles className="w-4 h-4 fill-[#E6392F]" />
-            <span className="tracking-widest uppercase">8 DEDICATED SODA TAPS + ICE-GOLA COUNTER</span>
+            <span className="tracking-widest uppercase">24 DEDICATED SODA TAPS + ICE-GOLA COUNTER</span>
           </div>
           <h1 className="font-display text-5xl sm:text-7xl font-black text-[#171717] tracking-tight leading-none mb-3">
             PRODUCTS &amp; FLAVORS
@@ -108,7 +108,7 @@ export const ProductsPage: React.FC = () => {
               NO FLAVOR MATCHES THAT
             </h3>
             <p className="text-xs text-[#7A6B56] mb-4">
-              Explore our full 8-flavor commercial draft setup and ice-gola unit on the franchise page.
+              Explore our full 24-flavor commercial draft setup and ice-gola unit on the franchise page.
             </p>
             <Link
               to="/franchise"
@@ -164,13 +164,10 @@ export const ProductsPage: React.FC = () => {
                   <div className="flex-1 flex flex-col justify-between">
                     <div>
                       <Link to={`/menu/${product.slug}`}>
-                        <h3 className="font-display text-xl sm:text-2xl font-black text-[#171717] tracking-tight hover:text-[#E6392F] transition-colors leading-tight">
+                        <h3 className="font-display text-xl sm:text-2xl font-black text-[#171717] tracking-tight hover:text-[#E6392F] transition-colors leading-tight mb-4">
                           {product.name}
                         </h3>
                       </Link>
-                      <p className="text-[11px] sm:text-xs text-[#7A6B56] font-medium mt-1 mb-3 line-clamp-2">
-                        {product.ingredients.join(' • ')}
-                      </p>
                     </div>
 
                     {/* Action */}
@@ -202,7 +199,7 @@ export const ProductsPage: React.FC = () => {
             WANT TO SERVE THESE AT YOUR OUTLET?
           </h3>
           <p className="text-sm text-[#FAF2E2]/90 max-w-xl mx-auto mt-2 mb-6">
-            Get the full 8-tap soda dispensing machine, Ice-Gola counter, and proprietary concentrates with complete franchise support.
+            Get the full 24-tap soda dispensing machine, Ice-Gola counter, and proprietary concentrates with complete franchise support.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link

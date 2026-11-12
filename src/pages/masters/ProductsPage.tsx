@@ -31,10 +31,12 @@ const productSchema = z.object({
   flavourName: z.string().min(1, 'Flavour Name is required').trim(),
   bottleSizeLitre: z.coerce
     .number({ invalid_type_error: 'Bottle size must be a number' })
+    .int('Bottle size must be a whole number (e.g. 5)')
     .positive('Bottle size must be greater than zero')
-    .default(5.0),
+    .default(5),
   defaultSellingPrice: z.coerce
     .number({ invalid_type_error: 'Price must be a number' })
+    .int('Default selling price must be a whole number (e.g. 540)')
     .min(0, 'Price cannot be negative')
     .optional()
     .or(z.nan()),
@@ -75,7 +77,7 @@ export const ProductsPage: React.FC = () => {
     defaultValues: {
       itemCode: '',
       flavourName: '',
-      bottleSizeLitre: 5.0,
+      bottleSizeLitre: 5,
       defaultSellingPrice: undefined,
       description: '',
     },
@@ -86,7 +88,7 @@ export const ProductsPage: React.FC = () => {
     reset({
       itemCode: '',
       flavourName: '',
-      bottleSizeLitre: 5.0,
+      bottleSizeLitre: 5,
       defaultSellingPrice: undefined,
       description: '',
     });
@@ -98,8 +100,11 @@ export const ProductsPage: React.FC = () => {
     reset({
       itemCode: product.itemCode,
       flavourName: product.flavourName,
-      bottleSizeLitre: product.bottleSizeLitre,
-      defaultSellingPrice: product.defaultSellingPrice,
+      bottleSizeLitre: product.bottleSizeLitre ? Math.round(Number(product.bottleSizeLitre)) : 5,
+      defaultSellingPrice:
+        product.defaultSellingPrice !== undefined && product.defaultSellingPrice !== null && !isNaN(Number(product.defaultSellingPrice))
+          ? Math.round(Number(product.defaultSellingPrice))
+          : undefined,
       description: product.description || '',
     });
     setIsFormOpen(true);
@@ -109,10 +114,10 @@ export const ProductsPage: React.FC = () => {
     const payload: ProductFormData = {
       itemCode: values.itemCode,
       flavourName: values.flavourName,
-      bottleSizeLitre: values.bottleSizeLitre,
+      bottleSizeLitre: Math.round(Number(values.bottleSizeLitre)),
       defaultSellingPrice:
         values.defaultSellingPrice !== undefined && !isNaN(values.defaultSellingPrice)
-          ? values.defaultSellingPrice
+          ? Math.round(Number(values.defaultSellingPrice))
           : undefined,
       description: values.description || undefined,
     };
@@ -314,10 +319,10 @@ export const ProductsPage: React.FC = () => {
             <Input
               label="Bottle Size (Litres)"
               type="number"
-              step="0.01"
-              min="0.1"
+              step="1"
+              min="1"
               required
-              helperText="Current standard bottle size is 5 litres. This can be changed for future product sizes."
+              helperText="Current standard bottle size is 5 litres (whole number)."
               error={errors.bottleSizeLitre?.message}
               {...register('bottleSizeLitre')}
             />
@@ -325,10 +330,10 @@ export const ProductsPage: React.FC = () => {
             <Input
               label="Default Selling Price (₹)"
               type="number"
-              step="0.01"
+              step="1"
               min="0"
-              placeholder="e.g. 550.00"
-              helperText="Base selling rate to franchises per bottle."
+              placeholder="e.g. 540"
+              helperText="Base selling rate to franchises per bottle (in whole rupees)."
               error={errors.defaultSellingPrice?.message}
               {...register('defaultSellingPrice')}
             />

@@ -203,7 +203,7 @@ export const MonthlyReportsPage: React.FC = () => {
             </div>
 
             <p className="text-sm text-slate-600 leading-relaxed">
-              Consolidated procurement log containing purchase bill numbers, supplier details, purchase dates, item breakdown, taxes, and total procurement spend.
+              Consolidated procurement log containing purchase bill numbers, supplier details, buying rates, 18% GST calculations, total billed (Debit), amount paid (Credit), and outstanding balance pending.
             </p>
 
             <form onSubmit={handleDownloadPurchasesCsv} className="space-y-3.5 pt-2">

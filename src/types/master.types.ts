@@ -73,6 +73,9 @@ export interface Outlet {
   city?: string;
   state?: string;
   pincode?: string;
+  agreementFileName?: string;
+  agreementFileType?: string;
+  hasAgreement?: boolean;
   active: boolean;
   createdAt?: string;
   machinesCount?: number;
@@ -88,6 +91,7 @@ export interface OutletFormData {
   city?: string;
   state?: string;
   pincode?: string;
+  agreementFile?: File | null;
 }
 
 export interface OutletFilterParams {

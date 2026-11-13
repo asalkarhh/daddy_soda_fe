@@ -11,9 +11,10 @@ import { enquiryStorage } from '../utils/storage';
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenProfile?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onOpenProfile }) => {
   const { user, accessToken } = useAuth();
   const userRole = user?.role;
   const [counts, setCounts] = useState({ orders: 0, enquiries: 0, dues: 0 });
@@ -162,18 +163,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
       {/* User info footer */}
       {user && (
-        <div className="p-4 border-t border-slate-100 bg-slate-50/70">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-brand-700 text-white font-bold flex items-center justify-center text-sm shadow-sm">
+        <div className="p-3 border-t border-slate-100 bg-slate-50/70">
+          <button
+            type="button"
+            onClick={() => {
+              if (onOpenProfile) onOpenProfile();
+              if (window.innerWidth < 1024) onClose();
+            }}
+            title="Click to view Profile & Franchise Details"
+            className="w-full flex items-center gap-3 p-1.5 rounded-xl hover:bg-white hover:shadow-sm border border-transparent hover:border-slate-200 transition-all text-left group cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
+            <div className="w-9 h-9 rounded-full bg-brand-700 text-white font-bold flex items-center justify-center text-sm shadow-sm group-hover:scale-105 transition-transform shrink-0">
               {user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-800 truncate leading-snug">
+              <p className="text-sm font-semibold text-slate-800 truncate leading-snug group-hover:text-brand-700 transition-colors">
                 {user.fullName}
               </p>
               <p className="text-xs text-slate-500 truncate">{user.mobile}</p>
             </div>
-          </div>
+          </button>
         </div>
       )}
     </div>

@@ -137,7 +137,30 @@ export function useOutletMutations() {
     },
   });
 
-  return { createMutation, updateMutation, statusMutation };
+  const uploadAgreementMutation = useMutation({
+    mutationFn: ({ id, file }: { id: string; file: File }) =>
+      masterApi.uploadOutletAgreement(id, file),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['outlets'] });
+      success(`Agreement uploaded for outlet "${data.outletName}"!`);
+    },
+    onError: (err) => {
+      toastError(getApiErrorMessage(err, 'Failed to upload agreement.'));
+    },
+  });
+
+  const deleteAgreementMutation = useMutation({
+    mutationFn: (id: string) => masterApi.deleteOutletAgreement(id),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['outlets'] });
+      success(`Agreement removed from outlet "${data.outletName}".`);
+    },
+    onError: (err) => {
+      toastError(getApiErrorMessage(err, 'Failed to remove agreement.'));
+    },
+  });
+
+  return { createMutation, updateMutation, statusMutation, uploadAgreementMutation, deleteAgreementMutation };
 }
 
 // ====================================================

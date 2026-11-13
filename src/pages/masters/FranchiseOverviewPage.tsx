@@ -1,7 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Building2, Boxes, Cpu, FileText, ShoppingCart, Wallet } from 'lucide-react';
+import {
+  ArrowLeft,
+  Building2,
+  Boxes,
+  Cpu,
+  FileText,
+  ShoppingCart,
+  Wallet,
+  Eye,
+  Download,
+  Upload,
+  Trash2,
+  Loader2,
+} from 'lucide-react';
 import { masterApi } from '../../api/master.api';
 import { orderApi } from '../../api/order.api';
 import { invoiceApi } from '../../api/invoice.api';
@@ -12,11 +25,17 @@ import { Button } from '../../components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { LoadingScreen } from '../../components/common/LoadingScreen';
 import { ErrorMessage } from '../../components/common/ErrorMessage';
+import { AgreementViewerModal } from '../../components/common/AgreementViewerModal';
+import { useToast } from '../../hooks/useToast';
+import { Outlet } from '../../types/master.types';
 import { formatCurrency, formatDate, formatQuantity } from '../../utils/formatters';
 
 export const FranchiseOverviewPage: React.FC = () => {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { success: toastSuccess, error: toastError } = useToast();
+
+  // Queries
   const franchise = useQuery({ queryKey: ['franchise-overview', id], queryFn: () => masterApi.getFranchiseById(id), enabled: Boolean(id) });
   const outlets = useQuery({ queryKey: ['franchise-overview-outlets', id], queryFn: () => masterApi.getOutlets({ franchiseId: id, size: 100 }), enabled: Boolean(id) });
   const machines = useQuery({ queryKey: ['franchise-overview-machines', id], queryFn: () => masterApi.getMachines({ franchiseId: id, size: 100 }), enabled: Boolean(id) });
@@ -24,7 +43,14 @@ export const FranchiseOverviewPage: React.FC = () => {
   const invoices = useQuery({ queryKey: ['franchise-overview-invoices', id], queryFn: () => invoiceApi.getInvoices({ franchiseId: id, size: 100 }), enabled: Boolean(id) });
   const dues = useQuery({ queryKey: ['franchise-overview-dues', id], queryFn: () => dashboardApi.getDues({ franchiseId: id, size: 100 }), enabled: Boolean(id) });
   const sales = useQuery({ queryKey: ['franchise-overview-sales', id], queryFn: () => iotApi.getManualDailySales({ franchiseId: id, size: 100 }), enabled: Boolean(id) });
+  
   const [paymentHistory, setPaymentHistory] = useState<Array<{ invoiceNumber: string; paymentDate: string; amount: number; paymentMode: string; referenceNumber?: string }>>([]);
+
+  // Agreement file viewing & upload state
+  const [viewingOutlet, setViewingOutlet] = useState<Outlet | null>(null);
+  const [uploadingOutletId, setUploadingOutletId] = useState<string | null>(null);
+  const [activeOutletForUpload, setActiveOutletForUpload] = useState<Outlet | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const invoiceRows = invoices.data?.content || [];
@@ -38,6 +64,7 @@ export const FranchiseOverviewPage: React.FC = () => {
   if (franchise.isLoading) return <LoadingScreen message="Loading franchise details..." />;
   if (franchise.isError || !franchise.data) return <ErrorMessage title="Franchise Not Found" message="Could not load this franchise." onRetry={() => franchise.refetch()} />;
   const f = franchise.data;
+  const outletRows = outlets.data?.content || [];
   const orderRows = orders.data?.content || [];
   const invoiceRows = invoices.data?.content || [];
   const dueRows = dues.data?.content || [];
@@ -50,8 +77,58 @@ export const FranchiseOverviewPage: React.FC = () => {
   const salesIncome = (rows: typeof salesRows) => rows.reduce((sum, sale) => sum + sale.quantity * (sale.retailUnitPrice || 0), 0);
   const monthSalesIncome = salesIncome(salesRows.filter((sale) => sale.salesDate.startsWith(today.slice(0, 7))));
 
+  // Agreement handlers
+  const handleTriggerUpload = (outlet: Outlet) => {
+    setActiveOutletForUpload(outlet);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFilePicked = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !activeOutletForUpload) return;
+    if (file.size > 25 * 1024 * 1024) {
+      toastError('File size exceeds the 25MB limit.');
+      return;
+    }
+
+    try {
+      setUploadingOutletId(activeOutletForUpload.id);
+      await masterApi.uploadOutletAgreement(activeOutletForUpload.id, file);
+      toastSuccess(`Agreement uploaded for outlet "${activeOutletForUpload.outletName}"!`);
+      outlets.refetch();
+    } catch {
+      toastError('Failed to upload agreement document.');
+    } finally {
+      setUploadingOutletId(null);
+      setActiveOutletForUpload(null);
+    }
+  };
+
+  const handleDeleteAgreement = async (outlet: Outlet) => {
+    if (!window.confirm(`Are you sure you want to remove the agreement file from outlet "${outlet.outletName}"?`)) {
+      return;
+    }
+    try {
+      await masterApi.deleteOutletAgreement(outlet.id);
+      toastSuccess(`Agreement removed from outlet "${outlet.outletName}".`);
+      outlets.refetch();
+    } catch {
+      toastError('Failed to remove agreement document.');
+    }
+  };
+
+  const handleDownloadAgreement = async (outlet: Outlet) => {
+    try {
+      await masterApi.downloadOutletAgreement(outlet.id, outlet.agreementFileName);
+    } catch {
+      toastError('Failed to download agreement file.');
+    }
+  };
+
   const downloadLedger = () => {
-    // 1. Invoices as Debit entries (Invoices represent official debits to the franchise)
     const invoiceEntries = invoiceRows.map((inv) => ({
       date: inv.invoiceDate,
       particulars: `Invoice ${inv.invoiceNumber}${inv.orderNumber ? ` · Order ${inv.orderNumber}` : ''}`,
@@ -62,7 +139,6 @@ export const FranchiseOverviewPage: React.FC = () => {
       isCancelled: false,
     }));
 
-    // 2. Payments recorded against invoices (Credits)
     const uniquePaymentsMap = new Map<string, typeof paymentHistory[0]>();
     paymentHistory.forEach((p) => {
       const key = (p as any).id || `${p.invoiceNumber}-${p.paymentDate}-${p.amount}-${p.paymentMode}`;
@@ -78,7 +154,6 @@ export const FranchiseOverviewPage: React.FC = () => {
       isCancelled: false,
     }));
 
-    // 3. Cancelled orders displayed for audit trail without incurring debit liability
     const cancelledOrderEntries = orderRows
       .filter((o) => o.status === 'CANCELLED')
       .map((o) => ({
@@ -225,36 +300,341 @@ export const FranchiseOverviewPage: React.FC = () => {
     }
   };
 
-  return <div className="space-y-6 max-w-7xl mx-auto pb-12">
-    <PageHeader title={f.businessName} subtitle={`Franchise ${f.franchiseCode}`} actions={<div className="flex flex-wrap gap-2"><Button variant="outline" onClick={downloadLedger}>Print / Download Ledger</Button><Button variant="outline" leftIcon={<ArrowLeft className="w-4 h-4" />} onClick={() => navigate('/franchises')}>Back to Franchises</Button></div>} />
-    <Card><CardHeader><CardTitle className="flex items-center gap-2"><Building2 className="w-5 h-5 text-brand-600" />Basic Details</CardTitle></CardHeader><CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm"><div><span className="text-slate-500 block">Franchise ID</span><span className="font-mono text-xs break-all">{f.id}</span></div><div><span className="text-slate-500 block">Owner</span><span className="font-semibold">{f.ownerName}</span></div><div><span className="text-slate-500 block">Contact</span><span>{f.mobile} · {f.email || 'No email'}</span></div><div className="md:col-span-2"><span className="text-slate-500 block">Address</span><span>{[f.address, f.city, f.state, f.pincode].filter(Boolean).join(', ') || 'No address provided'}</span></div><div><span className="text-slate-500 block">FSSAI Number</span><span>{f.fssaiNumber || '—'}</span></div></CardContent></Card>
-    <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-      <Metric icon={<Boxes />} label="Outlets" value={outlets.data?.content.length || 0} />
-      <Metric icon={<Cpu />} label="Machines" value={machines.data?.content.length || 0} />
-      <Metric icon={<ShoppingCart />} label="Orders" value={orderRows.length} />
-      <Metric icon={<FileText />} label="Pending Orders" value={pendingOrders.length} />
-      <Metric icon={<Wallet />} label="Available Credit" value={formatCurrency(f.availableCredit || 0)} />
-      <Metric icon={<Wallet />} label="Invoiced" value={formatCurrency(invoiced)} />
-      <Metric icon={<Wallet />} label="Pending Invoices" value={formatCurrency(totalPendingInvoices)} />
-      <Metric icon={<Wallet />} label="Overdue Dues" value={formatCurrency(overdueBalance)} />
-      <Metric icon={<Wallet />} label="This Month's Sales Income" value={formatCurrency(monthSalesIncome)} />
-      <Metric icon={<Wallet />} label="Total Sales Income" value={formatCurrency(salesIncome(salesRows))} />
+  return (
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+      <PageHeader
+        title={f.businessName}
+        subtitle={`Franchise ${f.franchiseCode}`}
+        actions={
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" onClick={downloadLedger}>
+              Print / Download Ledger
+            </Button>
+            <Button variant="outline" leftIcon={<ArrowLeft className="w-4 h-4" />} onClick={() => navigate('/franchises')}>
+              Back to Franchises
+            </Button>
+          </div>
+        }
+      />
+
+      {/* Hidden file input for uploading / replacing agreements */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        onChange={handleFilePicked}
+      />
+
+      {/* Basic Franchise Details Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Building2 className="w-5 h-5 text-brand-600" />
+            Basic Details
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div>
+            <span className="text-slate-500 block">Franchise ID</span>
+            <span className="font-mono text-xs break-all">{f.id}</span>
+          </div>
+          <div>
+            <span className="text-slate-500 block">Owner</span>
+            <span className="font-semibold">{f.ownerName}</span>
+          </div>
+          <div>
+            <span className="text-slate-500 block">Contact</span>
+            <span>{f.mobile} · {f.email || 'No email'}</span>
+          </div>
+          <div className="md:col-span-2">
+            <span className="text-slate-500 block">Address</span>
+            <span>{[f.address, f.city, f.state, f.pincode].filter(Boolean).join(', ') || 'No address provided'}</span>
+          </div>
+          <div>
+            <span className="text-slate-500 block">FSSAI Number</span>
+            <span>{f.fssaiNumber || '—'}</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Metric Counters */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+        <Metric icon={<Boxes />} label="Outlets" value={outletRows.length} />
+        <Metric icon={<Cpu />} label="Machines" value={machines.data?.content.length || 0} />
+        <Metric icon={<ShoppingCart />} label="Orders" value={orderRows.length} />
+        <Metric icon={<FileText />} label="Pending Orders" value={pendingOrders.length} />
+        <Metric icon={<Wallet />} label="Available Credit" value={formatCurrency(f.availableCredit || 0)} />
+        <Metric icon={<Wallet />} label="Invoiced" value={formatCurrency(invoiced)} />
+        <Metric icon={<Wallet />} label="Pending Invoices" value={formatCurrency(totalPendingInvoices)} />
+        <Metric icon={<Wallet />} label="Overdue Dues" value={formatCurrency(overdueBalance)} />
+        <Metric icon={<Wallet />} label="This Month's Sales Income" value={formatCurrency(monthSalesIncome)} />
+        <Metric icon={<Wallet />} label="Total Sales Income" value={formatCurrency(salesIncome(salesRows))} />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Outlets & Agreement Documents Section */}
+        <Card className="lg:col-span-2">
+          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <FileText className="w-5 h-5 text-brand-600" />
+              <div>
+                <CardTitle className="text-base">Outlets & Agreement Documents</CardTitle>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  View, download, replace, or delete franchise agreement files for each outlet location.
+                </p>
+              </div>
+            </div>
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700">
+              {outletRows.length} {outletRows.length === 1 ? 'Outlet' : 'Outlets'}
+            </span>
+          </CardHeader>
+          <CardContent className="pt-4">
+            {outletRows.length === 0 ? (
+              <p className="text-sm text-slate-500 py-6 text-center">No outlets found for this franchise.</p>
+            ) : (
+              <div className="divide-y divide-slate-100">
+                {outletRows.map((o) => (
+                  <div key={o.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-slate-900 text-sm">{o.outletName}</span>
+                        <span className="font-mono text-xs text-brand-800 bg-brand-50 px-2 py-0.5 rounded border border-brand-200">
+                          {o.outletCode}
+                        </span>
+                        <span
+                          className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                            o.active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'
+                          }`}
+                        >
+                          {o.active ? 'ACTIVE' : 'INACTIVE'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        {o.city || 'Location not specified'} • {o.machinesCount || 0} machines mapped
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {o.agreementFileName ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setViewingOutlet(o)}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 transition-colors"
+                            title={`Click to preview ${o.agreementFileName}`}
+                          >
+                            <Eye className="w-3.5 h-3.5 text-brand-600" />
+                            <span className="max-w-[160px] truncate">{o.agreementFileName}</span>
+                          </button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDownloadAgreement(o)}
+                            leftIcon={<Download className="w-3.5 h-3.5" />}
+                            title="Direct Download"
+                            className="text-xs py-1 px-2.5"
+                          >
+                            Download
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleTriggerUpload(o)}
+                            leftIcon={
+                              uploadingOutletId === o.id ? (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              ) : (
+                                <Upload className="w-3.5 h-3.5" />
+                              )
+                            }
+                            disabled={uploadingOutletId === o.id}
+                            title="Replace with a new agreement file"
+                            className="text-xs py-1 px-2.5 text-slate-700 hover:text-brand-700"
+                          >
+                            Replace
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteAgreement(o)}
+                            title="Delete agreement"
+                            className="text-xs py-1 px-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-slate-400 italic">No agreement uploaded</span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleTriggerUpload(o)}
+                            leftIcon={
+                              uploadingOutletId === o.id ? (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              ) : (
+                                <Upload className="w-3.5 h-3.5" />
+                              )
+                            }
+                            disabled={uploadingOutletId === o.id}
+                            className="text-xs py-1 px-2.5 text-brand-700 hover:bg-brand-50"
+                          >
+                            Upload Agreement
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <DataCard
+          title="Daily Sales Report"
+          exportName="daily-sales-report"
+          rows={salesRows.map(
+            (s) =>
+              `${s.salesDate} · ${s.flavourName} · ${formatQuantity(s.quantity)} ${s.quantityUnit} · ${s.machineCode}`
+          )}
+        >
+          <Rows
+            rows={salesRows.map(
+              (s) =>
+                `${s.salesDate} · ${s.flavourName} · ${formatQuantity(s.quantity)} ${s.quantityUnit} · ${s.machineCode}`
+            )}
+            empty="No daily sales recorded"
+          />
+        </DataCard>
+
+        <DataCard
+          title="Order History"
+          exportName="order-history"
+          rows={orderRows.slice(0, 12).map((o) => `${o.orderNumber} · ${o.status} · ${formatCurrency(o.orderTotal)}`)}
+        >
+          <Rows
+            rows={orderRows.slice(0, 12).map((o) => `${o.orderNumber} · ${o.status} · ${formatCurrency(o.orderTotal)}`)}
+            empty="No orders found"
+          />
+        </DataCard>
+
+        <DataCard
+          title="Invoice & Account Ledger"
+          exportName="account-ledger"
+          onPrint={downloadLedger}
+          rows={invoiceRows
+            .slice(0, 12)
+            .map(
+              (i) =>
+                `${i.invoiceNumber} · Total ${formatCurrency(i.totalAmount)} · Paid ${formatCurrency(
+                  i.paidAmount
+                )} · Pending ${formatCurrency(i.balanceAmount)} · ${i.paymentStatus}`
+            )}
+        >
+          <Rows
+            rows={invoiceRows
+              .slice(0, 12)
+              .map(
+                (i) =>
+                  `${i.invoiceNumber} · Total ${formatCurrency(i.totalAmount)} · Paid ${formatCurrency(
+                    i.paidAmount
+                  )} · Pending ${formatCurrency(i.balanceAmount)} · ${i.paymentStatus}`
+              )}
+            empty="No invoices found"
+          />
+        </DataCard>
+
+        <DataCard
+          title="Pending & Due Payments"
+          exportName="due-payments"
+          rows={dueRows.map((d) => `${d.invoiceNumber} · Due ${formatDate(d.dueDate)} · Balance ${formatCurrency(d.balanceAmount)}`)}
+        >
+          <Rows
+            rows={dueRows.map(
+              (d) => `${d.invoiceNumber} · Due ${formatDate(d.dueDate)} · Balance ${formatCurrency(d.balanceAmount)}`
+            )}
+            empty="No pending payments"
+          />
+        </DataCard>
+      </div>
+
+      {/* Agreement Document Viewer Modal */}
+      <AgreementViewerModal
+        isOpen={Boolean(viewingOutlet)}
+        onClose={() => setViewingOutlet(null)}
+        outletId={viewingOutlet?.id}
+        outletName={viewingOutlet?.outletName}
+        fileName={viewingOutlet?.agreementFileName}
+      />
     </div>
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <DataCard title="Outlets & Machines"><Rows rows={(outlets.data?.content || []).map((o) => `${o.outletName} · ${o.outletCode} · ${o.machinesCount || 0} machines`)} empty="No outlets found" /></DataCard>
-      <DataCard title="Daily Sales Report" exportName="daily-sales-report" rows={salesRows.map((s) => `${s.salesDate} · ${s.flavourName} · ${formatQuantity(s.quantity)} ${s.quantityUnit} · ${s.machineCode}`)}><Rows rows={salesRows.map((s) => `${s.salesDate} · ${s.flavourName} · ${formatQuantity(s.quantity)} ${s.quantityUnit} · ${s.machineCode}`)} empty="No daily sales recorded" /></DataCard>
-      <DataCard title="Order History" exportName="order-history" rows={orderRows.slice(0, 12).map((o) => `${o.orderNumber} · ${o.status} · ${formatCurrency(o.orderTotal)}`)}><Rows rows={orderRows.slice(0, 12).map((o) => `${o.orderNumber} · ${o.status} · ${formatCurrency(o.orderTotal)}`)} empty="No orders found" /></DataCard>
-      <DataCard title="Invoice & Account Ledger" exportName="account-ledger" onPrint={downloadLedger} rows={invoiceRows.slice(0, 12).map((i) => `${i.invoiceNumber} · Total ${formatCurrency(i.totalAmount)} · Paid ${formatCurrency(i.paidAmount)} · Pending ${formatCurrency(i.balanceAmount)} · ${i.paymentStatus}`)}><Rows rows={invoiceRows.slice(0, 12).map((i) => `${i.invoiceNumber} · Total ${formatCurrency(i.totalAmount)} · Paid ${formatCurrency(i.paidAmount)} · Pending ${formatCurrency(i.balanceAmount)} · ${i.paymentStatus}`)} empty="No invoices found" /></DataCard>
-      <DataCard title="Pending & Due Payments" exportName="due-payments" rows={dueRows.map((d) => `${d.invoiceNumber} · Due ${formatDate(d.dueDate)} · Balance ${formatCurrency(d.balanceAmount)}`)}><Rows rows={dueRows.map((d) => `${d.invoiceNumber} · Due ${formatDate(d.dueDate)} · Balance ${formatCurrency(d.balanceAmount)}`)} empty="No pending payments" /></DataCard>
-    </div>
-  </div>;
+  );
 };
 
-const Metric = ({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) => <Card><CardContent className="p-4"><div className="text-brand-600 w-5 h-5">{icon}</div><p className="text-xs text-slate-500 mt-2">{label}</p><p className="font-bold text-lg text-slate-900 mt-1">{value}</p></CardContent></Card>;
-const DataCard = ({ title, children, rows = [], exportName, onPrint }: { title: string; children: React.ReactNode; rows?: string[]; exportName?: string; onPrint?: () => void }) => {
-  const print = () => { if (onPrint) { onPrint(); return; } const win = window.open('', '_blank', 'width=900,height=700'); if (!win) return; win.document.write(`<html><head><title>${title}</title><style>body{font-family:Arial;padding:24px;color:#172033}h1{color:#0f766e}p{padding:10px;border-bottom:1px solid #ddd}.toolbar{text-align:right}button{background:#0f766e;color:white;border:0;border-radius:5px;padding:9px 14px}@media print{.toolbar{display:none}}</style></head><body><h1>Daddy Soda House</h1><h2>${title}</h2><div class="toolbar"><button onclick="window.print()">Download PDF / Print</button></div>${rows.map((row) => `<p>${row}</p>`).join('')}</body></html>`); win.document.close(); };
-  return <Card><CardHeader className="flex flex-row items-center justify-between"><CardTitle className="text-base">{title}</CardTitle>{exportName && <button type="button" className="text-xs text-brand-700 hover:underline" onClick={print}>View</button>}</CardHeader><CardContent>{children}</CardContent></Card>;
+const Metric = ({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) => (
+  <Card>
+    <CardContent className="p-4">
+      <div className="text-brand-600 w-5 h-5">{icon}</div>
+      <p className="text-xs text-slate-500 mt-2">{label}</p>
+      <p className="font-bold text-lg text-slate-900 mt-1">{value}</p>
+    </CardContent>
+  </Card>
+);
+
+const DataCard = ({
+  title,
+  children,
+  rows = [],
+  exportName,
+  onPrint,
+}: {
+  title: string;
+  children: React.ReactNode;
+  rows?: string[];
+  exportName?: string;
+  onPrint?: () => void;
+}) => {
+  const print = () => {
+    if (onPrint) {
+      onPrint();
+      return;
+    }
+    const win = window.open('', '_blank', 'width=900,height=700');
+    if (!win) return;
+    win.document.write(
+      `<html><head><title>${title}</title><style>body{font-family:Arial;padding:24px;color:#172033}h1{color:#0f766e}p{padding:10px;border-bottom:1px solid #ddd}.toolbar{text-align:right}button{background:#0f766e;color:white;border:0;border-radius:5px;padding:9px 14px}@media print{.toolbar{display:none}}</style></head><body><h1>Daddy Soda House</h1><h2>${title}</h2><div class="toolbar"><button onclick="window.print()">Download PDF / Print</button></div>${rows
+        .map((row) => `<p>${row}</p>`)
+        .join('')}</body></html>`
+    );
+    win.document.close();
+  };
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle className="text-base">{title}</CardTitle>
+        {exportName && (
+          <button type="button" className="text-xs text-brand-700 hover:underline" onClick={print}>
+            View
+          </button>
+        )}
+      </CardHeader>
+      <CardContent>{children}</CardContent>
+    </Card>
+  );
 };
-const Rows = ({ rows, empty }: { rows: string[]; empty: string }) => rows.length ? <div className="divide-y divide-slate-100 text-sm">{rows.map((row, index) => <div key={index} className="py-2 text-slate-700">{row}</div>)}</div> : <p className="text-sm text-slate-500">{empty}</p>;
+
+const Rows = ({ rows, empty }: { rows: string[]; empty: string }) =>
+  rows.length ? (
+    <div className="divide-y divide-slate-100 text-sm">
+      {rows.map((row, index) => (
+        <div key={index} className="py-2 text-slate-700">
+          {row}
+        </div>
+      ))}
+    </div>
+  ) : (
+    <p className="text-sm text-slate-500">{empty}</p>
+  );
 
 export default FranchiseOverviewPage;

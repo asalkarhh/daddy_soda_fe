@@ -108,6 +108,91 @@ export const masterApi = {
     return response.data.data;
   },
 
+  uploadOutletAgreement: async (outletId: string, file: File): Promise<Outlet> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await apiClient.post<ApiResponse<Outlet>>(`/outlets/${outletId}/agreement`, formData, {
+      headers: {
+        'Content-Type': undefined,
+      },
+    });
+    return response.data.data;
+  },
+
+  getOutletAgreementBlob: async (outletId: string, fallbackFilename?: string): Promise<{ blob: Blob; url: string; contentType: string; filename: string }> => {
+    let response;
+    try {
+      response = await apiClient.get(`/my/outlets/${outletId}/agreement?view=true`, {
+        responseType: 'blob',
+      });
+    } catch (err: any) {
+      if (err?.response?.status === 403 || err?.response?.status === 404) {
+        response = await apiClient.get(`/outlets/${outletId}/agreement?view=true`, {
+          responseType: 'blob',
+        });
+      } else {
+        throw err;
+      }
+    }
+
+    const contentType = (response.headers['content-type'] as string) || 'application/octet-stream';
+    let filename = fallbackFilename || `outlet-${outletId}-agreement`;
+    const disposition = response.headers['content-disposition'] as string | undefined;
+    if (disposition && disposition.includes('filename=')) {
+      const filenameMatch = disposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+      if (filenameMatch && filenameMatch[1]) {
+        filename = filenameMatch[1].replace(/['"]/g, '').trim();
+      }
+    }
+    const blob = new Blob([response.data], { type: contentType });
+    const url = window.URL.createObjectURL(blob);
+    return { blob, url, contentType, filename };
+  },
+
+  downloadOutletAgreement: async (outletId: string, fallbackFilename?: string): Promise<void> => {
+    let response;
+    try {
+      response = await apiClient.get(`/my/outlets/${outletId}/agreement`, {
+        responseType: 'blob',
+      });
+    } catch (err: any) {
+      if (err?.response?.status === 403 || err?.response?.status === 404) {
+        response = await apiClient.get(`/outlets/${outletId}/agreement`, {
+          responseType: 'blob',
+        });
+      } else {
+        throw err;
+      }
+    }
+
+    const blob = new Blob([response.data], {
+      type: (response.headers['content-type'] as string) || 'application/octet-stream',
+    });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+
+    let filename = fallbackFilename || `outlet-${outletId}-agreement`;
+    const disposition = response.headers['content-disposition'] as string | undefined;
+    if (disposition && disposition.includes('filename=')) {
+      const filenameMatch = disposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+      if (filenameMatch && filenameMatch[1]) {
+        filename = filenameMatch[1].replace(/['"]/g, '').trim();
+      }
+    }
+
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  },
+
+  deleteOutletAgreement: async (outletId: string): Promise<Outlet> => {
+    const response = await apiClient.delete<ApiResponse<Outlet>>(`/outlets/${outletId}/agreement`);
+    return response.data.data;
+  },
+
   // --------------------------------------------------
   // Machines API
   // --------------------------------------------------

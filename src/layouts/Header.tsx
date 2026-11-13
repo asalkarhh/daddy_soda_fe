@@ -9,9 +9,10 @@ import { useToast } from '../hooks/useToast';
 
 interface HeaderProps {
   onToggleSidebar: () => void;
+  onOpenProfile?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
+export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onOpenProfile }) => {
   const { user, logout } = useAuth();
   const { success } = useToast();
   const navigate = useNavigate();
@@ -107,10 +108,21 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
                     </div>
                   </div>
 
-                  <div className="px-2 py-1">
-                    <div className="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-600 rounded-lg">
-                      <UserIcon className="w-4 h-4 text-slate-400" />
-                      <span>Mobile: {user?.mobile}</span>
+                  <div className="px-2 py-1 space-y-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        if (onOpenProfile) onOpenProfile();
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-brand-700 hover:bg-brand-50 rounded-lg transition-colors text-left"
+                    >
+                      <UserIcon className="w-4 h-4 text-brand-600" />
+                      <span>{user?.role === 'FRANCHISE_OWNER' ? 'Franchise Profile & Agreements' : 'My Account Profile'}</span>
+                    </button>
+                    <div className="flex items-center gap-2.5 px-3 py-1.5 text-xs text-slate-600 rounded-lg">
+                      <span className="text-[11px] text-slate-400">Mobile:</span>
+                      <span className="font-mono text-slate-700">{user?.mobile}</span>
                     </div>
                   </div>
 

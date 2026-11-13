@@ -308,7 +308,7 @@ export const PurchaseDetailPage: React.FC = () => {
             <span>This Purchase Bill Has Been Cancelled</span>
           </div>
           <p className="text-sm">
-            <strong>Reason:</strong> {purchase.cancelledReason || purchase.cancellationReason || 'No reason specified'}
+            <strong>Reason:</strong> {purchase.cancellationReason || 'No reason specified'}
           </p>
           <div className="flex flex-wrap items-center gap-4 text-xs text-red-800 pt-1">
             {purchase.cancelledBy && <span>Cancelled by: {purchase.cancelledBy}</span>}

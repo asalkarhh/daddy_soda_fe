@@ -127,11 +127,11 @@ export default function Hero() {
             </h2>
 
             <p className="font-display text-xl sm:text-2xl text-[#7A6B56] uppercase tracking-wide">
-              HYGIENIC PROCESS • SIGNATURE HYGIENE ICE GOLA • AUTHENTIC FRUIT SYRUPS
+              HYGIENIC PROCESS • WATER TO ICE CRUSH • SIGNATURE HYGIENE ICE GOLA • AUTHENTIC FRUIT SYRUPS
             </p>
           </div>
 
-          {/* Floating Product Cup with 4 Ingredient Callout Chips */}
+          {/* Floating Product Cup with 5 Feature & Flavor Callout Chips */}
           <div className="relative max-w-lg mx-auto my-8">
             
             {/* Subtle floating wrapper with mouse parallax */}
@@ -183,7 +183,7 @@ export default function Hero() {
                 </div>
               </div>
 
-              {/* 4 Floating Ingredient Cards */}
+              {/* 5 Floating Feature & Ingredient Cards */}
 
               {/* TOP LEFT: HYGIENE ICE GOLA */}
               <div
@@ -206,6 +206,18 @@ export default function Hero() {
                 <div className="text-left">
                   <p className="text-[10px] uppercase font-bold text-[#A8987E]">Royal Syrup</p>
                   <p className="font-display text-sm font-bold text-[#171717]">KALA KHATTA</p>
+                </div>
+              </div>
+
+              {/* MIDDLE LEFT: WATER TO ICE CRUSH */}
+              <div
+                className="absolute top-[38%] -left-6 sm:-left-16 z-20 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-xl border border-[#E8D9BD] flex items-center gap-2.5 animate-bobbing"
+                style={{ animationDelay: '0.7s' }}
+              >
+                <span className="text-3xl">🧊</span>
+                <div className="text-left">
+                  <p className="text-[10px] uppercase font-bold text-[#A8987E]">Pure Ice Tech</p>
+                  <p className="font-display text-sm font-bold text-[#171717]">WATER TO ICE CRUSH</p>
                 </div>
               </div>
 
@@ -242,16 +254,20 @@ export default function Hero() {
               ✨ HYGIENIC PROCESS
             </span>
             <span className="text-[#A8987E]">•</span>
+            <span className="px-3.5 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD] text-[#E6392F]">
+              🧊 WATER TO ICE CRUSH
+            </span>
+            {/* <span className="text-[#A8987E]">•</span>
             <span className="px-3.5 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD]">
               🍇 KALA KHATTA
+            </span> */}
+            <span className="text-[#A8987E]">•</span>
+            <span className="px-3.5 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD]">
+              🫐 BLUEBERRY
             </span>
             <span className="text-[#A8987E]">•</span>
             <span className="px-3.5 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD]">
-              🌹 GOURMET ROSE
-            </span>
-            <span className="text-[#A8987E]">•</span>
-            <span className="px-3.5 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD]">
-              🍍 GOLDEN PINEAPPLE
+              🍊 NAGPUR ORANGE
             </span>
             <span className="text-[#A8987E]">•</span>
             <span className="px-3.5 py-1.5 rounded-full bg-[#FAF2E2] border border-[#E8D9BD]">

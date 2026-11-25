@@ -181,14 +181,28 @@ export const AboutPage: React.FC = () => {
             {LEADERSHIP.map((leader) => (
               <div
                 key={leader.name}
-                className="bg-white rounded-3xl p-8 sm:p-10 border border-[#E8D9BD] shadow-sm hover:shadow-lg transition-all flex flex-col items-center text-center relative overflow-hidden"
+                className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E8D9BD] shadow-sm hover:shadow-lg transition-all flex flex-col items-center text-center relative overflow-hidden"
               >
-                {/* Director Avatar Circle */}
-                <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-[#E6392F] to-[#FFB000] p-1 shadow-md mb-6 relative">
-                  <div className="w-full h-full rounded-full bg-[#FAF2E2] flex items-center justify-center font-display text-3xl font-black text-[#E6392F] border-2 border-white">
-                    {leader.initials}
+                {/* Director Photograph Frame */}
+                {leader.image ? (
+                  <div className="w-full aspect-[4/5] rounded-2xl overflow-hidden mb-6 shadow-md border-2 border-[#E8D9BD] bg-[#FAF2E2] relative group">
+                    <img
+                      src={leader.image}
+                      alt={leader.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      style={{
+                        objectPosition: leader.name.includes('Milind') ? '48% 50%' : '50% 0%',
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
                   </div>
-                </div>
+                ) : (
+                  <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-[#E6392F] to-[#FFB000] p-1 shadow-md mb-6 relative">
+                    <div className="w-full h-full rounded-full bg-[#FAF2E2] flex items-center justify-center font-display text-3xl font-black text-[#E6392F] border-2 border-white">
+                      {leader.initials}
+                    </div>
+                  </div>
+                )}
 
                 <h3 className="font-display text-2xl sm:text-3xl font-black text-[#171717] mb-2">
                   {leader.name}

@@ -127,12 +127,14 @@ export const LEADERSHIP = [
     role: 'FOUNDER & DIRECTOR',
     desc: "Seasoned business entrepreneur driving the group's strategic vision and successful presence in the society.",
     initials: 'MK',
+    image: '/images/photography/milindkadam.jpeg',
   },
   {
     name: 'Mr. Ketan Nandkumar Kadam',
     role: 'FOUNDER & DIRECTOR',
     desc: 'Responsible for strategic growth and operational management across all group businesses, ensuring consistent performance.',
     initials: 'KK',
+    image: '/images/photography/ketankadam.jpeg',
   },
 ];
 
